@@ -1,0 +1,53 @@
+from writeadoc import PageData, SectionRef
+from writeadoc.search import extract_search_data_from_page
+
+
+def test_extractor():
+    html = """
+<h1>Introduction</h1>
+<p class="description">JinjaX is a Python library for creating reusable "components" - encapsulated template snippets that can take arguments and render to HTML. They are similar to React or Vue components, but they render on the server side, not in the&nbsp;browser.</p>
+<p>Unlike Jinja's <code>{% include "..." %}</code> or macros, JinjaX components integrate naturally with the rest of your template code.</p>
+<div class="language-html+jinja highlight"><pre><code><span class="linenos" data-linenos="1 "></span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="linenos" data-linenos="2 "></span>  <span class="p">&lt;</span><span class="nt">Card</span> <span class="na">class</span><span class="o">=</span><span class="s">"bg-gray"</span><span class="p">&gt;</span>
+<span class="linenos" data-linenos="3 "></span>    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Products<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="linenos" data-linenos="4 "></span>    <span class="cp">{%</span> <span class="k">for</span> <span class="nv">product</span> <span class="k">in</span> <span class="nv">products</span> <span class="cp">%}</span>
+<span class="linenos" data-linenos="5 "></span>      <span class="p">&lt;</span><span class="nt">Product</span> <span class="na">product</span><span class="o">=</span><span class="cp">{{</span> <span class="nv">product</span> <span class="cp">}}</span> <span class="s">/</span><span class="p">&gt;</span>
+<span class="linenos" data-linenos="6 "></span>    <span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
+<span class="linenos" data-linenos="7 "></span>  <span class="p">&lt;/</span><span class="nt">Card</span><span class="p">&gt;</span>
+<span class="linenos" data-linenos="8 "></span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</code></pre></div>
+<h2 id="s-features">Features&nbsp;<a class="headerlink" href="#s-features"></a></h2>
+<h3 id="s-simple">Simple&nbsp;<a class="headerlink" href="#s-simple"></a></h3>
+<p>JinjaX components are simple Jinja templates. You use them as if they were HTML tags without needing to import them: they're easy to use and easy to read.</p>
+<h3 id="s-encapsulated">Encapsulated&nbsp;<a class="headerlink" href="#s-encapsulated"></a></h3>
+<p>They are independent of each other and can link to their own CSS and JS, so you can freely copy and paste components between applications.</p>
+"""
+    page = PageData(
+        title="Test Page",
+        content=html,
+        url="/docs/foobar/test-page/",
+        section=SectionRef(id="test", title="Test Section", url="/docs/test-section/"),
+    )
+    page.id = "page"
+    result = extract_search_data_from_page(page)
+    print(result)
+    assert result == {
+        "page-1": {
+            "title": "Test Page",
+            "content": 'Introduction JinjaX is a Python library for creating reusable "components" - encapsulated template snippets that can take arguments and render to HTML. They are similar to React or Vue components, but they render on the server side, not in the browser. Unlike Jinja\'s {% include "..." %} or macros, JinjaX components integrate naturally with the rest of your template code.',
+            "section": "foobar/test-page",
+            "url": "../docs/foobar/test-page/index.html",
+        },
+        "page-2": {
+            "title": "Test Page",
+            "content": 'template code. <div> <Card class="bg-gray"> <h1>Products</h1> {% for product in products %} <Product product={{ product }} /> {% endfor %} </Card></div> Features Simple JinjaX components are simple Jinja templates. You use them as if they were HTML tags without needing to import them: they\'re easy to use and easy to read.',
+            "section": "foobar/test-page",
+            "url": "../docs/foobar/test-page/index.html",
+        },
+        "page-3": {
+            "title": "Test Page",
+            "content": "easy to read. Encapsulated They are independent of each other and can link to their own CSS and JS, so you can freely copy and paste components between applications.",
+            "section": "foobar/test-page",
+            "url": "../docs/foobar/test-page/index.html",
+        },
+    }

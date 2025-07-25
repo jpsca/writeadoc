@@ -1,0 +1,27 @@
+[project]
+name = "writeadoc"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "jinja2>=3.1.6",
+    "jx",
+    "markdown>=3.8.2",
+    "pygments>=2.19.2",
+    "pymdown-extensions>=10.16",
+    "pyyaml>=6.0.2",
+    "watchdog>=6.0.0",
+]
+
+[tool.uv.sources]
+jx = { path = "../jx" }
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12.4",
+    "ty>=0.0.1a15",
+]
+test = [
+    "pytest>=8.4.1",
+]

@@ -1,0 +1,2 @@
+class InvalidFrontMatter(Exception):
+    pass
