@@ -96,7 +96,7 @@ def start_server(build_folder: str) -> None:
     port = 8000
     handler = partial(SimpleHTTPRequestHandler, directory=build_folder)
     server = ThreadingHTTPServer(("0.0.0.0", port), handler)
-    url = f"http://0.0.0.0:{port}/"
+    url = f"http://localhost:{port}/"
     print(f"Serving docs on {url}")
     try:
         server.serve_forever()

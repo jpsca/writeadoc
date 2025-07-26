@@ -1093,8 +1093,8 @@ code {
 
 .page {
   background: var(--color-white);
-  border-bottom: 3px dashed var(--color-base-darker);
-  border-top: 3px dashed var(--color-base-darker);
+  border-bottom: 2px solid var(--color-base-darker);
+  border-top: 2px solid var(--color-base-darker);
   display: flex;
   flex: 1;
   flex-direction: column;

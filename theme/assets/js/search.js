@@ -1,29 +1,38 @@
+function showResults(results, store, searchTerm) {
+  var searchResults = document.getElementById('search-results');
+  document.querySelector('#search-query mark').textContent = searchTerm;
+  var appendString = '';
+  var shownUrls = new Set();
+
+  if (results.length) {
+    results.forEach(result => {
+      var item = store[result.ref];
+      if (shownUrls.has(item.url)) {
+        return; // Skip duplicate URLs
+      }
+      shownUrls.add(item.url);
+
+      appendString += '<div class="search-result">';
+      appendString += '  <h3><a href="' + item.url + '">' + item.title + '</a></h3>';
+      appendString += '  <small><a href="' + item.url + '">' + item.section + '</a></small>';
+      appendString += '  <p>' + item.content.substring(0, 250) + '&hellip;</p>';
+      appendString += '</div>';
+    });
+  } else {
+    appendString = '<div class="search-result"><p>No results found.</p></div>';
+  }
+  searchResults.innerHTML = appendString;
+}
+
+function getQuery(variable) {
+  var params = new URLSearchParams(window.location.search.substring(1));
+  if (params.has(variable)) {
+    return decodeURIComponent(params.get(variable).replace(/\+/g, '%20'));
+  }
+  return null;
+}
+
 function ready() {
-  function showResults(results, store, searchTerm) {
-    var searchResults = document.getElementById('search-results');
-    document.querySelector('#search-query mark').textContent = searchTerm;
-    var appendString = '';
-    if (results.length) {
-      results.forEach(result => {
-        var item = store[result.ref];
-        appendString += '<div class="search-result">';
-        appendString += '  <h3><a href="' + item.url + '">' + item.title + '</a></h3>';
-        appendString += '  <small><a href="' + item.url + '">' + item.section + '</a></small>';
-        appendString += '  <p>' + item.content.substring(0, 250) + '&hellip;</p>';
-        appendString += '</div>';
-      });
-    } else {
-      appendString = '<div class="search-result"><p>No results found.</p></div>';
-    }
-    searchResults.innerHTML = appendString;
-  }
-  function getQuery(variable) {
-    var params = new URLSearchParams(window.location.search.substring(1));
-    if (params.has(variable)) {
-      return decodeURIComponent(params.get(variable).replace(/\+/g, '%20'));
-    }
-    return null;
-  }
   var searchTerm = getQuery('q');
   if (searchTerm) {
     var searchBoxes = document.querySelectorAll('.search-box');
@@ -49,6 +58,7 @@ function ready() {
     var results = idx.search(searchTerm);
     showResults(results, window.store, searchTerm);
   }
+
   document.querySelectorAll('.search').forEach(form => {
     var searchInput = form.querySelector('input');
     form.addEventListener('submit', e => {
@@ -61,6 +71,7 @@ function ready() {
     });
   });
 }
+
 document.addEventListener('DOMContentLoaded', () => {
   ready();
 });
