@@ -3,16 +3,16 @@ import theme
 
 
 pages = {
+    "Overview": [
+        "overview/intro.md",
+        "overview/motivation.md",
+    ],
     "Guides": [
-        "index.md",
         "components.md",
         "arguments.md",
         "organization.md",
         "slots.md",
         "css_and_js.md",
-    ],
-    "Motivation": [
-      "motivation.md",
     ],
 }
 

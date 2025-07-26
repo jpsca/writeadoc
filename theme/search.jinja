@@ -19,6 +19,6 @@
   <article>
     <h1 id="search-query">Search results for <mark></mark></h1>
     <div id="search-results"></div>
-    <script>window.store = {{ search_data }};</script>
+    <script>window.store = {{ search_data | safe }};</script>
   </article>
 </Layout>

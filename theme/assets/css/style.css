@@ -1252,6 +1252,33 @@ code {
   --flow-space: 0.4em
 }
 
+.page article h1 .headerlink,
+.page article h2 .headerlink,
+.page article h3 .headerlink,
+.page article h4 .headerlink,
+.page article h5 .headerlink,
+.page article h6 .headerlink {
+  opacity: 0.05;
+  font-size: 0.9em;
+  margin-left: 0.4em;
+  transition: opacity var(--transition);
+}
+
+.page article h1:hover .headerlink,
+.page article h1:focus .headerlink,
+.page article h2:hover .headerlink,
+.page article h2:focus .headerlink,
+.page article h3:hover .headerlink,
+.page article h3:focus .headerlink,
+.page article h4:hover .headerlink,
+.page article h4:focus .headerlink,
+.page article h5:hover .headerlink,
+.page article h5:focus .headerlink,
+.page article h6:hover .headerlink,
+.page article h6:focus .headerlink {
+  opacity: 0.8;
+}
+
 .page article hr {
   --flow-space: 0;
   height: var(--space-x-large)

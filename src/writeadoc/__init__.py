@@ -8,3 +8,7 @@ from .types import (
     SearchPageData,  # noqa
     TSearchData,  # noqa
 )
+from .utils import (
+    DEFAULT_MD_EXTENSIONS,  # noqa
+    DEFAULT_MD_CONFIG,  # noqa
+)

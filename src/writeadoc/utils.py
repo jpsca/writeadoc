@@ -1,10 +1,13 @@
 import os
-import re
+import time
 import typing as t
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
-from watchdog.events import FileSystemEventHandler
 import yaml
 from pymdownx import emoji
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 try:
     from yaml import CSafeLoader as SafeLoader
@@ -13,20 +16,22 @@ except ImportError:  # pragma: no cover
 
 from .exceptions import InvalidFrontMatter
 
-
 DEFAULT_MD_EXTENSIONS = [
     "attr_list",
-    "def_list",
+    "footnotes",
     "md_in_html",
-    "meta",
-    "sane_lists",
     "tables",
+    "toc",
     "pymdownx.betterem",
     "pymdownx.blocks.admonition",
+    "pymdownx.blocks.definition",
+    "pymdownx.blocks.details",
+    "pymdownx.blocks.tab",
     "pymdownx.caret",
     "pymdownx.emoji",
     "pymdownx.highlight",
     "pymdownx.inlinehilite",
+    "pymdownx.keys",
     "pymdownx.magiclink",
     "pymdownx.mark",
     "pymdownx.saneheaders",
@@ -39,6 +44,11 @@ DEFAULT_MD_EXTENSIONS = [
 DEFAULT_MD_CONFIG = {
     "keys": {
         "camel_case": True,
+    },
+    "toc": {
+        "permalink": True,
+        "permalink_title": "",
+        "toc_depth": 3,
     },
     "pymdownx.highlight": {
         "linenums_style": "pymdownx-inline",
@@ -80,34 +90,34 @@ def truncate(source: str) -> str:
     return source
 
 
-
-RX_ABS_URL = re.compile(
-    r"""(\s(?:src|href|action|data-[a-z0-9_-]+)\s*=\s*['"])(\/(?:[a-z0-9_-][^'"]*)?)(['"])""",
-    re.IGNORECASE,
-)
-
-def relativize_urls(html: str, current_url: str) -> str:
-    depth = current_url.lstrip("/").count("/")
-    pos = 0
-    while True:
-        match = RX_ABS_URL.search(html, pos=pos)
-        if not match:
-            break
-        left, url, right = match.groups()
-        new_url = relativize_url(url, depth)
-        pos = match.end()
-        html = f"{html[: match.start()]}{left}{new_url}{right}{html[pos:]}"
-
-    return html
+def start_server(build_folder: str) -> None:
+    """Run a simple HTTP server to serve files from the specified directory."""
+    # Create a handler that serves files from build_folder
+    port = 8000
+    handler = partial(SimpleHTTPRequestHandler, directory=build_folder)
+    server = ThreadingHTTPServer(("0.0.0.0", port), handler)
+    url = f"http://0.0.0.0:{port}/"
+    print(f"Serving docs on {url}")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
 
 
-def relativize_url(url: str, depth: int) -> str:
-    new_url = f'{"../" * depth}{url.lstrip("/")}'
-    if not new_url.startswith("."):
-        new_url = f"./{new_url}"
-    if new_url.endswith("/"):
-        new_url = f"{new_url}index.html"
-    return new_url
+def start_observer(run_callback) -> None:
+    """Start a file system observer to watch for changes."""
+    event_handler = ChangeHandler(run_callback)
+    observer = Observer()
+    # Watch current directory and all subfolders
+    observer.schedule(event_handler, os.getcwd(), recursive=True)
+    observer.start()
+    print("Watching for changes. Press Ctrl+C to exit.\n")
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()
 
 
 class ChangeHandler(FileSystemEventHandler):

@@ -1,4 +1,3 @@
-import html
 import re
 from html.parser import HTMLParser
 
@@ -42,7 +41,7 @@ def extract_search_data_from_page(page: PageData) -> TSearchData:
 
 
 
-FRAGMENT_SIZE = 300
+FRAGMENT_SIZE = 240
 
 HTML_IGNORE = (
     "button",
@@ -60,6 +59,15 @@ HTML_IGNORE = (
     "video",
 )
 
+HTML_HEADER_TAGS = (
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+)
+
 HTML_BLOCK_TAGS = [
     "address",
     "article",
@@ -75,12 +83,7 @@ HTML_BLOCK_TAGS = [
     "figure",
     "footer",
     "form",
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "h5",
-    "h6",
+    *HTML_HEADER_TAGS,
     "header",
     "hr",
     "li",
@@ -111,7 +114,6 @@ class TextExtractor(HTMLParser):
     _page: PageData
     _fragment_size: int
     _overlap_size: int
-    _base_url: str
     _hash: str
     _title: list[str]
     _content: list[str]
@@ -123,7 +125,6 @@ class TextExtractor(HTMLParser):
         self._page = page
         self._fragment_size = fragment_size
         self._overlap_size = fragment_size // 20
-        self._base_url = f"../{page.url.strip('/')}/index.html"
         self._hash = ""
         self._title = []
         self._content = []
@@ -141,6 +142,10 @@ class TextExtractor(HTMLParser):
             self._capture = False
             return
 
+        if tag in HTML_HEADER_TAGS:
+            if "id" in dict(attrs):
+                self._hash = dict(attrs)["id"]
+
     def handle_endtag(self, tag: str):
         if not self._capture:
             return
@@ -156,23 +161,20 @@ class TextExtractor(HTMLParser):
         if not self._capture:
             return
 
-        data = html.escape(data).replace("\n", "")
+        data = (
+            data
+            .replace("\n", "")
+            .replace("&para;", "")
+            .replace("¶", "")
+            .replace(">", "&gt;")
+            .replace("<", "&lt;")
+        )
         data = RX_MULTIPLE_SPACES.sub(" ", data)
         if data:
             self._content.append(f"{data}")
 
         if len(self.content) > self._fragment_size:
             self.save_fragment()
-
-    def handle_entityref(self, name):
-        if not self._capture:
-            return
-        self._content.append(f"&{name};")
-
-    def handle_charref(self, name):
-        if not self._capture:
-            return
-        self._content.append(f"&{name};")
 
     def save_fragment(self):
         content = self.content
@@ -184,14 +186,14 @@ class TextExtractor(HTMLParser):
         if not title:
             title = self._page.title
 
-        url = self._base_url
+        url = self._page.url
         if self._hash:
-            url = f"{self._base_url}#{self._hash}"
+            url = f"{self._page.url}#{self._hash}"
 
         self.docs[f"{self._page.id}-{self._id}"] = {
             "title": title,
             "content": content,
-            "section": self._page.url.removeprefix("/docs/").strip("/"),
+            "section": self._page.url,
             "url": url,
         }
 

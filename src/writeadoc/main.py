@@ -1,17 +1,15 @@
 import argparse
-import os
+from multiprocessing import Process
 import shutil
-import time
+import signal
 import types
 import typing as t
-import webbrowser
 from pathlib import Path
 from uuid import uuid4
 
 import jinja2
 import markdown
 from markupsafe import Markup
-from watchdog.observers import Observer
 
 from . import helpers, utils, search
 from .types import PageData, PageRef, SectionRef, SiteData
@@ -70,7 +68,7 @@ class Docs:
             "widont": helpers.widont,
         })
 
-    def build(self, relativize_urls: bool = True) -> None:
+    def build(self, devmode: bool = True) -> None:
         print("Building documentation...")
 
         proc_pages = self._process_pages()
@@ -86,11 +84,11 @@ class Docs:
             for section, sec_pages in proc_pages
         ]
 
-        self._render_pages(proc_pages, relativize_urls=relativize_urls)
-        self._render_search_page(proc_pages, relativize_urls=relativize_urls)
-        self._render_index_page(relativize_urls=relativize_urls)
+        self._render_pages(proc_pages)
+        self._render_search_page(proc_pages)
+        self._render_index_page()
         self._render_docs_redirect_page()
-        if False and relativize_urls:
+        if devmode:
             self._symlink_assets()
         else:
             self._copy_assets()
@@ -105,29 +103,38 @@ class Docs:
         args = parser.parse_args()
 
         if args.command == "build":
-            self.build(relativize_urls=False)
-            print("Documentation built successfully.")
-            print("You can now copy the 'build' folder to your web server.")
-
+            self._cli_build()
         elif args.command in (None, "run"):
-            self.build()  # Initial run
-            event_handler = utils.ChangeHandler(self.build)
-            observer = Observer()
-            # Watch current directory and all subfolders
-            observer.schedule(event_handler, os.getcwd(), recursive=True)
-            observer.start()
-            print("Watching for changes. Press Ctrl+C to exit.\n")
-            webbrowser.open("./build/index.html")
-            try:
-                while True:
-                    time.sleep(1)
-            except KeyboardInterrupt:
-                observer.stop()
-            observer.join()
+            self._cli_run()
         else:
             parser.print_help()
 
     ## Private
+
+    def _cli_build(self) -> None:
+        """Build the documentation for deployment."""
+        self.build(devmode=False)
+        print("Documentation built successfully.")
+        print("You can now copy the 'build' folder to your web server.")
+
+    def _cli_run(self) -> None:
+        """Run the documentation server and watch for changes."""
+        self.build()  # Initial run
+        p = Process(
+            target=utils.start_server,
+            args=(str(self.build_folder),),
+            daemon=True
+        )
+        p.start()
+        utils.start_observer(self.build)
+
+        def shutdown(*args):
+            p.terminate()
+            p.join()
+            exit(0)
+
+        signal.signal(signal.SIGINT, shutdown)
+        signal.signal(signal.SIGTERM, shutdown)
 
     def _process_pages(self) -> TProcPages:
         proc_pages = []
@@ -198,12 +205,12 @@ class Docs:
         html = html.replace("<pre><span></span>", "<pre>")
         return html
 
-    def _render_pages(self, proc_pages: TProcPages, relativize_urls: bool) -> None:
+    def _render_pages(self, proc_pages: TProcPages) -> None:
         for _, sec_pages in proc_pages:
             for page in sec_pages:
-                self._render_page(page, relativize_urls=relativize_urls)
+                self._render_page(page)
 
-    def _render_page(self, page: PageData, relativize_urls: bool) -> None:
+    def _render_page(self, page: PageData) -> None:
         outpath = self.build_folder / str(page.url).strip("/") / "index.html"
         outpath.parent.mkdir(parents=True, exist_ok=True)
 
@@ -213,11 +220,9 @@ class Docs:
             page=page,
         )
         html = co.render()
-        if relativize_urls:
-            html = utils.relativize_urls(html, page.url)
         outpath.write_text(html, encoding="utf-8")
 
-    def _render_search_page(self, proc_pages: TProcPages, *, relativize_urls: bool) -> None:
+    def _render_search_page(self, proc_pages: TProcPages) -> None:
         outpath = self.build_folder / "search" / "index.html"
         outpath.parent.mkdir(parents=True, exist_ok=True)
         page = PageData(
@@ -232,8 +237,6 @@ class Docs:
         )
         search_data = search.extract_search_data(proc_pages)
         html = co.render(search_data=search_data)
-        if relativize_urls:
-            html = utils.relativize_urls(html, "/search/")
         outpath.write_text(html, encoding="utf-8")
 
     def _render_docs_redirect_page(self) -> None:
@@ -253,7 +256,7 @@ class Docs:
         )
         outpath.write_text(html, encoding="utf-8")
 
-    def _render_index_page(self, relativize_urls: bool) -> None:
+    def _render_index_page(self) -> None:
         outpath = self.build_folder / "index.html"
         outpath.parent.mkdir(parents=True, exist_ok=True)
 
@@ -281,8 +284,6 @@ class Docs:
             site=self.site,
         )
         html = co.render()
-        if relativize_urls:
-            html = utils.relativize_urls(html, "/")
         outpath.write_text(html, encoding="utf-8")
 
     def _symlink_assets(self) -> None:
