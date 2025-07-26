@@ -34,20 +34,26 @@ def test_extractor():
     assert result == {
         "page-1": {
             "title": "Test Page",
-            "content": 'Introduction JinjaX is a Python library for creating reusable "components" - encapsulated template snippets that can take arguments and render to HTML. They are similar to React or Vue components, but they render on the server side, not in the browser. Unlike Jinja\'s {% include "..." %} or macros, JinjaX components integrate naturally with the rest of your template code.',
-            "section": "foobar/test-page",
-            "url": "../docs/foobar/test-page/index.html",
+            "content": 'Introduction JinjaX is a Python library for creating reusable "components" - encapsulated template snippets that can take arguments and render to HTML. They are similar to React or Vue components, but they render on the server side, not in the browser.',
+            "section": "/docs/foobar/test-page/",
+            "url": "/docs/foobar/test-page/",
         },
         "page-2": {
             "title": "Test Page",
-            "content": 'template code. <div> <Card class="bg-gray"> <h1>Products</h1> {% for product in products %} <Product product={{ product }} /> {% endfor %} </Card></div> Features Simple JinjaX components are simple Jinja templates. You use them as if they were HTML tags without needing to import them: they\'re easy to use and easy to read.',
-            "section": "foobar/test-page",
-            "url": "../docs/foobar/test-page/index.html",
+            "content": 'browser. Unlike Jinja\'s {% include "..." %} or macros, JinjaX components integrate naturally with the rest of your template code. &lt;div&gt; &lt;Card class="bg-gray"&gt; &lt;h1&gt;Products&lt;/h1&gt; {% for product in products %} &lt;Product',
+            "section": "/docs/foobar/test-page/",
+            "url": "/docs/foobar/test-page/",
         },
         "page-3": {
             "title": "Test Page",
-            "content": "easy to read. Encapsulated They are independent of each other and can link to their own CSS and JS, so you can freely copy and paste components between applications.",
-            "section": "foobar/test-page",
-            "url": "../docs/foobar/test-page/index.html",
+            "content": "&lt;Product product={{ product }} /&gt; {% endfor %} &lt;/Card&gt;&lt;/div&gt; Features Simple JinjaX components are simple Jinja templates. You use them as if they were HTML tags without needing to import them: they're easy to use and easy to read.",
+            "section": "/docs/foobar/test-page/",
+            "url": "/docs/foobar/test-page/#s-simple",
+        },
+        "page-4": {
+            "title": "Test Page",
+            "content": "to read. Encapsulated They are independent of each other and can link to their own CSS and JS, so you can freely copy and paste components between applications.",
+            "section": "/docs/foobar/test-page/",
+            "url": "/docs/foobar/test-page/#s-encapsulated",
         },
     }
