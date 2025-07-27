@@ -9,6 +9,7 @@ from .toc import Toc
 
 class SearchPage(Component):
     components = [Layout, Toc]
+    css = ("/assets/css/search.css", )
     js = ("/assets/js/search.js", )
 
     def render(self, search_data: TSearchData) -> str:

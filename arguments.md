@@ -18,6 +18,8 @@ Every argument must be declared at the beginning of the component with `{#def ar
 
 In this example, the component takes three arguments: "action", "method", and "multipart". The last two have default values, so they are optional, but the first one doesn't. That means it must be passed a value when rendering the component.
 
+> "Flowbite is just awesome. It contains tons of predesigned components and pages starting from login screen to complex dashboard. Perfect choice for your next SaaS application."
+
 The syntax is exactly like how you declare the arguments of a Python function (in fact, it's parsed by the same code), so it can even include type comments, although they are not used by JinjaX (yet!).
 
 ```python
