@@ -15,7 +15,19 @@ function showResults(results, store, searchTerm) {
       appendString += '<div class="search-result">';
       appendString += '  <h3><a href="' + item.url + '">' + item.title + '</a></h3>';
       appendString += '  <small><a href="' + item.url + '">' + item.section + '</a></small>';
-      appendString += '  <p>' + item.content.substring(0, 250) + '&hellip;</p>';
+
+      if (item.content.startsWith('<pre>')) {
+        var content = item.content.replace(/<pre>/g, '').replace(/<\/pre>/g, '');
+        if (content.length > 200) {
+          content = content.slice(0, 200) + ' &hellip;';
+        } else {
+          content = content.slice(0, 200);
+        }
+        appendString += '  <div><pre>' + content + '</pre></div>';
+      } else {
+        appendString += '  <div>' + item.content.slice(0, 300) + ' &hellip;</div>';
+      }
+
       appendString += '</div>';
     });
   } else {

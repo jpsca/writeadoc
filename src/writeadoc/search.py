@@ -34,22 +34,38 @@ def extract_search_data_from_page(page: PageData) -> TSearchData:
         SearchData object containing the search data.
     """
     parser = TextExtractor(page)
-    parser.feed(page.content)
+    html = prepare_html(page.content)
+    if not html:
+        return {}
+    parser.feed(html)
     parser.close()
     return parser.docs
 
 
+REMOVE_SELF_CLOSING_TAGS = (
+    "hr",
+    "input",
+    "img",
+    "link",
+    "meta",
+    "source",
+    "track",
+    "wbr",
+    "area",
+    "base",
+    "col",
+    "command",
+    "embed",
+)
 
-
-FRAGMENT_SIZE = 240
-
-HTML_IGNORE = (
+REMOVE_TAGS_AND_CONTENTS = (
     "button",
+    "canvas",
     "dialog",
     "form",
     "iframe",
-    "input",
     "nav",
+    "noscript",
     "script",
     "select",
     "style",
@@ -59,7 +75,32 @@ HTML_IGNORE = (
     "video",
 )
 
-HTML_HEADER_TAGS = (
+REMOVE_TAGS_KEEP_CONTENT = (
+    "a",
+    "address",
+    "article",
+    "aside",
+    "b",
+    "code",
+    "div",
+    "em",
+    "fieldset",
+    "figure",
+    "footer",
+    "figcaption",
+    "header",
+    "i",
+    "kbd",
+    "main",
+    "mark",
+    "samp",
+    "section",
+    "span",
+    "strong",
+    "tfoot",
+)
+
+HTML_HEADER = (
     "h1",
     "h2",
     "h3",
@@ -68,48 +109,55 @@ HTML_HEADER_TAGS = (
     "h6",
 )
 
-HTML_BLOCK_TAGS = [
-    "address",
-    "article",
-    "aside",
+HTML_PRE = "pre"
+
+HTML_FRAGMENT_SEP = (
     "blockquote",
-    "canvas",
-    "dd",
-    "div",
-    "dl",
-    "dt",
-    "fieldset",
-    "figcaption",
-    "figure",
-    "footer",
-    "form",
-    *HTML_HEADER_TAGS,
-    "header",
-    "hr",
-    "li",
-    "main",
-    "nav",
-    "noscript",
-    "ol",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
     "p",
     "pre",
-    "section",
     "table",
-    "tfoot",
-    "ul",
-    "video",
-]
+)
 
 RX_MULTIPLE_SPACES = re.compile(r"\s+")
-RX_NON_TEXT = re.compile(
-    r"[^\w./_\-]|\s[._-]+|[._-]+\s|[._-]+$|^[._-]+|\s/\s",
-    re.UNICODE | re.IGNORECASE,
-)
+
+
+def prepare_html(html: str) -> str:
+    """
+    Prepare HTML content by removing unwanted tags and contents.
+
+    Args:
+        html: The HTML content to prepare.
+
+    Returns:
+        Cleaned HTML content.
+    """
+    if not html:
+        return ""
+
+    # Remove self-closing tags
+    for tag in REMOVE_SELF_CLOSING_TAGS:
+        html = re.sub(rf"<{tag}.*?/>", "", html, flags=re.DOTALL)
+    # Remove tags and their contents
+    for tag in REMOVE_TAGS_AND_CONTENTS:
+        html = re.sub(rf"<{tag}.*?>.*?</{tag}>", "", html, flags=re.DOTALL)
+    # Remove tags but keep their contents
+    for tag in REMOVE_TAGS_KEEP_CONTENT:
+        html = re.sub(rf"<{tag}.*?>(.*?)</{tag}>", r"\1", html, flags=re.DOTALL)
+
+    html = html.strip()
+    return html
 
 
 class TextExtractor(HTMLParser):
     docs: TSearchData
-    _capture: bool = True
+    _tag: str = "p"
+    _in_header: bool = False
 
     _page: PageData
     _fragment_size: int
@@ -119,91 +167,93 @@ class TextExtractor(HTMLParser):
     _content: list[str]
     _id: int
 
-    def __init__(self, page: PageData, fragment_size: int = FRAGMENT_SIZE):
+    def __init__(self, page: PageData):
         super().__init__()
         self.docs = {}
         self._page = page
-        self._fragment_size = fragment_size
-        self._overlap_size = fragment_size // 20
         self._hash = ""
         self._title = []
         self._content = []
         self._id = 1
 
-    @property
-    def content(self) -> str:
-        return RX_MULTIPLE_SPACES.sub(" ", "".join(self._content).strip())
-
     def handle_starttag(self, tag: str, attrs: list):
-        if not self._capture:
-            return
+        self._tag = tag
 
-        if tag in HTML_IGNORE:
-            self._capture = False
-            return
+        if tag in HTML_FRAGMENT_SEP:
+            if self._content:
+                self.save_fragment()
 
-        if tag in HTML_HEADER_TAGS:
+        if tag in HTML_HEADER:
+            self._title = []
+            self._in_header = True
             if "id" in dict(attrs):
                 self._hash = dict(attrs)["id"]
-
-    def handle_endtag(self, tag: str):
-        if not self._capture:
             return
 
-        if tag in HTML_BLOCK_TAGS:
-            self._content.append(" ")
-
-        if tag in HTML_IGNORE:
-            self._capture = True
+    def handle_endtag(self, tag: str):
+        if tag in HTML_HEADER:
+            self._in_header = False
             return
 
     def handle_data(self, data: str):
-        if not self._capture:
+        if self._tag == HTML_PRE:
+            data = (
+                data
+                .replace("&", "&amp;")
+                .replace(">", "&gt;")
+                .replace("<", "&lt;")
+            )
+            if data.strip():
+                self._content.append(f"<pre>{data}</pre>")
+            return
+
+        if self._in_header:
+            data = (
+                data
+                .replace("&para;", "")
+                .replace("&", "&amp;")
+                .replace(">", "&gt;")
+                .replace("<", "&lt;")
+                .replace("¶", "")
+                .replace("\n", "")
+            )
+            data = RX_MULTIPLE_SPACES.sub(" ", data)
+            if data:
+                self._title.append(data)
             return
 
         data = (
             data
             .replace("\n", "")
-            .replace("&para;", "")
-            .replace("¶", "")
+            .replace("&", "&amp;")
             .replace(">", "&gt;")
             .replace("<", "&lt;")
         )
-        data = RX_MULTIPLE_SPACES.sub(" ", data)
         if data:
-            self._content.append(f"{data}")
-
-        if len(self.content) > self._fragment_size:
-            self.save_fragment()
+            data = RX_MULTIPLE_SPACES.sub(" ", data)
+            self._content.append(data)
 
     def save_fragment(self):
-        content = self.content
-        if not content or len(content) <= self._overlap_size:
-            return
-
         title = "".join(self._title).strip()
         title = RX_MULTIPLE_SPACES.sub(" ", title)
         if not title:
             title = self._page.title
 
+        content = "".join(self._content)
+        if not content or content == self._page.title:
+            return
+
         url = self._page.url
         if self._hash:
             url = f"{self._page.url}#{self._hash}"
 
-        self.docs[f"{self._page.id}-{self._id}"] = {
+        self.docs[f"{url}{self._id}"] = {
             "title": title,
             "content": content,
             "section": self._page.url,
             "url": url,
         }
-
-        # store a part of the content for the next fragment
-        # so they overlap
-        overlap = content[-self._overlap_size:]
-        # split and discard the first word because it was cut off
-        overlap = overlap.split(" ")[1:]
-        # add the missing spaces and store it
-        self._content = [f"{word} " for word in overlap]
+        self._content = []
         self._id += 1
 
     def close(self):

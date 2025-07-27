@@ -4,7 +4,7 @@ from writeadoc.search import extract_search_data_from_page
 
 def test_extractor():
     html = """
-<h1>Introduction</h1>
+<h1 id="introduction">Introduction</h1>
 <p class="description">JinjaX is a Python library for creating reusable "components" - encapsulated template snippets that can take arguments and render to HTML. They are similar to React or Vue components, but they render on the server side, not in the&nbsp;browser.</p>
 <p>Unlike Jinja's <code>{% include "..." %}</code> or macros, JinjaX components integrate naturally with the rest of your template code.</p>
 <div class="language-html+jinja highlight"><pre><code><span class="linenos" data-linenos="1 "></span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
@@ -32,27 +32,33 @@ def test_extractor():
     result = extract_search_data_from_page(page)
     print(result)
     assert result == {
-        "page-1": {
-            "title": "Test Page",
-            "content": 'Introduction JinjaX is a Python library for creating reusable "components" - encapsulated template snippets that can take arguments and render to HTML. They are similar to React or Vue components, but they render on the server side, not in the browser.',
+        "/docs/foobar/test-page/#introduction1": {
+            "title": "Introduction",
+            "content": '<p>JinjaX is a Python library for creating reusable "components" - encapsulated template snippets that can take arguments and render to HTML. They are similar to React or Vue components, but they render on the server side, not in the browser.</p>',
             "section": "/docs/foobar/test-page/",
-            "url": "/docs/foobar/test-page/",
+            "url": "/docs/foobar/test-page/#introduction",
         },
-        "page-2": {
-            "title": "Test Page",
-            "content": 'browser. Unlike Jinja\'s {% include "..." %} or macros, JinjaX components integrate naturally with the rest of your template code. &lt;div&gt; &lt;Card class="bg-gray"&gt; &lt;h1&gt;Products&lt;/h1&gt; {% for product in products %} &lt;Product',
+        "/docs/foobar/test-page/#introduction2": {
+            "title": "Introduction",
+            "content": '<p>Unlike Jinja\'s {% include "..." %} or macros, JinjaX components integrate naturally with the rest of your template code.</p>',
             "section": "/docs/foobar/test-page/",
-            "url": "/docs/foobar/test-page/",
+            "url": "/docs/foobar/test-page/#introduction",
         },
-        "page-3": {
-            "title": "Test Page",
-            "content": "&lt;Product product={{ product }} /&gt; {% endfor %} &lt;/Card&gt;&lt;/div&gt; Features Simple JinjaX components are simple Jinja templates. You use them as if they were HTML tags without needing to import them: they're easy to use and easy to read.",
+        "/docs/foobar/test-page/#introduction3": {
+            "title": "Introduction",
+            "content": '<pre>&lt;div&gt;\n  &lt;Card class="bg-gray"&gt;\n    &lt;h1&gt;Products&lt;/h1&gt;\n    {% for product in products %}\n      &lt;Product product={{ product }} /&gt;\n    {% endfor %}\n  &lt;/Card&gt;\n&lt;/div&gt;\n</pre>',
+            "section": "/docs/foobar/test-page/",
+            "url": "/docs/foobar/test-page/#introduction",
+        },
+        "/docs/foobar/test-page/#s-simple4": {
+            "title": "Simple",
+            "content": "<p>JinjaX components are simple Jinja templates. You use them as if they were HTML tags without needing to import them: they're easy to use and easy to read.</p>",
             "section": "/docs/foobar/test-page/",
             "url": "/docs/foobar/test-page/#s-simple",
         },
-        "page-4": {
-            "title": "Test Page",
-            "content": "to read. Encapsulated They are independent of each other and can link to their own CSS and JS, so you can freely copy and paste components between applications.",
+        "/docs/foobar/test-page/#s-encapsulated5": {
+            "title": "Encapsulated",
+            "content": "<p>They are independent of each other and can link to their own CSS and JS, so you can freely copy and paste components between applications.</p>",
             "section": "/docs/foobar/test-page/",
             "url": "/docs/foobar/test-page/#s-encapsulated",
         },

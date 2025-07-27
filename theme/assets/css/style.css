@@ -1602,8 +1602,23 @@ code {
   text-decoration: none
 }
 
-@media (hover: hover) {
+#search-results .search-result > div :not(pre) {
+  font-size: 80%;
+  overflow: auto;
+}
 
+#search-results .search-result > div pre {
+  font-family: var(--font-family-mono);
+  font-size: 70%;
+  white-space: pre;
+  background: rgba(var(--rgb-grey), 0.1);
+  padding: 1em 1.4em;
+  border-radius: 0.2em;
+  max-height: 30em;
+  overflow: hidden;
+}
+
+@media (hover: hover) {
   #search-results h3 a:focus,
   #search-results h3 a:hover {
     color: var(--color-grey);
