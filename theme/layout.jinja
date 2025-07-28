@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="cs-system">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>{{ site.name }} — {{ page.title }}</title>
@@ -23,6 +23,12 @@
     <link rel="mask-icon" href="/assets/images/mask-icon.svg" color="#0A82F5" />
     <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png" />
     <link rel="stylesheet" href="/assets/css/style.css" />
+    <script>
+      if ('colorScheme' in localStorage) {
+      document.documentElement.classList.remove('cs-light', 'cs-dark', 'cs-system');
+      document.documentElement.classList.add('cs-' + localStorage.colorScheme);
+    }
+    </script>
     <script src="/assets/js/lunr.min.js"></script>
     {{ _assets.render() }}
   </head>
@@ -31,6 +37,7 @@
     <input class="nav-active" id="nav-active" type="checkbox" />
     <nav class="nav">
       <div class="nav__toggle">
+        <ColorScheme />
         <label for="nav-active">
           <span></span>
         </label>
@@ -73,6 +80,7 @@
           <a class="logo" href="/" aria-label="{{ site.name }}">{{ site.name }}</a>
           <a class="release" href="{{ site.source_url }}" target="_blank" rel="noopener">{{ site.version }}</a>
         </div>
+        <ColorScheme />
         <ul>
           <li>
             <a href="/docs/" aria-label="Documentation">
@@ -87,11 +95,6 @@
           <li>
             <a href="{{ site.help_url }}" target="_blank" rel="noopener" aria-label="Help">
               <span>Help</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" target="_blank" rel="noopener" aria-label="Discord">
-              <span>Discord</span>
             </a>
           </li>
         </ul>

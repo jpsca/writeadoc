@@ -1,6 +1,9 @@
 function ready() {
   var highlights = document.querySelectorAll('div.highlight, figure.highlight');
   highlights.forEach(highlight => {
+    if (highlight.querySelector('button.copy')) {
+      return; // Skip if button already exists
+    }
     var button = document.createElement('button');
     button.className = 'copy';
     button.innerText = 'Copy';
