@@ -4,25 +4,26 @@ description: Create a professional static site for your project in minutes. Sear
 ---
 
 
-Focus on the content of your documentation ant let WriteADoc generate beautiful documentation your users will love.
+Focus on your content and let WriteADoc create beautiful documentation your users will love.
 
 ### Simple yet powerful formatting
 
-Write in Markdown plus many powerful syntax features like callbacks, flexible code blocks, etc.
+Write in Markdown, plus enjoy powerful features like callbacks, flexible code blocks, and more.
 
 ### Built-in full-text search
 
-Automatically generates a full-text search index for you during construction, out-of-the-box full-text search capabilities withoiut a third-party service.
+Automatically generates a full-text search index for you. No third-party service required.
 
 ### Multi-language & multi-version capable
 
-Manage documentation for multiple versions and/or in multiple languages out of the box. No need for plugins or complex changes.
+Easily manage documentation for multiple versions and languages, right out of the box. No plugins or complicated setup needed.
 
-### Works on all devices
+### Works on all devices and with light/dark modes
 
-WriteADoc automatically adapts to perfectly fit the available screen, no matter the type or size of the viewing device. Desktop. Tablet. Mobile. All great.
+WriteADoc automatically adapts to perfectly fit the available screen, no matter the type or size of the viewing device. Desktop. Tablet. Mobile.
+Whether you're an early bird or a night owl. All great.
 
 ### Always yours
 
-A static site means you can host it anywhere. You own the content and you own the final site, no need to entrust your product knowledge to third-party platforms.
+A static site means you can host it anywhere. You own your content and your site. No need to trust your product knowledge to third-party platforms.
 

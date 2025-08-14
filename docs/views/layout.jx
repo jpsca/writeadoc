@@ -23,16 +23,15 @@
   <link rel="icon" href="/assets/images/favicon.svg" />
   <link rel="mask-icon" href="/assets/images/mask-icon.svg" color="#3f92e9" />
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png" />
-  <script>
-    if ('colorScheme' in localStorage) {
-      document.documentElement.classList.remove('cs-light', 'cs-dark', 'cs-system');
-      document.documentElement.classList.add('cs-' + localStorage.colorScheme);
-    }
-  </script>
+  <script src="/assets/js/color-scheme.js"></script>
   <link rel="stylesheet" href="/assets/css/style.css" />
+  <script type="module" src="/assets/js/turbo.min.js"></script>
+  <script type="module" src="/assets/js/code.js"></script>
+  <script type="module" src="/assets/js/search.js"></script>
+  <script type="module" src="/assets/js/video.js"></script>
+  {{ _assets.render() }}
   <script src="/assets/js/lunr.min.js"></script>
   {% if site.lang != "en" %}<script src="/assets/js/lunr.{{ site.lang }}.min.js"></script>{% endif %}
-  {{ _assets.render() }}
 </head>
 
 <body>

@@ -1,3 +1,7 @@
+if ('colorScheme' in localStorage) {
+  document.documentElement.classList.remove('cs-light', 'cs-dark', 'cs-system');
+  document.documentElement.classList.add('cs-' + localStorage.colorScheme);
+}
 function ready() {
   const currentScheme = document.documentElement.classList.contains('cs-dark')
     ? 'dark' : (document.documentElement.classList.contains('cs-light') ? 'light' : 'system');
