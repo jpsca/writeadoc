@@ -217,7 +217,7 @@ class Docs:
         return proc_pages
 
     def process_page(self, filename: str, section: SectionRef) -> PageData:
-        filepath = self.pages_dir / filename
+        filepath = self.pages_dir / self.prefix / filename
         meta, html = self.process_file(filepath)
 
         url = f"/docs/{Path(filename).with_suffix('').as_posix().strip('/')}/"
@@ -237,7 +237,7 @@ class Docs:
         if not filepath.exists():
             raise FileNotFoundError(f"File {filepath} does not exist.")
 
-        logger.debug("Processing page: %s", filepath.relative_to(self.pages_dir))
+        logger.debug("Processing page: %s", filepath.relative_to(self.pages_dir / self.prefix))
         source = filepath.read_text(encoding="utf-8")
         meta, source = utils.extract_metadata(source)
         html = self.render_markdown(source)
@@ -301,7 +301,7 @@ class Docs:
         outpath.parent.mkdir(parents=True, exist_ok=True)
         url = f"/{self.prefix}/" if self.prefix else "/"
 
-        md_index = self.pages_dir / "index.md"
+        md_index = self.pages_dir / self.prefix / "index.md"
         if md_index.exists():
             meta, html = self.process_file(md_index)
             page = PageData(
