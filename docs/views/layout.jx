@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang }}" class="cs-system">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>{{ site.name }} — {{ page.title }}</title>
+  <meta content="ie=edge" http-equiv="x-ua-compatible" />
+  <meta name="handheldfriendly" content="true" />
+  <meta name="viewport" content="initial-scale=1, width=device-width" />
+  <meta name="description" content="{{ (page.description or site.description) | e }}" />
+  <meta property="og:site_name" content="{{ site.name | e }}" />
+  <meta property="og:title" content="{{ page.title | e }}" />
+  <meta property="og:description" content="{{ (page.description or site.description) | e }}" />
+  <meta property="og:image" content="{{ site.base_url }}{{ page.image or site.image }}" />
+  <meta property="og:url" content="{{ site.base_url }}{{ page.url }}" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:title" content="{{ page.title | e }}" />
+  <meta name="twitter:description" content="{{ (page.description or site.description) | e }}" />
+  <meta name="twitter:image" content="{{ site.base_url }}{{ page.image or site.image }}" />
+  <meta name="twitter:image:alt" content="{{ site.name | e }}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="canonical" href="{{ site.base_url }}{{ page.url }}" />
+  <link rel="icon" href="/assets/images/favicon.svg" />
+  <link rel="mask-icon" href="/assets/images/mask-icon.svg" color="#3f92e9" />
+  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png" />
+  <script>
+    if ('colorScheme' in localStorage) {
+      document.documentElement.classList.remove('cs-light', 'cs-dark', 'cs-system');
+      document.documentElement.classList.add('cs-' + localStorage.colorScheme);
+    }
+  </script>
+  <link rel="stylesheet" href="/assets/css/style.css" />
+  <script src="/assets/js/lunr.min.js"></script>
+  {% if site.lang != "en" %}<script src="/assets/js/lunr.{{ site.lang }}.min.js"></script>{% endif %}
+  {{ _assets.render() }}
+</head>
+
+<body>
+  {%- if site.archived %}
+  <aside class="banner banner--warning">
+    <div class="banner__content">
+      {{ _('NOT_THE_LATEST_VERSION') }} <a href="/"><strong>{{ _('CLICK_TO_GO_TO_LATEST') }}</strong>.</a>
+    </div>
+  </aside>
+  {%- endif %}
+
+  <nav class="nav">
+    <input class="nav-active" id="nav-active" type="checkbox" />
+    <div class="nav__toggle">
+      <label for="nav-active"><span></span></label>
+    </div>
+    <div class="nav__options">
+      <form class="search search--nav" action="/search/" method="get">
+        <input type="search" placeholder="{{ _('SEARCH') }}…" class="search-box" name="q" />
+        <button type="submit" aria-label="{{ _('SEARCH') }}">
+          <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="m16.1909 17.8535c-1.8921 1.4686-4.2727 2.161-6.65733 1.9363-2.38461-.2248-4.59395-1.3499-6.17829-3.1462-1.58433-1.7963-2.424578-4.1289-2.3497-6.5229.07489-2.39402 1.05927-4.66953 2.75277-6.36333 1.6938-1.6935 3.9693-2.67788 6.36335-2.75276 2.394-.074885 4.7266.76536 6.5229 2.3497 1.7963 1.58433 2.9214 3.79367 3.1461 6.17828.2248 2.38461-.4676 4.76531-1.9362 6.65731l4.7709 4.7709c.1549.1439.2682.3269.3278.5297.0597.2029.0635.4181.0111.6229-.0523.2048-.159.3918-.3087.5411s-.3369.2555-.5419.3073c-.2046.0524-.4195.0488-.6222-.0106s-.3857-.1723-.5297-.3268zm1.2869-7.4388c.014-.93601-.1583-1.86541-.5069-2.73418-.3485-.86877-.8663-1.65956-1.5232-2.32638-.657-.66681-1.44-1.19634-2.3034-1.55778-.8635-.36144-1.7902-.54758-2.7263-.54758-.93608 0-1.86281.18614-2.72629.54758-.86347.36144-1.64646.89097-2.30341 1.55778-.65695.66682-1.17475 1.45761-1.52327 2.32638-.34853.86877-.52083 1.79817-.50687 2.73418.02765 1.8541.78361 3.623 2.10458 4.9244 1.32096 1.3014 3.10089 2.0309 4.95526 2.0309 1.8543 0 3.6343-.7295 4.9552-2.0309 1.321-1.3014 2.077-3.0703 2.1046-4.9244z"
+              fill="currentColor"></path>
+          </svg>
+        </button>
+      </form>
+      <ul>
+        <li class="selected">
+          <a href="/docs/">{{ _('DOCUMENTATION') }}</a>
+          <Toc />
+        </li>
+        <li>
+          <a href="{{ site.source_url }}" target="_blank" rel="noopener">{{ _('SOURCE_CODE') }}</a>
+        </li>
+        {%- if site.help_url %}
+        <li>
+          <a href="{{ site.help_url }}" target="_blank" rel="noopener">{{ _('HELP') }}</a>
+        </li>
+        {%- endif %}
+      </ul>
+    </div>
+  </nav>
+
+  <header class="header">
+    <nav>
+      <div class="brand">
+        <a class="logo" href="/" aria-label="{{ site.name }}">{{ site.name }}</a>
+        <VersionPopover />
+      </div>
+
+      <LanguagePopover />
+      <ColorScheme />
+      <div class="header__links">
+        <a href="/docs/">
+          <span>{{ _('DOCUMENTATION') }}</span>
+        </a>
+        <a href="{{ site.source_url }}" target="_blank" rel="noopener">
+          <span>{{ _('SOURCE_CODE') }}</span>
+        </a>
+        {%- if site.help_url %}
+        <a href="{{ site.help_url }}" target="_blank" rel="noopener">
+          <span>{{ _('HELP') }}</span>
+        </a>
+        {%- endif %}
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    {{ _content }}
+  </main>
+
+  <footer class="footer">
+    <div>
+      <p>
+        © 2025
+        <a href="https://jpscaletti.com/" target="_blank" rel="noopener">JP Scaletti</a>
+      </p>
+    </div>
+  </footer>
+  <script>
+    window.strings = {
+      COPY: "{{ _('COPY') }}",
+      COPIED: "{{ _('COPIED') }}",
+      NO_RESULTS_FOUND: "{{ _('NO_RESULTS_FOUND') }}",
+    };
+  </script>
+</body>
+</html>

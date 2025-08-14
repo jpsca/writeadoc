@@ -2,6 +2,16 @@ import typing as t
 from uuid import uuid4
 
 
+class SiteMeta(t.TypedDict, total=False):
+    name: str
+    description: str
+    image: str
+    version: str
+    base_url: str
+    source_url: str
+    help_url: str
+
+
 class SectionRef(t.TypedDict):
     id: str
     title: str
@@ -14,6 +24,31 @@ class PageRef(t.TypedDict):
     url: str
 
 
+
+class TSiteData(t.TypedDict, total=False):
+    name: str
+    description: str
+    image: str
+    version: str
+    base_url: str
+    source_url: str
+    help_url: str
+    lang: str
+
+
+DEFAULT_SITE_DATA = {
+    "name": "WriteADoc",
+    "description": "",
+    "image": "/assets/images/opengraph.png",
+    "version": "1.0",
+    "base_url": "",
+    "source_url": "",
+    "help_url": "",
+    "lang": "en",
+    "archived": False,
+}
+
+
 class SiteData:
     name: str
     description: str
@@ -22,26 +57,18 @@ class SiteData:
     base_url: str
     source_url: str
     help_url: str
+    lang: str
+    archived: bool
     pages: list[tuple[SectionRef, list[PageRef]]]
 
-    def __init__(
-        self,
-        *,
-        name: str = "WriteADoc",
-        description: str = "",
-        image: str = "/assets/images/opengraph.png",
-        version: str = "0.1.0",
-        base_url: str = "",
-        source_url: str = "",
-        help_url: str = "",
-    ):
-        self.name = name
-        self.description = description
-        self.image = image
-        self.version = version
-        self.base_url = base_url
-        self.source_url = source_url
-        self.help_url = help_url
+    def __init__(self, **data: t.Any):
+        for key, value in DEFAULT_SITE_DATA.items():
+            setattr(self, key, data.get(key, value))
+
+        if self.base_url.endswith("/"):
+            self.base_url = self.base_url.rstrip("/")
+
+        self.archived = False
         self.pages = []
 
 

@@ -17,14 +17,11 @@ lint:
 # coverage:
 # 	uv run pytest --cov-config=pyproject.toml --cov-report html --cov writeadoc src/writeadoc tests
 
-# .PHONY: docs
-# docs:
-# 	cd docs && uv run python docs.py
+.PHONY: docs
+docs:
+	cd docs && uv run python docs.py
 
-# .PHONY: docs-build
-# docs-build:
-# 	cd docs && uv run python docs.py build
+.PHONY: docs-build
+docs-build:
+	cd docs && uv run python docs.py build
 
-# .PHONY: docs-deploy
-# docs-deploy:
-# 	cd docs && uv run sh deploy.sh

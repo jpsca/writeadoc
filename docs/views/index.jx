@@ -1,0 +1,14 @@
+<Layout>
+  <div class="headline">
+    <header>
+      <h1>Painless documentation</h1>
+      <p>Create a professional static site for your project in minutes. Searchable, fast, and infinitely customizable.</p>
+    </header>
+  </div>
+
+  <div class="page page--docs">
+    <div class="page__content">
+      <article>{{ page.content }}</article>
+    </div>
+  </div>
+</Layout>

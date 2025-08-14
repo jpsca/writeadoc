@@ -1,7 +1,7 @@
 [project]
 name = "writeadoc"
 version = "0.1.0"
-description = "Add your description here"
+description = "Write your documentation"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -19,6 +19,7 @@ jx = { path = "../jx" }
 
 [dependency-groups]
 dev = [
+    "ipdb>=0.13.13",
     "ruff>=0.12.4",
     "ty>=0.0.1a15",
 ]

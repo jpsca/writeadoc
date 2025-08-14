@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 import typing as t
@@ -5,7 +6,6 @@ from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 import yaml
-from pymdownx import emoji
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
@@ -16,23 +16,21 @@ except ImportError:  # pragma: no cover
 
 from .exceptions import InvalidFrontMatter
 
+
+logger = logging.getLogger("writeadoc")
+
 DEFAULT_MD_EXTENSIONS = [
     "attr_list",
-    "footnotes",
     "md_in_html",
     "tables",
     "toc",
     "pymdownx.betterem",
     "pymdownx.blocks.admonition",
-    "pymdownx.blocks.definition",
     "pymdownx.blocks.details",
-    "pymdownx.blocks.tab",
     "pymdownx.caret",
-    "pymdownx.emoji",
+    "pymdownx.fancylists",
     "pymdownx.highlight",
     "pymdownx.inlinehilite",
-    "pymdownx.keys",
-    "pymdownx.magiclink",
     "pymdownx.mark",
     "pymdownx.saneheaders",
     "pymdownx.smartsymbols",
@@ -50,18 +48,30 @@ DEFAULT_MD_CONFIG = {
         "permalink_title": "",
         "toc_depth": 3,
     },
+    "pymdownx.blocks.admonition": {
+        "types": [
+            "note",
+            "tip",
+            "warning",
+            "danger",
+            "new",
+            "question",
+            "error",
+            "example",
+        ],
+    },
+    "pymdownx.fancylists": {
+        "additional_ordered_styles": ["roman", "alpha", "generic"],
+        "inject_class": True,
+    },
     "pymdownx.highlight": {
         "linenums_style": "pymdownx-inline",
         "anchor_linenums": False,
         "css_class": "highlight",
-        "linenums": True,
         "pygments_lang_class": True,
     },
     "pymdownx.superfences": {
         "disable_indented_code_blocks": True,
-    },
-    "pymdownx.emoji": {
-        "emoji_generator": emoji.to_alt,
     },
 }
 
@@ -104,12 +114,12 @@ def start_server(build_folder: str) -> None:
         pass
 
 
-def start_observer(run_callback) -> None:
+def start_observer(path, run_callback) -> None:
     """Start a file system observer to watch for changes."""
     event_handler = ChangeHandler(run_callback)
     observer = Observer()
-    # Watch current directory and all subfolders
-    observer.schedule(event_handler, os.getcwd(), recursive=True)
+    # Watch directory and all subfolders
+    observer.schedule(event_handler, path, recursive=True)
     observer.start()
     print("Watching for changes. Press Ctrl+C to exit.\n")
     try:

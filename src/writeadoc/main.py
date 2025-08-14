@@ -1,9 +1,10 @@
 import argparse
-from multiprocessing import Process
+import re
 import shutil
 import signal
 import types
 import typing as t
+from multiprocessing import Process
 from pathlib import Path
 from uuid import uuid4
 
@@ -11,8 +12,9 @@ import jinja2
 import markdown
 from markupsafe import Markup
 
-from . import helpers, utils, search
-from .types import PageData, PageRef, SectionRef, SiteData
+from . import search, utils
+from .types import PageData, PageRef, SectionRef, SiteData, TSiteData, TSearchData
+from .utils import logger
 
 
 TPages = dict[str, list[str]]
@@ -22,56 +24,125 @@ TProcPages = list[tuple[SectionRef, list[PageData]]]
 class Docs:
     pages: TPages
     site: SiteData
-    theme: types.ModuleType
-    build_folder: Path
+    views: types.ModuleType
+    prefix: str = ""
+
+    pages_dir: Path
+    build_dir: Path
+    assets_dir: Path
+
+    renderer: markdown.Markdown
+    jinja_env: jinja2.Environment
+    search_data: TSearchData
 
     def __init__(
         self,
-        pages: TPages,
+        root: str,
+        /,
         *,
-        theme: types.ModuleType,
-        name: str = "WriteADoc",
-        description: str = "",
-        image: str = "/assets/images/opengraph.png",
-        version: str = "0.1.0",
-        base_url: str = "",
-        source_url: str = "",
-        help_url: str = "",
+        pages: TPages,
+        views: types.ModuleType,
+        site: TSiteData | None = None,
+        variants: dict[str, t.Self] | None = None,
         md_extensions: list[str] = utils.DEFAULT_MD_EXTENSIONS,
         md_config: dict[str, dict[str, t.Any]] = utils.DEFAULT_MD_CONFIG,
     ):
+        root_dir = Path(root).resolve().parent
+        if not root_dir.exists():
+            raise FileNotFoundError(f"Path {root} does not exist.")
+        self.root_dir = root_dir
+        self.pages_dir = root_dir / "content"
+        self.assets_dir = root_dir / "assets"
+        self.build_dir = root_dir / "build"
+        self.archive_dir = root_dir / "archive"
+
         self.pages = pages
-        self.site = SiteData(
-            name=name,
-            description=description,
-            image=image,
-            version=version,
-            base_url=base_url.rstrip("/"),
-            source_url=source_url,
-            help_url=help_url,
-        )
-        self.theme = theme
-        self.build_folder = Path("build")
-        self.renderer = markdown.Markdown(
-            extensions=md_extensions,
-            extension_configs=md_config,
-            output_format="html",
-            tab_length=2,
-        )
+        self.views = views
+        for prefix, variant in (variants or {}).items():
+            variant.prefix = prefix
+        self.variants = variants or {}
+
+        site = site or {}
+        self.site = SiteData(**site)
+
+        self.strings = getattr(views.strings, self.site.lang, {})
         self.jinja_env = jinja2.Environment(
             extensions=[
                 "jinja2.ext.loopcontrols",
             ],
             undefined=jinja2.StrictUndefined,
         )
-        self.jinja_env.filters.update({
-            "widont": helpers.widont,
-        })
 
-    def build(self, devmode: bool = True) -> None:
+        self.renderer = markdown.Markdown(
+            extensions=md_extensions,
+            extension_configs=md_config,
+            output_format="html",
+            tab_length=2,
+        )
+
+    def cli(self):
+        parser = argparse.ArgumentParser(description="WriteADoc CLI")
+        subparsers = parser.add_subparsers(dest="command")
+
+        subparsers.add_parser("run", help="Run and watch for changes")
+
+        build_parser = subparsers.add_parser("build", help="Build the documentation for deployment")
+        build_parser.add_argument(
+            "--archive",
+            action="store_true",
+            default=False,
+            help="Build the current version as an archived documentation"
+        )
+
+        args = parser.parse_args()
+
+        if args.command == "build":
+            self.cli_build(archive=args.archive)
+        elif args.command in (None, "run"):
+            self.cli_run()
+        else:
+            parser.print_help()
+
+    def cli_build(self, archive: bool) -> None:
+        """Build the documentation for deployment."""
+        self.build(devmode=False, archive=archive)
+        print("Documentation built successfully.")
+        if archive:
+            print(f"Archived documentation is available in the `archive/{self.site.version}` directory.")
+        else:
+            print("Documentation is available in the `build` directory.")
+
+    def cli_run(self) -> None:
+        """Run the documentation server and watch for changes."""
+        self.build()  # Initial buil
+        p = Process(
+            target=utils.start_server,
+            args=(str(self.build_dir),),
+            daemon=True
+        )
+        p.start()
+        utils.start_observer(self.root_dir, self.build)
+
+        def shutdown(*args):
+            p.terminate()
+            p.join()
+            exit(0)
+
+        signal.signal(signal.SIGINT, shutdown)
+        signal.signal(signal.SIGTERM, shutdown)
+
+    def build(self, devmode: bool = True, archive: bool = False) -> None:
         print("Building documentation...")
 
-        proc_pages = self._process_pages()
+        if archive:
+            self.prefix = f"{self.prefix}/{self.site.version}" if self.prefix else self.site.version
+            self.site.archived = True
+            self.build_dir = self.archive_dir
+
+        if self.prefix:
+            self.site.base_url = f"{self.site.base_url}/{self.prefix}"
+
+        proc_pages = self.process_pages()
         self.site.pages = [
             (
                 section,
@@ -84,59 +155,23 @@ class Docs:
             for section, sec_pages in proc_pages
         ]
 
-        self._render_pages(proc_pages)
-        self._render_search_page(proc_pages)
-        self._render_index_page()
-        self._render_docs_redirect_page()
+        self.search_data = search.extract_search_data(proc_pages)
+
+        self.render_pages(proc_pages)
+        self.render_search_page()
+        self.render_index_page()
+        self.render_docs_redirect_page()
+
         if devmode:
-            self._symlink_assets()
+            self.symlink_assets()
         else:
-            self._copy_assets()
+            self.add_prefix_to_urls()
+            self.copy_assets()
 
-    def cli(self):
-        parser = argparse.ArgumentParser(description="WriteADoc CLI")
-        subparsers = parser.add_subparsers(dest="command")
+        for variant in self.variants.values():
+            variant.build(devmode=devmode, archive=archive)
 
-        subparsers.add_parser("run", help="Run and watch for changes")
-        subparsers.add_parser("build", help="Build the documentation for deployment")
-
-        args = parser.parse_args()
-
-        if args.command == "build":
-            self._cli_build()
-        elif args.command in (None, "run"):
-            self._cli_run()
-        else:
-            parser.print_help()
-
-    ## Private
-
-    def _cli_build(self) -> None:
-        """Build the documentation for deployment."""
-        self.build(devmode=False)
-        print("Documentation built successfully.")
-        print("You can now copy the 'build' folder to your web server.")
-
-    def _cli_run(self) -> None:
-        """Run the documentation server and watch for changes."""
-        self.build()  # Initial run
-        p = Process(
-            target=utils.start_server,
-            args=(str(self.build_folder),),
-            daemon=True
-        )
-        p.start()
-        utils.start_observer(self.build)
-
-        def shutdown(*args):
-            p.terminate()
-            p.join()
-            exit(0)
-
-        signal.signal(signal.SIGINT, shutdown)
-        signal.signal(signal.SIGTERM, shutdown)
-
-    def _process_pages(self) -> TProcPages:
+    def process_pages(self) -> TProcPages:
         proc_pages = []
 
         for section_name, files in self.pages.items():
@@ -146,19 +181,9 @@ class Docs:
                 url="",
             )
             sec_pages = []
-            for filename in files:
-                filepath = Path(filename)
-                meta, html = self._process_file(filepath)
-                url = f"/docs/{filepath.with_suffix('').as_posix().strip('/')}/"
 
-                page = PageData(
-                    section=section,
-                    title=meta.pop("title", filepath.name),
-                    description=meta.pop("description", ""),
-                    url=url,
-                    meta=meta,
-                    content=html,
-                )
+            for filename in files:
+                page = self.process_page(filename, section)
                 sec_pages.append(page)
 
             if sec_pages:
@@ -191,63 +216,78 @@ class Docs:
 
         return proc_pages
 
-    def _process_file(self, filepath: Path) -> tuple[dict[str, t.Any], str]:
+    def process_page(self, filename: str, section: SectionRef) -> PageData:
+        filepath = self.pages_dir / filename
+        meta, html = self.process_file(filepath)
+
+        url = f"/docs/{Path(filename).with_suffix('').as_posix().strip('/')}/"
+        if self.prefix:
+            url = f"/{self.prefix}{url}"
+
+        return PageData(
+            section=section,
+            title=meta.pop("title", filepath.name),
+            description=meta.pop("description", ""),
+            url=url,
+            meta=meta,
+            content=html,
+        )
+
+    def process_file(self, filepath: Path) -> tuple[dict[str, t.Any], str]:
         if not filepath.exists():
             raise FileNotFoundError(f"File {filepath} does not exist.")
 
+        logger.debug("Processing page: %s", filepath.relative_to(self.pages_dir))
         source = filepath.read_text(encoding="utf-8")
         meta, source = utils.extract_metadata(source)
-        html = self._render_markdown(source)
+        html = self.render_markdown(source)
         return meta, Markup(html)
 
-    def _render_markdown(self, source: str) -> str:
+    def render_markdown(self, source: str) -> str:
         html = self.renderer.convert(source).strip()
         html = html.replace("<pre><span></span>", "<pre>")
         return html
 
-    def _render_pages(self, proc_pages: TProcPages) -> None:
+    def render_pages(self, proc_pages: TProcPages) -> None:
         for _, sec_pages in proc_pages:
             for page in sec_pages:
-                self._render_page(page)
+                self.render_page(page)
 
-    def _render_page(self, page: PageData) -> None:
-        outpath = self.build_folder / str(page.url).strip("/") / "index.html"
+    def render_page(self, page: PageData) -> None:
+        outpath = self.build_dir / str(page.url).strip("/") / "index.html"
         outpath.parent.mkdir(parents=True, exist_ok=True)
 
-        co = self.theme.Page(
-            jinja_env=self.jinja_env,
-            site=self.site,
-            page=page,
-        )
+        co = self.views.Page(self.jinja_env, page=page, site=self.site, _=self.translate)
         html = co.render()
         outpath.write_text(html, encoding="utf-8")
 
-    def _render_search_page(self, proc_pages: TProcPages) -> None:
-        outpath = self.build_folder / "search" / "index.html"
+    def render_search_page(self) -> None:
+        outpath = self.build_dir / self.prefix / "search" / "index.html"
         outpath.parent.mkdir(parents=True, exist_ok=True)
+        url = f"/{self.prefix}/search/" if self.prefix else "/search/"
+
         page = PageData(
-            section=SectionRef(id="", title="Search", url="/search/"),
+            section=SectionRef(id="", title="Search", url=url),
             title="Search",
-            url="/search/",
+            url=url,
         )
-        co = self.theme.SearchPage(
-            jinja_env=self.jinja_env,
-            page=page,
-            site=self.site,
-        )
-        search_data = search.extract_search_data(proc_pages)
-        html = co.render(search_data=search_data)
+        co = self.views.SearchPage(self.jinja_env, page=page, site=self.site, _=self.translate)
+        html = co.render(search_data=self.search_data)
         outpath.write_text(html, encoding="utf-8")
 
-    def _render_docs_redirect_page(self) -> None:
+    def render_docs_redirect_page(self) -> None:
         section = self.site.pages[0]if self.site.pages else None
         if not section:
             return
         # Use the first page in the section or the section itself if no pages
         url = section[1][0]["url"] if section[1] else section[0]["url"]
-        url = f"{url.removeprefix("/docs/")}index.html"
+        if self.prefix:
+            url = url.removeprefix(f"/{self.prefix}/docs/")
+        else:
+            url = url.removeprefix("/docs/")
+        url = f"{url}index.html"
 
-        outpath = self.build_folder / "docs" / "index.html"
+        outpath = self.build_dir / self.prefix / "docs" / "index.html"
         outpath.parent.mkdir(parents=True, exist_ok=True)
         html = (
             '<!DOCTYPE html><html><head><meta charset="utf-8">'
@@ -256,59 +296,80 @@ class Docs:
         )
         outpath.write_text(html, encoding="utf-8")
 
-    def _render_index_page(self) -> None:
-        outpath = self.build_folder / "index.html"
+    def render_index_page(self) -> None:
+        outpath = self.build_dir / self.prefix / "index.html"
         outpath.parent.mkdir(parents=True, exist_ok=True)
+        url = f"/{self.prefix}/" if self.prefix else "/"
 
-        md_index = Path("index.md")
+        md_index = self.pages_dir / "index.md"
         if md_index.exists():
-            meta, html = self._process_file(md_index)
+            meta, html = self.process_file(md_index)
             page = PageData(
-                section=SectionRef(id="", title=self.site.name, url="/"),
+                section=SectionRef(id="", title=self.site.name, url=url),
                 title=meta.get("title", self.site.name),
-                url="/",
+                url=url,
                 description=meta.get("description", ""),
                 content=html,
             )
         else:
             # Just render the template page
             page = PageData(
-                section=SectionRef(id="", title=self.site.name, url="/"),
+                section=SectionRef(id="", title=self.site.name, url=url),
                 title=self.site.name,
-                url="/",
+                url=url,
             )
 
-        co = self.theme.IndexPage(
-            jinja_env=self.jinja_env,
-            page=page,
-            site=self.site,
-        )
+        co = self.views.IndexPage(self.jinja_env, page=page, site=self.site, _=self.translate)
         html = co.render()
         outpath.write_text(html, encoding="utf-8")
 
-    def _symlink_assets(self) -> None:
-        if not self.theme.__file__:
+    def symlink_assets(self) -> None:
+        if not self.views.__file__:
             return
-        assets_folder = Path(self.theme.__file__).parent / "assets"
-        if not assets_folder.exists():
+        if not self.assets_dir.exists():
             return
-        target_path = self.build_folder / "assets"
+        target_path = self.build_dir / self.prefix / "assets"
         if target_path.exists():
             if target_path.is_symlink():
                 target_path.unlink()
             else:
                 shutil.rmtree(target_path)
-        target_path.symlink_to(assets_folder, target_is_directory=True)
+        target_path.symlink_to(self.assets_dir, target_is_directory=True)
 
-    def _copy_assets(self) -> None:
-        if not self.theme.__file__:
+    def copy_assets(self) -> None:
+        if not self.views.__file__:
             return
-        assets_folder = Path(self.theme.__file__).parent / "assets"
-        if not assets_folder.exists():
+        if not self.assets_dir.exists():
             return
-        target_path = self.build_folder / "assets"
+        target_path = self.build_dir / self.prefix / "assets"
         shutil.copytree(
-            assets_folder,
+            self.assets_dir,
             target_path,
             dirs_exist_ok=True,
         )
+
+    def add_prefix_to_urls(self) -> None:
+        """Update URLs in the site data for archived documentation."""
+        if not self.prefix:
+            return
+        rx_urls = re.compile(r"""(href|src|action|poster|data|srcset|data-src)=("|')/(docs|assets|search)/""")
+        build_dir = self.build_dir / self.prefix
+        for html_file in build_dir.rglob("*.html"):
+            content = html_file.read_text()
+
+            def replace_url(match: re.Match) -> str:
+                attr = match.group(1)
+                quote = match.group(2)
+                url = match.group(3)
+                return f'{attr}={quote}/{self.prefix}/{url}/'
+
+            new_content = rx_urls.sub(replace_url, content)
+            html_file.write_text(new_content)
+
+    def translate(self, key: str, **kwargs) -> str:
+        """
+        Translate a key using the strings dictionary.
+        If the key does not exist, return the key itself.
+        """
+        string = self.strings.get(key, key)
+        return string.format(**kwargs)
