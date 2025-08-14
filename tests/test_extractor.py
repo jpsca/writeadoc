@@ -34,13 +34,13 @@ def test_extractor():
     assert result == {
         "/docs/foobar/test-page/#introduction1": {
             "title": "Introduction",
-            "content": '<p>JinjaX is a Python library for creating reusable "components" - encapsulated template snippets that can take arguments and render to HTML. They are similar to React or Vue components, but they render on the server side, not in the browser.</p>',
+            "content": 'JinjaX is a Python library for creating reusable "components" - encapsulated template snippets that can take arguments and render to HTML. They are similar to React or Vue components, but they render on the server side, not in the browser.',
             "section": "/docs/foobar/test-page/",
             "url": "/docs/foobar/test-page/#introduction",
         },
         "/docs/foobar/test-page/#introduction2": {
             "title": "Introduction",
-            "content": '<p>Unlike Jinja\'s {% include "..." %} or macros, JinjaX components integrate naturally with the rest of your template code.</p>',
+            "content": 'Unlike Jinja\'s {% include "..." %} or macros, JinjaX components integrate naturally with the rest of your template code.',
             "section": "/docs/foobar/test-page/",
             "url": "/docs/foobar/test-page/#introduction",
         },
@@ -52,13 +52,13 @@ def test_extractor():
         },
         "/docs/foobar/test-page/#s-simple4": {
             "title": "Simple",
-            "content": "<p>JinjaX components are simple Jinja templates. You use them as if they were HTML tags without needing to import them: they're easy to use and easy to read.</p>",
+            "content": "JinjaX components are simple Jinja templates. You use them as if they were HTML tags without needing to import them: they're easy to use and easy to read.",
             "section": "/docs/foobar/test-page/",
             "url": "/docs/foobar/test-page/#s-simple",
         },
         "/docs/foobar/test-page/#s-encapsulated5": {
             "title": "Encapsulated",
-            "content": "<p>They are independent of each other and can link to their own CSS and JS, so you can freely copy and paste components between applications.</p>",
+            "content": "They are independent of each other and can link to their own CSS and JS, so you can freely copy and paste components between applications.",
             "section": "/docs/foobar/test-page/",
             "url": "/docs/foobar/test-page/#s-encapsulated",
         },
