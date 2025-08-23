@@ -21,33 +21,33 @@ class AutodocBlockProcessor(BlockProcessor):
         block = blocks.pop(0)
         match = self.RE_AUTODOC.match(block)
         if match:
-            name = match.group(1) or "" # Get the name after "::: "
-            level = match.group(2)  # Get the level after the name
+            name = match.group(1) or ""
+            level = match.group(2)
             level = int(level) if level is not None else None
             markdown_content = self.renderer(name, level)
-            html = self.parser.md.convert(markdown_content)
 
-            div = ElementTree.Element("div")
-            div.set("class", "autodoc-block")
-            try:
-                parsed_html = ElementTree.fromstring(f"<div>{html}</div>")
-                for child in parsed_html:
-                    div.append(child)
-            except Exception:
-                # Fallback if HTML parsing fails
-                div.text = html
+            # Process the content directly using markdown
+            tmp = ElementTree.Element("div")
+            self.parser.parseChunk(tmp, markdown_content)
 
-            parent.append(div)
+            # Extract processed elements
+            for child in tmp:
+                parent.append(child)
+
             return True
         return False
 
 
 def fallback_renderer(x: str, y: int | None = None):
-    return (f"Autodoc for {x} at level {y}")
+    return f"Autodoc for {x} at level {y}"
 
 
 class AutodocExtension(Extension):
-    def __init__(self, renderer: Callable[[str, int | None], str] = fallback_renderer, **kwargs):
+    def __init__(
+        self,
+        renderer: Callable[[str, int | None], str] = fallback_renderer,
+        **kwargs,
+    ):
         self.config = {
             "renderer": [
                 renderer,

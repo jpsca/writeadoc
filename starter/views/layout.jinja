@@ -25,7 +25,6 @@
   <meta name="twitter:image:alt" content="{{ site.name | e }}" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="canonical" href="{{ site.base_url }}{{ page.url }}" />
-  <link rel="icon" href="/assets/images/favicon.svg" />
   <link rel="icon" href="/assets/images/favicon.png" />
   <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png" />
   <script src="/assets/js/color-scheme.js"></script>
@@ -33,7 +32,6 @@
   <script type="module" src="/assets/js/turbo.min.js"></script>
   <script type="module" src="/assets/js/code.js"></script>
   <script type="module" src="/assets/js/search.js"></script>
-  <script type="module" src="/assets/js/video.js"></script>
   {{ assets.render() }}
   <script src="/assets/js/lunr.min.js"></script>
   {% if site.lang != "en" %}<script src="/assets/js/lunr.{{ site.lang }}.min.js"></script>{% endif %}
@@ -112,10 +110,7 @@
 
   <footer class="footer">
     <div>
-      <p>
-        © 2025
-        <a href="https://jpscaletti.com/" target="_blank" rel="noopener">JP Scaletti</a>
-      </p>
+      <p>Made with <a href="https://writeadoc.scaletti.dev" target="_blank" rel="noopener">WriteADoc</a>.</p>
     </div>
   </footer>
   <script>

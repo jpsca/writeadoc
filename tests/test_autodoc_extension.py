@@ -5,21 +5,25 @@ from writeadoc.extensions.autodoc import AutodocExtension
 
 
 def renderer(name, level=None):
+    if level is None:
+        return f"# Documentation for {name}"
     return f"# Documentation for {name}, {level}"
 
 
 def test_autodoc_block():
     """Test that the extension correctly processes autodoc blocks."""
     md = markdown.Markdown(extensions=[AutodocExtension(renderer=renderer)])
-    test_md = "::: sample.module.Class"
-    html = md.convert(test_md)
+    test_md = "Hello world\n\n::: sample.module.Class\n\nBye"
+    html = md.convert(test_md).strip()
 
-    assert "Documentation for sample.module.Class" in html
+    print(html)
+    assert html == "<p>Hello world</p>\n<h1>Documentation for sample.module.Class</h1>\n<p>Bye</p>"
 
 def test_autodoc_block_with_level():
     """Test that the extension correctly processes autodoc blocks with levels."""
     md = markdown.Markdown(extensions=[AutodocExtension(renderer=renderer)])
-    test_md = "::: sample.module.Class 4"
-    html = md.convert(test_md)
+    test_md = "Hello world\n\n::: sample.module.Class 4\n\nBye"
+    html = md.convert(test_md).strip()
 
-    assert "Documentation for sample.module.Class, 4" in html
+    print(html)
+    assert html == "<p>Hello world</p>\n<h1>Documentation for sample.module.Class, 4</h1>\n<p>Bye</p>"

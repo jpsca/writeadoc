@@ -1,0 +1,28 @@
+.headline {
+  display: flex;
+  flex-direction: column;
+  padding-left: var(--space-medium);
+  padding-right: var(--space-medium);
+  padding-top: var(--space-medium)
+}
+.headline header {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+  margin-bottom: -0.4em;
+  margin-top: -0.2em;
+  text-align: center
+}
+.headline header h1 {
+  font-size: var(--font-size-xx-large)
+}
+
+@media (min-width: 64em) {
+  .headline {
+    padding: var(--space-x-large);
+  }
+  .headline header h1 {
+    font-size: var(--font-size-xxx-large)
+  }
+}

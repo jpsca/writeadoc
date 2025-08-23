@@ -1,0 +1,127 @@
+{# def obj=None, name="", level=2, members=True #}
+{# import "autodoc.jinja" as Autodoc #}
+
+{% set obj = obj or autodoc(name) %}
+
+<h{{ level }}>
+  <code class="autodoc-symbol autodoc-symbol-{{ obj.symbol }}">{{ obj.symbol }}</code>
+  <span class="autodoc-name autodoc-name-{{ obj.symbol }}">{{ name or obj.name }}</span>
+  {% if obj.label -%}
+  <code class="autodoc-label autodoc-label-{{ obj.label }}">{{ obj.label }}</code>
+  {%- endif %}
+</h{{ level }}>
+
+{%- if obj.short_description -%}
+<div class="autodoc-short-description" markdown="1">
+{{ obj.short_description | safe }}
+</div>
+{% endif -%}
+
+{%- if obj.signature -%}
+<div class="autodoc-signature" markdown="1">
+```python
+{{ obj.signature | safe }}
+```
+</div>
+{%- endif %}
+
+{% if obj.bases -%}
+<div class="autodoc-bases">
+<p>Bases:
+{%- for base in obj.bases %} <code>{{ base }}</code>{% if not loop.last %}, {% endif %}
+{%- endfor %}
+</p>
+</div>
+{%- endif %}
+
+{% if obj.params -%}
+<div class="autodoc-table">
+<table class="autodoc-arguments">
+<thead><tr><th>Argument</th><th>Description</th></tr>
+</thead>
+<tbody>
+{%- for param in obj.params %}
+<tr>
+<td><code>{{ param.name }}</code></td>
+<td markdown="span">{{ param.description | safe }}</td>
+</tr>
+{%- endfor %}
+</tbody>
+</table>
+</div>
+{%- endif %}
+
+{%- if obj.long_description -%}
+<div class="autodoc-long-description" markdown="1">
+{{ obj.long_description | safe }}
+</div>
+{% endif -%}
+
+{% if obj.examples -%}
+<div class="autodoc-examples">
+<p><strong>Example:</strong></p>
+
+{% for ex in obj.examples -%}
+<div markdown="1">
+{%- if ex.description %}
+{{ ex.description | safe }}
+{% endif -%}
+{%- if ex.snippet %}
+{{ ex.snippet | safe }}
+{% endif -%}
+<div>
+{% endfor -%}
+</div>
+{%- endif %}
+
+{% if obj.returns -%}
+<div class="autodoc-returns">
+<p><strong>Returns:</strong></p>
+
+{% if ex.returns -%}
+<p markdown="span">{{ obj.returns | safe }}</p>
+{%- endif %}
+{% if ex.many_returns -%}
+<ul>
+{% for return in ex.many_returns %}
+<li markdown="span">{{ return | safe }}</li>
+{%- endfor %}
+</ul>
+{%- endif %}
+</div>
+{%- endif %}
+
+{% if obj.raises -%}
+<div class="autodoc-raises"></div>
+<p><strong>Raises:</strong></p>
+<ul>
+{% for raises in obj.raises -%}
+<li markdown="span">{{ raises.description | safe }}</li>
+{% endfor -%}
+</ul>
+</li>
+{%- endif %}
+
+{% if obj.attrs-%}
+<div class="autodoc-attrs" markdown="1">
+{% for attr in obj.attrs -%}
+<Autodoc obj={{ attr }} level={{ level + 1 }} />
+{% endfor %}
+</div>
+{%- endif %}
+
+{% if obj.properties-%}
+<div class="autodoc-properties" markdown="1">
+{% for attr in obj.properties %}
+<Autodoc obj={{ attr }} level={{ level + 1 }} />
+{%- endfor %}
+</div>
+{%- endif %}
+
+{% if obj.methods -%}
+<div class="autodoc-methods" markdown="1">
+{% for method in obj.methods %}
+<Autodoc obj={{ method }} level={{ level + 1 }} />
+{%- endfor %}
+</div>
+{%- endif %}

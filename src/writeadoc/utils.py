@@ -15,11 +15,7 @@ from watchdog.events import (
     FileMovedEvent,
 )
 from watchdog.observers import Observer
-
-try:
-    from yaml import CSafeLoader as SafeLoader
-except ImportError:  # pragma: no cover
-    from yaml import SafeLoader  # type: ignore
+from yaml import SafeLoader
 
 from .exceptions import InvalidFrontMatter
 
