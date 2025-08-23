@@ -1,5 +1,6 @@
-# English
-en = {
+{
+  "en": {
+    "_": "English",
     "DOCUMENTATION": "Documentation",
     "SOURCE_CODE": "Code",
     "HELP": "Help",
@@ -15,11 +16,10 @@ en = {
     "SWITCH_TO_LIGHT_MODE": "Switch to light mode",
     "SWITCH_TO_SYSTEM": "Switch to system preference",
     "NOT_THE_LATEST_VERSION": "This is not the latest version of the documentation.",
-    "CLICK_TO_GO_TO_LATEST": "Click here to go to latest",
-}
-
-# Danish
-da = {
+    "CLICK_TO_GO_TO_LATEST": "Click here to go to latest"
+  },
+  "da": {
+    "_": "Danish",
     "DOCUMENTATION": "Dokumentation",
     "SOURCE_CODE": "Kode",
     "HELP": "Hjælp",
@@ -35,11 +35,10 @@ da = {
     "SWITCH_TO_LIGHT_MODE": "Skift til lys tilstand",
     "SWITCH_TO_SYSTEM": "Skift til systempræference",
     "NOT_THE_LATEST_VERSION": "Dette er ikke den nyeste version af dokumentationen.",
-    "CLICK_TO_GO_TO_LATEST": "Klik her for at gå til den nyeste",
-}
-
-# German
-de = {
+    "CLICK_TO_GO_TO_LATEST": "Klik her for at gå til den nyeste"
+  },
+  "de": {
+    "_": "German",
     "DOCUMENTATION": "Dokumentation",
     "SOURCE_CODE": "Code",
     "HELP": "Hilfe",
@@ -55,11 +54,10 @@ de = {
     "SWITCH_TO_LIGHT_MODE": "Wechsle zum Hellmodus",
     "SWITCH_TO_SYSTEM": "Wechsle zur System-Einstellung",
     "NOT_THE_LATEST_VERSION": "Das ist nicht die neueste Version der Doku.",
-    "CLICK_TO_GO_TO_LATEST": "Klick hier, um zur neuesten zu gehen",
-}
-
-# Spanish
-es = {
+    "CLICK_TO_GO_TO_LATEST": "Klick hier, um zur neuesten zu gehen"
+  },
+  "es": {
+    "_": "Spanish",
     "DOCUMENTATION": "Documentación",
     "SOURCE_CODE": "Código",
     "HELP": "Ayuda",
@@ -75,11 +73,10 @@ es = {
     "SWITCH_TO_LIGHT_MODE": "Cambia al modo claro",
     "SWITCH_TO_SYSTEM": "Cambia a la preferencia del sistema",
     "NOT_THE_LATEST_VERSION": "Esta no es la última versión de la documentación.",
-    "CLICK_TO_GO_TO_LATEST": "Haz clic aquí para ir a la última",
-}
-
-# French
-fr = {
+    "CLICK_TO_GO_TO_LATEST": "Haz clic aquí para ir a la última"
+  },
+  "fr": {
+    "_": "French",
     "DOCUMENTATION": "Documentation",
     "SOURCE_CODE": "Code",
     "HELP": "Aide",
@@ -95,11 +92,10 @@ fr = {
     "SWITCH_TO_LIGHT_MODE": "Passe en mode clair",
     "SWITCH_TO_SYSTEM": "Passe à la préférence système",
     "NOT_THE_LATEST_VERSION": "Ce n'est pas la dernière version de la doc.",
-    "CLICK_TO_GO_TO_LATEST": "Clique ici pour aller à la dernière",
-}
-
-# Italian
-it = {
+    "CLICK_TO_GO_TO_LATEST": "Clique ici pour aller à la dernière"
+  },
+  "it": {
+    "_": "Italian",
     "DOCUMENTATION": "Documentazione",
     "SOURCE_CODE": "Codice",
     "HELP": "Aiuto",
@@ -115,11 +111,10 @@ it = {
     "SWITCH_TO_LIGHT_MODE": "Passa alla modalità chiara",
     "SWITCH_TO_SYSTEM": "Passa alla preferenza di sistema",
     "NOT_THE_LATEST_VERSION": "Questa non è l'ultima versione della documentazione.",
-    "CLICK_TO_GO_TO_LATEST": "Fai clic qui per andare all'ultima",
-}
-
-# Portuguese
-pt = {
+    "CLICK_TO_GO_TO_LATEST": "Fai clic qui per andare all'ultima"
+  },
+  "pt": {
+    "_": "Portuguese",
     "DOCUMENTATION": "Documentação",
     "SOURCE_CODE": "Código",
     "HELP": "Ajuda",
@@ -135,5 +130,6 @@ pt = {
     "SWITCH_TO_LIGHT_MODE": "Mudar para o modo claro",
     "SWITCH_TO_SYSTEM": "Mudar para a preferência do sistema",
     "NOT_THE_LATEST_VERSION": "Esta não é a versão mais recente da documentação.",
-    "CLICK_TO_GO_TO_LATEST": "Clique aqui para ir para a mais recente",
+    "CLICK_TO_GO_TO_LATEST": "Clique aqui para ir para a mais recente"
+  }
 }

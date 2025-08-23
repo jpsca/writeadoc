@@ -1879,4 +1879,55 @@ html.cs-dark .page article img.invert {
   --admonition-icon: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m15.07 11.25-.9.92C13.45 12.89 13 13.5 13 15h-2v-.5c0-1.11.45-2.11 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41a2 2 0 0 0-2-2 2 2 0 0 0-2 2H8a4 4 0 0 1 4-4 4 4 0 0 1 4 4 3.2 3.2 0 0 1-.93 2.25M13 19h-2v-2h2M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10c0-5.53-4.5-10-10-10"/></svg>');
 }
 
+/******* Autodoc *******/
+
+.autodoc-symbol {
+  border-radius: 0.1rem;
+  padding: 0 0.3em;
+  font-weight: bold;
+}
+
+.autodoc-symbol-attr {
+  color: var(--doc-symbol-attribute-fg-color, #ffa657) !important;
+  background-color: var(--doc-symbol-attribute-bg-color, #ffa6571a) !important;
+}
+.autodoc-symbol-function {
+  color: var(--doc-symbol-function-fg-color, #d2a8ff) !important;
+  background-color: var(--doc-symbol-function-bg-color, #d2a8ff1a) !important;
+}
+.autodoc-symbol-method {
+  color: var(--doc-symbol-method-fg-color, #d2a8ff) !important;
+  background-color: var(--doc-symbol-method-bg-color, #d2a8ff1a) !important;
+}
+.autodoc-symbol-class {
+  color: var(--doc-symbol-class-fg-color, #79c0ff) !important;
+  background-color: var(--doc-symbol-class-bg-color, #79c0ff1a) !important;
+}
+.autodoc-symbol-module {
+  color: var(--doc-symbol-module-fg-color, #baff79) !important;
+  background-color: var(--doc-symbol-module-bg-color, #baff791a) !important;
+}
+
+.autodoc-name {
+  font-weight: normal;
+}
+.autodoc-label {
+  font-size: 0.6em !important;
+  color: #36464e !important;
+  font-weight: 400;
+  padding: 0.1rem 0.4rem !important;
+}
+
+.autodoc-attrs > *,
+.autodoc-properties > *,
+.autodoc-methods > *,
+.autodoc-long-description > * {
+  margin-top: var(--flow-space, 1.4em);
+}
+
+.autodoc-table {
+  width: 100%;
+  overflow-x: auto;
+}
+
 /*******  *******/

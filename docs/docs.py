@@ -1,5 +1,4 @@
 from writeadoc import Docs
-import views
 
 
 pages = {
@@ -23,12 +22,14 @@ pages = {
         "markdown/attributes.md",
         "markdown/html.md",
     ],
+    "API": [
+        "api.md",
+    ],
 }
 
 docs = Docs(
     __file__,
     pages=pages,
-    views=views,
     site={
         "name": "WriteADoc",
         "description": "Write your documentation",

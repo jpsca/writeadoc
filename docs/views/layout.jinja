@@ -1,3 +1,8 @@
+{# import "./color_scheme.jinja" as ColorScheme #}
+{# import "./toc.jinja" as Toc #}
+{# import "./language_popover.jinja" as LanguagePopover #}
+{# import "./version_popover.jinja" as VersionPopover #}
+
 <!DOCTYPE html>
 <html lang="{{ site.lang }}" class="cs-system">
 
@@ -29,7 +34,7 @@
   <script type="module" src="/assets/js/code.js"></script>
   <script type="module" src="/assets/js/search.js"></script>
   <script type="module" src="/assets/js/video.js"></script>
-  {{ _assets.render() }}
+  {{ assets.render() }}
   <script src="/assets/js/lunr.min.js"></script>
   {% if site.lang != "en" %}<script src="/assets/js/lunr.{{ site.lang }}.min.js"></script>{% endif %}
 </head>
@@ -102,7 +107,7 @@
   </header>
 
   <main>
-    {{ _content }}
+    {{ content }}
   </main>
 
   <footer class="footer">

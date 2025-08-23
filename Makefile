@@ -2,6 +2,7 @@
 install:
 	uv sync --group dev --group test
 	uv pip install -e .
+	uv pip install -e ../jx
 # 	uv run pre-commit install
 
 .PHONY: test

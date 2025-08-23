@@ -1,3 +1,7 @@
+{# def search_data #}
+{# import "./layout.jinja" as Layout #}
+{# import "./toc.jinja" as Toc #}
+
 <Layout>
   <div class="page page--docs">
     <div class="page__content">
@@ -21,7 +25,7 @@
         <div id="search-results">
           <p>{{ _('NO_RESULTS_FOUND') }}</p>
         </div>
-        <script>window.store = {{ search_data | safe }};</script>
+        <script>window.store = {{ search_data | tojson(indent=2) }};</script>
       </article>
     </div>
   </div>

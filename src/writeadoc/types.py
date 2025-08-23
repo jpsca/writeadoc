@@ -77,6 +77,7 @@ class PageData:
     section: SectionRef
     title: str
     url: str
+    view: str
     description: str
     image: str
     meta: dict[str, t.Any]
@@ -93,15 +94,18 @@ class PageData:
         description: str = "",
         image: str = "",
         meta: dict[str, t.Any] | None = None,
+        view: str = "page.jinja",
         content: str = "",
     ):
+        meta = meta or {}
         self.id = uuid4().hex
         self.section = section
         self.title = title
         self.description = description
         self.image = image
         self.url = url
-        self.meta = meta or {}
+        self.view = meta.get("view", view)
+        self.meta = meta
         self.content = content
 
 

@@ -2,11 +2,18 @@ import logging
 import os
 import time
 import typing as t
+from collections.abc import Callable
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 import yaml
-from watchdog.events import FileSystemEventHandler
+from watchdog.events import (
+    FileSystemEventHandler,
+    FileDeletedEvent,
+    FileModifiedEvent,
+    FileCreatedEvent,
+    FileMovedEvent,
+)
 from watchdog.observers import Observer
 
 try:
@@ -94,9 +101,9 @@ def extract_metadata(source: str) -> tuple[TMetadata, str]:
     return meta, source.strip().lstrip("- ")
 
 
-def truncate(source: str) -> str:
-    if len(source) > 203:
-        return f"{source[:200]}..."
+def truncate(source: str, limit: int = 400) -> str:
+    if len(source) > limit:
+        return f"{source[: limit - 3]}..."
     return source
 
 
@@ -114,12 +121,27 @@ def start_server(build_folder: str) -> None:
         pass
 
 
-def start_observer(path, run_callback) -> None:
+def start_observer(
+    path,
+    run_callback: Callable,
+    *,
+    path_filter: tuple[str, ...] = ("content", "views")
+) -> None:
     """Start a file system observer to watch for changes."""
-    event_handler = ChangeHandler(run_callback)
+    event_handler = ChangeHandler(run_callback, path_filter)
     observer = Observer()
     # Watch directory and all subfolders
-    observer.schedule(event_handler, path, recursive=True)
+    observer.schedule(
+        event_handler,
+        path,
+        recursive=True,
+        event_filter=[
+            FileDeletedEvent,
+            FileModifiedEvent,
+            FileCreatedEvent,
+            FileMovedEvent,
+        ],
+    )
     observer.start()
     print("Watching for changes. Press Ctrl+C to exit.\n")
     try:
@@ -131,27 +153,24 @@ def start_observer(path, run_callback) -> None:
 
 
 class ChangeHandler(FileSystemEventHandler):
-    def __init__(self, run_callback):
+    def __init__(self, run_callback: Callable, path_filter: tuple[str, ...] = ()):
         super().__init__()
         self.run_callback = run_callback
+        self.path_filter = path_filter
 
     def on_any_event(self, event):
-        # Only act on file changes (not directory events)
-        if event.is_directory or event.event_type in ("opened", "closed", "closed_no_write"):
-            return
         if isinstance(event.src_path, bytes):
             src_path = event.src_path.decode()
         else:
             src_path = str(event.src_path)
         rel_path = os.path.relpath(src_path, os.getcwd())
 
-        if rel_path.startswith("build" + os.sep) or rel_path.startswith("."):
+        if not rel_path.startswith(self.path_filter):
             return
 
         # Check for file changes in current dir or non-hidden subfolders
-        if (
-            rel_path.endswith((".py", ".jinja", ".md"))
-            and not any(part.startswith(".") for part in rel_path.split(os.sep))
+        if rel_path.endswith((".py", ".jinja", ".md")) and not any(
+            part.startswith(".") for part in rel_path.split(os.sep)
         ):
             print(f"File changed ({event.event_type}):", rel_path)
             self.run_callback()

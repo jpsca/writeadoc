@@ -1,18 +1,20 @@
 import argparse
+import json
 import re
 import shutil
 import signal
-import types
 import typing as t
 from multiprocessing import Process
 from pathlib import Path
 from uuid import uuid4
 
-import jinja2
+import jx
 import markdown
 from markupsafe import Markup
 
 from . import search, utils
+from .autodoc import autodoc
+from .extensions.autodoc import AutodocExtension
 from .types import PageData, PageRef, SectionRef, SiteData, TSiteData, TSearchData
 from .utils import logger
 
@@ -24,15 +26,14 @@ TProcPages = list[tuple[SectionRef, list[PageData]]]
 class Docs:
     pages: TPages
     site: SiteData
-    views: types.ModuleType
     prefix: str = ""
 
+    views_dir: Path
     pages_dir: Path
     build_dir: Path
     assets_dir: Path
 
     renderer: markdown.Markdown
-    jinja_env: jinja2.Environment
     search_data: TSearchData
 
     def __init__(
@@ -41,10 +42,9 @@ class Docs:
         /,
         *,
         pages: TPages,
-        views: types.ModuleType,
         site: TSiteData | None = None,
         variants: dict[str, t.Self] | None = None,
-        md_extensions: list[str] = utils.DEFAULT_MD_EXTENSIONS,
+        md_extensions: list[t.Any] = utils.DEFAULT_MD_EXTENSIONS,
         md_config: dict[str, dict[str, t.Any]] = utils.DEFAULT_MD_CONFIG,
     ):
         root_dir = Path(root).resolve().parent
@@ -52,12 +52,12 @@ class Docs:
             raise FileNotFoundError(f"Path {root} does not exist.")
         self.root_dir = root_dir
         self.pages_dir = root_dir / "content"
+        self.views_dir = root_dir / "views"
         self.assets_dir = root_dir / "assets"
         self.build_dir = root_dir / "build"
         self.archive_dir = root_dir / "archive"
 
         self.pages = pages
-        self.views = views
         for prefix, variant in (variants or {}).items():
             variant.prefix = prefix
         self.variants = variants or {}
@@ -65,20 +65,29 @@ class Docs:
         site = site or {}
         self.site = SiteData(**site)
 
-        self.strings = getattr(views.strings, self.site.lang, {})
-        self.jinja_env = jinja2.Environment(
-            extensions=[
-                "jinja2.ext.loopcontrols",
-            ],
-            undefined=jinja2.StrictUndefined,
+        self.catalog = jx.Catalog(
+            site=self.site,
+            _=self.translate,
+            autodoc=autodoc,
         )
 
+        md_extensions.append(AutodocExtension(renderer=self.render_autodoc))
         self.renderer = markdown.Markdown(
             extensions=md_extensions,
             extension_configs=md_config,
             output_format="html",
             tab_length=2,
         )
+
+    def init_catalog(self):
+        strings_file = self.views_dir / "strings.json"
+        if strings_file.exists():
+            strings_data = json.loads(strings_file.read_text())
+            self.strings = strings_data.get(self.site.lang, {})
+        else:
+            self.strings = {}
+
+        self.catalog.add_folder(self.views_dir)
 
     def cli(self):
         parser = argparse.ArgumentParser(description="WriteADoc CLI")
@@ -133,6 +142,7 @@ class Docs:
 
     def build(self, devmode: bool = True, archive: bool = False) -> None:
         print("Building documentation...")
+        self.init_catalog()
 
         if archive:
             self.prefix = f"{self.prefix}/{self.site.version}" if self.prefix else self.site.version
@@ -257,8 +267,10 @@ class Docs:
         outpath = self.build_dir / str(page.url).strip("/") / "index.html"
         outpath.parent.mkdir(parents=True, exist_ok=True)
 
-        co = self.views.Page(self.jinja_env, page=page, site=self.site, _=self.translate)
-        html = co.render()
+        html = self.catalog.render(
+            page.view,
+            globals={"page": page}
+        )
         outpath.write_text(html, encoding="utf-8")
 
     def render_search_page(self) -> None:
@@ -270,9 +282,14 @@ class Docs:
             section=SectionRef(id="", title="Search", url=url),
             title="Search",
             url=url,
+            view="search.jinja"
         )
-        co = self.views.SearchPage(self.jinja_env, page=page, site=self.site, _=self.translate)
-        html = co.render(search_data=self.search_data)
+
+        html = self.catalog.render(
+            page.view,
+            search_data=self.search_data,
+            globals={"page": page}
+        )
         outpath.write_text(html, encoding="utf-8")
 
     def render_docs_redirect_page(self) -> None:
@@ -308,6 +325,7 @@ class Docs:
                 section=SectionRef(id="", title=self.site.name, url=url),
                 title=meta.get("title", self.site.name),
                 url=url,
+                view="index.jinja",
                 description=meta.get("description", ""),
                 content=html,
             )
@@ -317,15 +335,19 @@ class Docs:
                 section=SectionRef(id="", title=self.site.name, url=url),
                 title=self.site.name,
                 url=url,
+                view="index.jinja",
             )
 
-        co = self.views.IndexPage(self.jinja_env, page=page, site=self.site, _=self.translate)
-        html = co.render()
+        html = self.catalog.render(
+            page.view,
+            globals={"page": page}
+        )
         outpath.write_text(html, encoding="utf-8")
 
+    def render_autodoc(self, name: str, level: int | None):
+        return self.catalog.render("autodoc.jinja", name=name, level=level or 2)
+
     def symlink_assets(self) -> None:
-        if not self.views.__file__:
-            return
         if not self.assets_dir.exists():
             return
         target_path = self.build_dir / self.prefix / "assets"
@@ -337,8 +359,6 @@ class Docs:
         target_path.symlink_to(self.assets_dir, target_is_directory=True)
 
     def copy_assets(self) -> None:
-        if not self.views.__file__:
-            return
         if not self.assets_dir.exists():
             return
         target_path = self.build_dir / self.prefix / "assets"

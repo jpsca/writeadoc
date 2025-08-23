@@ -1,3 +1,6 @@
+{# import "./layout.jinja" as Layout #}
+{# import "./toc.jinja" as Toc #}
+
 <Layout>
   <div class="page page--docs">
     <div class="page__content">
@@ -20,7 +23,7 @@
 
       <article>
         <h1>{{ page.title }}</h1>
-        {{ page.content or _content }}
+        {{ page.content or content }}
         <nav>
           {%- if page.prev %}
           <a href="{{ page.prev.url }}" aria-label="{{ page.prev.title }}" class="prev">
