@@ -1881,6 +1881,13 @@ html.cs-dark .page article img.invert {
 
 /******* Autodoc *******/
 
+.autodoc > *,
+.autodoc-short-description > *,
+.autodoc-long-description > *,
+.autodoc-methods > * {
+  margin-top: var(--flow-space, 1.4em);
+}
+
 .autodoc-symbol {
   border-radius: 0.1rem;
   padding: 0 0.3em;
@@ -1916,13 +1923,6 @@ html.cs-dark .page article img.invert {
   color: #36464e !important;
   font-weight: 400;
   padding: 0.1rem 0.4rem !important;
-}
-
-.autodoc-attrs > *,
-.autodoc-properties > *,
-.autodoc-methods > *,
-.autodoc-long-description > * {
-  margin-top: var(--flow-space, 1.4em);
 }
 
 .autodoc-table {

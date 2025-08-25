@@ -2,4 +2,4 @@
 title: API
 ---
 
-::: jx.Catalog
+@autodoc jx.Catalog

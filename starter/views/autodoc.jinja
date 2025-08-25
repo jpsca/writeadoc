@@ -1,127 +1,119 @@
-{# def obj=None, name="", level=2, members=True #}
+{# def ds, level=2 #}
 {# import "autodoc.jinja" as Autodoc #}
 
-{% set obj = obj or autodoc(name) %}
-
 <h{{ level }}>
-  <code class="autodoc-symbol autodoc-symbol-{{ obj.symbol }}">{{ obj.symbol }}</code>
-  <span class="autodoc-name autodoc-name-{{ obj.symbol }}">{{ name or obj.name }}</span>
-  {% if obj.label -%}
-  <code class="autodoc-label autodoc-label-{{ obj.label }}">{{ obj.label }}</code>
+  <code class="autodoc-symbol autodoc-symbol-{{ ds.symbol }}">{{ ds.symbol }}</code>
+  <span class="autodoc-name autodoc-name-{{ ds.symbol }}">{{ ds.name }}</span>
+  {% if ds.label -%}
+  <code class="autodoc-label autodoc-label-{{ ds.label }}">{{ ds.label }}</code>
   {%- endif %}
 </h{{ level }}>
 
-{%- if obj.short_description -%}
-<div class="autodoc-short-description" markdown="1">
-{{ obj.short_description | safe }}
+{%- if ds.short_description -%}
+<div class="autodoc-short-description">
+  {{ ds.short_description | markdown }}
 </div>
 {% endif -%}
 
-{%- if obj.signature -%}
-<div class="autodoc-signature" markdown="1">
-```python
-{{ obj.signature | safe }}
-```
+{%- if ds.signature -%}
+<div class="autodoc-signature">
+  {{ ds.signature | markdown("python") }}
 </div>
-{%- endif %}
+{% endif -%}
 
-{% if obj.bases -%}
+{%- if ds.bases -%}
 <div class="autodoc-bases">
-<p>Bases:
-{%- for base in obj.bases %} <code>{{ base }}</code>{% if not loop.last %}, {% endif %}
-{%- endfor %}
-</p>
+  <p>Bases:
+  {%- for base in ds.bases %} <code>{{ base }}</code>{% if not loop.last %}, {% endif %}
+  {%- endfor %}</p>
 </div>
-{%- endif %}
+{% endif -%}
 
-{% if obj.params -%}
+{%- if ds.params -%}
 <div class="autodoc-table">
-<table class="autodoc-arguments">
-<thead><tr><th>Argument</th><th>Description</th></tr>
-</thead>
-<tbody>
-{%- for param in obj.params %}
-<tr>
-<td><code>{{ param.name }}</code></td>
-<td markdown="span">{{ param.description | safe }}</td>
-</tr>
-{%- endfor %}
-</tbody>
+  <table class="autodoc-arguments">
+    <thead><tr><th>Argument</th><th>Description</th></tr></thead>
+  <tbody>
+    {%- for param in ds.params %}
+    <tr>
+      <td><code>{{ param.name }}</code></td>
+      <td>{{ param.description | markdown }}</td>
+    </tr>
+    {%- endfor %}
+  </tbody>
 </table>
 </div>
-{%- endif %}
+{% endif -%}
 
-{%- if obj.long_description -%}
-<div class="autodoc-long-description" markdown="1">
-{{ obj.long_description | safe }}
+{%- if ds.long_description -%}
+<div class="autodoc-long-description">
+  {{ ds.long_description | markdown }}
 </div>
 {% endif -%}
 
-{% if obj.examples -%}
+{% if ds.examples -%}
 <div class="autodoc-examples">
-<p><strong>Example:</strong></p>
-
-{% for ex in obj.examples -%}
-<div markdown="1">
-{%- if ex.description %}
-{{ ex.description | safe }}
-{% endif -%}
-{%- if ex.snippet %}
-{{ ex.snippet | safe }}
-{% endif -%}
-<div>
-{% endfor -%}
+  <p><strong>Example:</strong></p>
+  {% for ex in ds.examples -%}
+  <div>
+  {%- if ex.description %}{{ ex.description | markdown }}{% endif -%}
+  {%- if ex.snippet %}
+  {{ ex.snippet | markdown("python") }}
+  {% endif -%}
+  </div>
+  {% endfor -%}
 </div>
-{%- endif %}
+{% endif -%}
 
-{% if obj.returns -%}
+{%- if ds.returns or ds.many_returns -%}
 <div class="autodoc-returns">
-<p><strong>Returns:</strong></p>
+  <p><strong>Returns:</strong></p>
+  {%- if ds.returns -%}
+  <p>{{ ds.returns.description | markdown }}</p>
+  {%- elif ds.many_returns -%}
+  <ul>
+    {% for return in ds.many_returns %}
+    <li>
+      <strong>{{ return.return_name }}: <strong>
+      {{ return.description | markdown }}
+    </li>
+    {%- endfor %}
+  </ul>
+  {% endif -%}
+</div>
+{% endif -%}
 
-{% if ex.returns -%}
-<p markdown="span">{{ obj.returns | safe }}</p>
-{%- endif %}
-{% if ex.many_returns -%}
-<ul>
-{% for return in ex.many_returns %}
-<li markdown="span">{{ return | safe }}</li>
+{%- if ds.raises -%}
+<div class="autodoc-raises">
+  <p><strong>Raises:</strong></p>
+  <ul>
+    {% for raises in ds.raises -%}
+    <li>{{ raises.description | markdown }}</li>
+    {% endfor -%}
+  </ul>
+</div>
+{% endif -%}
+
+{%- if ds.attrs-%}
+<div class="autodoc-attrs">
+  {% for attr in ds.attrs -%}
+  <Autodoc ds={{ attr }} level={{ level + 1 }} />
+  {% endfor %}
+</div>
+{% endif -%}
+
+{%- if ds.properties -%}
+<div class="autodoc-properties">
+  {% for attr in ds.properties -%}
+  <Autodoc ds={{ attr }} level={{ level + 1 }} />
+  {%- endfor %}
+</div>
+{% endif -%}
+
+{%- if ds.methods -%}
+<div class="autodoc-methods">
+{% for method in ds.methods -%}
+<Autodoc ds={{ method }} level={{ level + 1 }} />
 {%- endfor %}
-</ul>
-{%- endif %}
 </div>
-{%- endif %}
-
-{% if obj.raises -%}
-<div class="autodoc-raises"></div>
-<p><strong>Raises:</strong></p>
-<ul>
-{% for raises in obj.raises -%}
-<li markdown="span">{{ raises.description | safe }}</li>
-{% endfor -%}
-</ul>
-</li>
-{%- endif %}
-
-{% if obj.attrs-%}
-<div class="autodoc-attrs" markdown="1">
-{% for attr in obj.attrs -%}
-<Autodoc obj={{ attr }} level={{ level + 1 }} />
-{% endfor %}
-</div>
-{%- endif %}
-
-{% if obj.properties-%}
-<div class="autodoc-properties" markdown="1">
-{% for attr in obj.properties %}
-<Autodoc obj={{ attr }} level={{ level + 1 }} />
-{%- endfor %}
-</div>
-{%- endif %}
-
-{% if obj.methods -%}
-<div class="autodoc-methods" markdown="1">
-{% for method in obj.methods %}
-<Autodoc obj={{ method }} level={{ level + 1 }} />
-{%- endfor %}
-</div>
-{%- endif %}
+{% endif -%}

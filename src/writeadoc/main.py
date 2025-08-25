@@ -7,20 +7,21 @@ import typing as t
 from multiprocessing import Process
 from pathlib import Path
 from uuid import uuid4
+from textwrap import dedent
 
 import jx
 import markdown
 from markupsafe import Markup
 
 from . import search, utils
-from .autodoc import autodoc
-from .extensions.autodoc import AutodocExtension
+from .autodoc import Autodoc
 from .types import PageData, PageRef, SectionRef, SiteData, TSiteData, TSearchData
 from .utils import logger
 
-
 TPages = dict[str, list[str]]
 TProcPages = list[tuple[SectionRef, list[PageData]]]
+
+RX_AUTODOC = re.compile(r"<p>\s*:::\s+([\w\.]+)((?:\s+\w+=\w+)*)\s*</p>")
 
 
 class Docs:
@@ -33,7 +34,6 @@ class Docs:
     build_dir: Path
     assets_dir: Path
 
-    renderer: markdown.Markdown
     search_data: TSearchData
 
     def __init__(
@@ -65,18 +65,23 @@ class Docs:
         site = site or {}
         self.site = SiteData(**site)
 
-        self.catalog = jx.Catalog(
-            site=self.site,
-            _=self.translate,
-            autodoc=autodoc,
-        )
-
-        md_extensions.append(AutodocExtension(renderer=self.render_autodoc))
-        self.renderer = markdown.Markdown(
-            extensions=md_extensions,
-            extension_configs=md_config,
+        self.md_renderer = markdown.Markdown(
+            extensions=[
+                *utils.DEFAULT_MD_EXTENSIONS,
+            ],
+            extension_configs={**utils.DEFAULT_MD_CONFIG},
             output_format="html",
             tab_length=2,
+        )
+
+        self.autodoc = Autodoc()
+
+        self.catalog = jx.Catalog(
+            filters={
+                "markdown": self.markdown_filter
+            },
+            site=self.site,
+            _=self.translate,
         )
 
     def init_catalog(self):
@@ -254,8 +259,40 @@ class Docs:
         return meta, Markup(html)
 
     def render_markdown(self, source: str) -> str:
-        html = self.renderer.convert(source).strip()
+        source = source.strip()
+        html = self.md_renderer.convert(source).strip()
         html = html.replace("<pre><span></span>", "<pre>")
+        html = self.render_autodoc(html)
+        return html
+
+    def markdown_filter(self, source: str, code: str = "") -> str:
+        source = dedent(source.strip("\n")).strip()
+        if code:
+            source = f"\n```{code}\n{source}\n```\n"
+        html = self.md_renderer.convert(source).strip()
+        html = html.replace("<pre><span></span>", "<pre>")
+        return Markup(html)
+
+    def render_autodoc(self, html: str):
+        while True:
+            match = RX_AUTODOC.search(html)
+            if not match:
+                break
+            name = match.group(1)
+
+            kwargs: dict[str, t.Any] = dict(arg.split("=") for arg in match.group(2).split())
+
+            include = (kwargs.pop("include", "").split(",")) if "include" in kwargs else ()
+            exclude = (kwargs.pop("exclude", "").split(",")) if "exclude" in kwargs else ()
+            kwargs["ds"] = self.autodoc(name, include=include, exclude=exclude)
+            if "level" in kwargs:
+                kwargs["level"] = int(kwargs["level"])
+
+            frag = self.catalog.render("autodoc.jinja", **kwargs)
+            frag = str(frag).replace("<br>", "").strip()
+            start, end = match.span(0)
+            html = f"{html[:start]}{frag}{html[end:]}"
+
         return html
 
     def render_pages(self, proc_pages: TProcPages) -> None:
@@ -344,18 +381,15 @@ class Docs:
         )
         outpath.write_text(html, encoding="utf-8")
 
-    def render_autodoc(self, name: str, level: int | None):
-        return self.catalog.render("autodoc.jinja", name=name, level=level or 2)
-
     def symlink_assets(self) -> None:
         if not self.assets_dir.exists():
             return
         target_path = self.build_dir / self.prefix / "assets"
-        if target_path.exists():
-            if target_path.is_symlink():
-                target_path.unlink()
-            else:
-                shutil.rmtree(target_path)
+        if target_path.is_symlink():
+            target_path.unlink()
+        elif target_path.exists():
+            shutil.rmtree(target_path)
+
         target_path.symlink_to(self.assets_dir, target_is_directory=True)
 
     def copy_assets(self) -> None:

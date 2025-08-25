@@ -12,14 +12,23 @@ from docstring_parser.common import (
     DocstringReturns,
 )
 
+@dataclass(slots=True)
+class AttrDocstring:
+    symbol: str = ""
+    name: str = ""
+    label: str = "attribute"
+    short_description: str = ""
+    long_description: str = ""
+    description: str = ""
+
 
 @dataclass(slots=True)
-class Autodoc:
+class Docstring:
     name: str = ""
     symbol: str = ""
     label: str = ""
     signature: str = ""
-    params: list["Autodoc"] = field(default_factory=list)
+    params: list[AttrDocstring] = field(default_factory=list)
 
     # First paragraph of the description
     short_description: str = ""
@@ -42,172 +51,202 @@ class Autodoc:
     # Inheritance information
     bases: list[str] = field(default_factory=list)
     # Attributes
-    attrs: list["Autodoc"] = field(default_factory=list)
+    attrs: list[AttrDocstring] = field(default_factory=list)
     # Properties
-    properties: list["Autodoc"] = field(default_factory=list)
+    properties: list[AttrDocstring] = field(default_factory=list)
     # Methods
-    methods: list["Autodoc"] = field(default_factory=list)
+    methods: list["Docstring"] = field(default_factory=list)
 
 
+class Autodoc:
+    def __call__(
+        self,
+        name: str,
+        *,
+        include: tuple[str, ...] = (),
+        exclude: tuple[str, ...] = (),
+    ) -> Docstring:
+        module_name, obj_name = name.rsplit(".", 1)
+        module = import_module(module_name)
+        assert module
+        obj = getattr(module, obj_name, None)
+        if not obj:
+            raise ValueError(f"Object {obj_name} not found in module {module_name}")
 
-def autodoc(name: str) -> Autodoc:
-    module_name, obj_name = name.rsplit(".", 1)
-    module = import_module(module_name)
-    assert module
-    obj = getattr(module, obj_name, None)
-    assert obj
-    return autodoc_obj(obj)
+        return self.autodoc_obj(obj, include=include, exclude=exclude)
 
+    def autodoc_obj(
+        self,
+        obj: t.Any,
+        *,
+        include: tuple[str, ...] = (),
+        exclude: tuple[str, ...] = (),
+    ) -> Docstring:
+        if inspect.isclass(obj):
+            ds = self.autodoc_class(obj, include=include, exclude=exclude)
+        elif inspect.isfunction(obj) or inspect.ismethod(obj):
+            ds = self.autodoc_function(obj)
+        else:
+            ds = Docstring()
+        return ds
 
-def autodoc_obj(obj: t.Any) -> Autodoc:
-    if inspect.isclass(obj):
-        return autodoc_class(obj)
-    elif inspect.isfunction(obj) or inspect.ismethod(obj):
-        return autodoc_function(obj)
-    else:
-        return Autodoc()
+    def autodoc_class(
+        self,
+        obj: t.Any,
+        *,
+        symbol: str = "class",
+        include: tuple[str, ...] = (),
+        exclude: tuple[str, ...] = (),
+    ) -> Docstring:
+        init = getattr(obj, "__init__", None)
+        obj_name = obj.__name__
+        ds = parse(obj.__doc__ or init.__doc__ or "")
 
+        description = (ds.description or "").strip()
+        short_description, long_description = self.split_description(description)
 
-def autodoc_class(obj: t.Any, *, symbol: str = "class") -> Autodoc:
-    init = getattr(obj, "__init__", None)
-    obj_name = obj.__name__
-    ds = obj.__doc__ or init.__doc__ or ""
-    parsed_ds = parse(ds)
+        params = []
+        attrs = []
+        properties = []
+        methods = []
 
-    description = (parsed_ds.description or "").strip()
-    short_description, long_description = split_description(description)
+        for param in ds.params:
+            doc = self.autodoc_attr(param)
+            if param.args[0] == "param":
+                params.append(doc)
+            elif param.args[0] == "attribute":
+                attrs.append(doc)
 
-    params = []
-    attrs = []
-    properties = []
-    methods = []
+        for name, value in  inspect.getmembers(obj):
+            if name.startswith("_") and name not in include:
+                continue
+            if name in exclude:
+                continue
+            if inspect.isfunction(value):
+                methods.append(self.autodoc_function(value, symbol="method"))
+                continue
+            if isinstance(value, property):
+                properties.append(self.autodoc_property(name, value))
+                continue
 
-    for param in parsed_ds.params:
-        doc = autodoc_attr(param)
-        if param.args[0] == "param":
-            params.append(doc)
-        elif param.args[0] == "attribute":
-            attrs.append(doc)
+        if ds.deprecation:
+            ds.deprecation.description = (ds.deprecation.description or "").strip()
+        if ds.returns:
+            ds.returns.description = (ds.returns.description or "").strip()
+        for meta in ds.raises:
+            meta.description = (meta.description or "").strip()
+        for meta in ds.many_returns:
+            meta.description = (meta.description or "").strip()
+        for meta in ds.examples:
+            meta.snippet = (meta.snippet or "").strip()
+            meta.description = (meta.description or "").strip()
 
-    for name, value in  inspect.getmembers(obj):
-        if name[0] == "_":
-            continue
-        if inspect.isfunction(value):
-            methods.append(autodoc_function(value, symbol="method"))
-            continue
-        if isinstance(value, property):
-            properties.append(autodoc_property(name, value))
-            continue
+        return Docstring(
+            symbol=symbol,
+            name=obj_name,
+            signature=self.get_signature(obj_name, init),
+            params=params,
+            short_description=short_description,
+            long_description=long_description,
+            description=description,
+            deprecation=ds.deprecation,
+            returns=ds.returns,
+            raises=ds.raises,
+            examples=ds.examples,
+            many_returns=ds.many_returns,
 
-    return Autodoc(
-        symbol=symbol,
-        name=obj_name,
-        signature=get_signature(obj_name, init),
-        params=params,
-        short_description=short_description,
-        long_description=long_description,
-        description=description,
-        deprecation=parsed_ds.deprecation,
-        returns=parsed_ds.returns,
-        raises=parsed_ds.raises,
-        examples=parsed_ds.examples,
-        many_returns=parsed_ds.many_returns,
+            bases=[
+                base.__name__ for base in obj.__bases__
+                if base.__name__ != "object"
+            ],
+            attrs=attrs,
+            properties=properties,
+            methods=methods,
+        )
 
-        bases=[
-            base.__name__ for base in obj.__bases__
-            if base.__name__ != "object"
-        ],
-        attrs=attrs,
-        properties=properties,
-        methods=methods,
-    )
+    def autodoc_function(self, obj: t.Any, *, symbol: str = "function") -> Docstring:
+        obj_name = obj.__name__
+        ds = parse(obj.__doc__ or "")
 
+        description = (ds.description or "").strip()
+        short_description, long_description = self.split_description(description)
+        params = [self.autodoc_attr(param) for param in ds.params]
 
-def autodoc_function(obj: t.Any, *, symbol: str = "function") -> Autodoc:
-    obj_name = obj.__name__
-    parsed_ds = parse(obj.__doc__ or "")
+        if ds.deprecation:
+            ds.deprecation.description = (ds.deprecation.description or "").strip()
+        if ds.returns:
+            ds.returns.description = (ds.returns.description or "").strip()
+        for meta in ds.raises:
+            meta.description = (meta.description or "").strip()
+        for meta in ds.many_returns:
+            meta.description = (meta.description or "").strip()
+        for meta in ds.examples:
+            meta.snippet = (meta.snippet or "").strip()
+            meta.description = (meta.description or "").strip()
 
-    description = (parsed_ds.description or "").strip()
-    short_description, long_description = split_description(description)
-    params = [autodoc_attr(param) for param in parsed_ds.params]
+        return Docstring(
+            name=obj_name,
+            symbol=symbol,
+            signature=self.get_signature(obj_name, obj),
+            params=params,
+            short_description=short_description,
+            long_description=long_description,
+            description=description,
+            deprecation=ds.deprecation,
+            returns=ds.returns,
+            raises=ds.raises,
+            examples=ds.examples,
+            many_returns=ds.many_returns,
+        )
 
-    return Autodoc(
-        name=obj_name,
-        symbol=symbol,
-        signature=get_signature(obj_name, obj),
-        params=params,
-        short_description=short_description,
-        long_description=long_description,
-        description=description,
-        deprecation=parsed_ds.deprecation,
-        returns=parsed_ds.returns,
-        raises=parsed_ds.raises,
-        examples=parsed_ds.examples,
-        many_returns=parsed_ds.many_returns,
-    )
+    def autodoc_property(self, name: str, obj: t.Any, *, symbol: str = "attr") -> Docstring:
+        ds = parse(obj.__doc__ or "")
+        description = (ds.description or "").strip()
+        short_description, long_description = self.split_description(description)
 
+        return Docstring(
+            name=name,
+            symbol=symbol,
+            label="property",
+            short_description=short_description,
+            long_description=long_description,
+            description=description,
+            deprecation=ds.deprecation,
+            returns=ds.returns,
+            raises=ds.raises,
+            examples=ds.examples,
+            many_returns=ds.many_returns,
+        )
 
-def autodoc_property(name: str, obj: t.Any, *, symbol: str = "attr") -> Autodoc:
-    parsed_ds = parse(obj.__doc__ or "")
+    def autodoc_attr(self, attr: DocstringParam, *, symbol: str = "attr") -> AttrDocstring:
+        if attr.type_name:
+            name = f"{attr.arg_name}: {attr.type_name}"
+        else:
+            name = attr.arg_name
 
-    description = (parsed_ds.description or "").strip()
-    short_description, long_description = split_description(description)
+        description = (attr.description or "").strip()
+        short_description, long_description = self.split_description(description)
 
-    return Autodoc(
-        name=name,
-        symbol=symbol,
-        label="property",
-        short_description=short_description,
-        long_description=long_description,
-        description=description,
-        deprecation=parsed_ds.deprecation,
-        returns=parsed_ds.returns,
-        raises=parsed_ds.raises,
-        examples=parsed_ds.examples,
-        many_returns=parsed_ds.many_returns,
-    )
+        return AttrDocstring(
+            symbol=symbol,
+            name=name,
+            label="attribute",
+            short_description=short_description,
+            long_description=long_description,
+            description=description,
+        )
 
+    def get_signature(self, obj_name: str, obj: t.Any) -> str:
+        sig = inspect.signature(obj)
+        str_sig = (
+            sig.format(max_width=5)
+            .replace("    self,\n", "")
+            .replace("(self)", "()")
+        )
+        return f"{obj_name}{str_sig}"
 
-def autodoc_attr(attr: DocstringParam, *, symbol: str = "attr") -> Autodoc:
-    if attr.type_name:
-        name = f"{attr.arg_name}: {attr.type_name}"
-    else:
-        name = attr.arg_name
-
-    description = (attr.description or "").strip()
-    short_description, long_description = split_description(description)
-
-    return Autodoc(
-        symbol=symbol,
-        name=name,
-        label="attribute",
-        short_description=short_description,
-        long_description=long_description,
-        description=description,
-    )
-
-
-def get_signature(obj_name: str, obj: t.Any, split_at: int = 70) -> str:
-    sig = inspect.signature(obj)
-    str_sig = str(sig).replace("(self, ", "(").replace("(self)", "()")
-    fullsig = f"{obj_name}{str_sig}"
-    if len(fullsig) < split_at:
-        return fullsig
-
-    fullsig = (
-        fullsig
-        .replace("*, ", "\n    *, ")
-        .replace(", **", ",\n    **")
-        .replace("(", "(\n    ", 1)
-    )
-    for name in sig.parameters:
-        fullsig = fullsig.replace(f", {name}", f",\n    {name}")
-
-    return fullsig.replace(") ->", "\n) ->")
-
-
-def split_description(description: str) -> tuple[str, str]:
-    if "\n\n" not in description:
-        return description, ""
-    head, rest = description.split("\n\n", 1)
-    return head, rest
+    def split_description(self, description: str) -> tuple[str, str]:
+        if "\n\n" not in description:
+            return description, ""
+        head, rest = description.split("\n\n", 1)
+        return head, rest

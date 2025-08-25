@@ -8,7 +8,7 @@ def extract_search_data(pages) -> TSearchData:
     """
     Extract search data from processed pages.
 
-    Args:
+    Arguments:
         pages: List of processed pages.
 
     Returns:
@@ -27,7 +27,7 @@ def extract_search_data_from_page(page: PageData) -> TSearchData:
     """
     Extract search data from a single page.
 
-    Args:
+    Arguments:
         page: The page to extract data from.
 
     Returns:
@@ -131,7 +131,7 @@ def prepare_html(html: str) -> str:
     """
     Prepare HTML content by removing unwanted tags and contents.
 
-    Args:
+    Arguments:
         html: The HTML content to prepare.
 
     Returns:
