@@ -1,5 +1,6 @@
 ---
 title: Unordered Lists
+icon: icons/list-ul.svg
 ---
 
 To create an unordered list, add dashes (-), asterisks (*), or plus signs (+) in front of line items.

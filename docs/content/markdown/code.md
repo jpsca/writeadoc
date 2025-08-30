@@ -1,5 +1,6 @@
 ---
 title: Code blocks
+icon: icons/code.svg
 ---
 
 To include a code block in your document, place three backticks (` ``` `) before and after the code block and, optionally, add a language name.

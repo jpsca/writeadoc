@@ -1,5 +1,6 @@
 ---
 title: Tasks Lists
+icon: icons/list-check.svg
 ---
 
 WriteADoc supports _Github Flavored Markdown_ (GFM) style task lists. They follow the same syntax as GFM.

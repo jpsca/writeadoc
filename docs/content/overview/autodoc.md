@@ -1,5 +1,6 @@
 ---
 title: Autodoc
+icon: icons/sparkles.svg
 ---
 
 WriteADoc provides functionality for automatically generating documentation from Python code docstrings. It extracts information from docstrings, including descriptions, parameters, return values, examples, and more, and structures them into a standardized format.

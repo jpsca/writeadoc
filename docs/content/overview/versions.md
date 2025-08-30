@@ -1,5 +1,6 @@
 ---
 title: Multiple versions
+icon: icons/versions.svg
 ---
 
 When we talk about documentation versioning, we refer to two different things:
@@ -51,9 +52,9 @@ If you haven't removed it from your template, a banner will be added to every pa
 
 ### 3. Add the version to the selector
 
-Add a link to the list of options of the version selector at `views/layout.jx` and rebuild your current documentation. You might need to un-comment the selector if it's your first time using it.
+Add a link to the list of options of the version selector at `views/layout.jinja` and rebuild your current documentation. You might need to un-comment the selector if it's your first time using it.
 
-```html+jinja {title="views/laguage_popover.jx" linenums="7"}
+```html+jinja {title="views/laguage_popover.jinja" linenums="7"}
 <div id="version-selector" popover="auto">
   <div>
     <a href="/1.0/" {% if site.version == "1.0" %}class="selected"{% endif %}>1.0</a>

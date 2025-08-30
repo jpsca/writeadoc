@@ -1,5 +1,6 @@
 ---
 title: Ordered Lists
+icon: icons/list-ol.svg
 ---
 
 To create an ordered list, add line items with numbers followed by periods. You can also use `#` instead of numbers.

@@ -1,5 +1,6 @@
 ---
 title: Attributes Lists
+icon: icons/attrs.svg
 ---
 
 The Attribute Lists syntax allows you to define attributes on various HTML elements in Markdown's output.

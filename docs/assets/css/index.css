@@ -1,12 +1,51 @@
+.page-index {
+  .hero {
+    background: #ccdef9;
+    color: black;
+  }
+
+  .header {
+    background: transparent;
+    backdrop-filter: none;
+  }
+  /* .header .logo,
+  .header__links a, .header nav button {
+    color: black;
+  } */
+}
+
+@media (prefers-color-scheme: dark) {
+  html.cs-system .page-index {
+    .hero {
+      background: #000;
+      color: white;
+    }
+    /* .header .logo,
+    .header__links a, .header nav button {
+      color: white;
+    } */
+  }
+}
+html.cs-dark .page-index {
+  .hero {
+    background: #000;
+    color: white;
+  }
+  /* .header .logo,
+  .header__links a, .header nav button {
+    color: white;
+  } */
+}
+
 .headline {
   display: flex;
   flex-direction: column;
-  padding-left: var(--space-medium);
-  padding-right: var(--space-medium);
-  padding-top: var(--space-medium)
+  padding: var(--space-medium);
 }
 
 .headline header {
+  max-width: 60rem;
+  margin: 0 auto;
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -15,11 +54,9 @@
   margin-top: -0.2em;
   text-align: center
 }
-
 .headline header h1 {
   font-size: var(--font-size-xx-large)
 }
-
 .headline header br {
   display: none
 }
@@ -28,11 +65,9 @@
   .headline {
     padding: var(--space-x-large);
   }
-
   .headline header h1 {
     font-size: var(--font-size-xxx-large)
   }
-
   .headline header br {
     display: inline
   }

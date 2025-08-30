@@ -1,5 +1,6 @@
 ---
 title: Multiple languages
+icon: icons/language.svg
 ---
 
 WriteADoc supports internationalization and managing documentation in multiple languages out of the box.
@@ -53,7 +54,7 @@ variants
 
 language selector
 
-```html+jinja {title="views/laguage_popover.jx" linenums="7"}
+```html+jinja {title="views/laguage_popover.jinja" linenums="7"}
 <div id="language-selector" popover="auto">
     <div>
         <a href="/" {% if site.lang == "en" %}class="selected"{% endif %}>English</a>

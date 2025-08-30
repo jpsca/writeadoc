@@ -128,15 +128,16 @@ wheels = [
 
 [[package]]
 name = "jx"
-version = "0.1.0"
+version = "0.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jinja2" },
     { name = "markupsafe" },
+    { name = "ty" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b7/38/71aed17bf4755234cf65dfd44fc833b199306ffa426d405ff9146e6e5569/jx-0.1.0.tar.gz", hash = "sha256:183969395229e8e52d5e0e04062d07968088e29437b57937761cdf01138ab561", size = 20735, upload-time = "2025-08-23T12:10:31.395Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/0b/71/24b65c0dc07b01ba6ce93a33e1c763a03e90710f2d537f965d21cb9744e8/jx-0.2.0.tar.gz", hash = "sha256:927fc8ea9598e7407ac8cf5c6a2d23df280136c1239e20e6ceba9d3ad5f820c6", size = 25203, upload-time = "2025-08-28T20:24:05.248Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/98/09/770aaf1cd56736df2a6e1883b366cae2c0aa01efbaa28a1a917de502113a/jx-0.1.0-py3-none-any.whl", hash = "sha256:3d23907e7650a40b0b2eeb36005d30e9ff645a8fd9cca80efb8f38cfb5d557d4", size = 14694, upload-time = "2025-08-23T12:10:30.302Z" },
+    { url = "https://files.pythonhosted.org/packages/d8/8e/239df866ee35a9b05023e8690debb17866449abbfe50ce8762d8f51790f5/jx-0.2.0-py3-none-any.whl", hash = "sha256:1ceecee0689725d1fd39bc66a4c84412385fac962925d770be9ff29cf5e25866", size = 18161, upload-time = "2025-08-28T20:24:04.409Z" },
 ]
 
 [[package]]
@@ -444,7 +445,7 @@ test = [
 requires-dist = [
     { name = "docstring-parser", specifier = ">=0.17.0" },
     { name = "jinja2", specifier = ">=3.1.6" },
-    { name = "jx", specifier = ">=0.1.0" },
+    { name = "jx", specifier = ">=0.2.0" },
     { name = "markdown", specifier = ">=3.8.2" },
     { name = "pygments", specifier = ">=2.19.2" },
     { name = "pymdown-extensions", specifier = ">=10.16" },

@@ -1,5 +1,6 @@
 ---
 title: Formatting
+icon: icons/format.svg
 ---
 
 ## Emphasis

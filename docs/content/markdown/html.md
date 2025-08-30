@@ -1,5 +1,6 @@
 ---
 title: HTML
+icon: icons/html.svg
 ---
 
 Markdown is a subset of HTML, anything that cannot be expressed in Markdown can always be expressed with raw HTML directly.

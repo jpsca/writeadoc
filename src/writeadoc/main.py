@@ -1,4 +1,5 @@
 import argparse
+import datetime
 import json
 import re
 import shutil
@@ -7,6 +8,7 @@ import typing as t
 from multiprocessing import Process
 from pathlib import Path
 from uuid import uuid4
+from tempfile import mkdtemp
 from textwrap import dedent
 
 import jx
@@ -54,8 +56,9 @@ class Docs:
         self.pages_dir = root_dir / "content"
         self.views_dir = root_dir / "views"
         self.assets_dir = root_dir / "assets"
-        self.build_dir = root_dir / "build"
         self.archive_dir = root_dir / "archive"
+        self.build_dir = root_dir / "build"
+
 
         self.pages = pages
         for prefix, variant in (variants or {}).items():
@@ -82,6 +85,7 @@ class Docs:
             },
             site=self.site,
             _=self.translate,
+            _insert_asset=self.insert_asset,
         )
 
     def init_catalog(self):
@@ -147,6 +151,8 @@ class Docs:
 
     def build(self, devmode: bool = True, archive: bool = False) -> None:
         print("Building documentation...")
+
+        self.build_dir = Path(mkdtemp(prefix="wad-")) if devmode else self.root_dir / "build"
         self.init_catalog()
 
         if archive:
@@ -158,21 +164,12 @@ class Docs:
             self.site.base_url = f"{self.site.base_url}/{self.prefix}"
 
         proc_pages = self.process_pages()
-        self.site.pages = [
-            (
-                section,
-                [
-                    PageRef(id=page.id, title=page.title, url=page.url)
-                    for page in sec_pages
-                    if len(sec_pages) > 1
-                ],
-            )
-            for section, sec_pages in proc_pages
-        ]
-
+        self.site.pages = proc_pages
         self.search_data = search.extract_search_data(proc_pages)
 
-        self.render_pages(proc_pages)
+        for _, sec_pages in proc_pages:
+            self.render_pages(sec_pages)
+
         self.render_search_page()
         self.render_index_page()
         self.render_docs_redirect_page()
@@ -188,6 +185,28 @@ class Docs:
 
     def process_pages(self) -> TProcPages:
         proc_pages = []
+        pages_list = []
+
+        def iter_pages(files, section):
+            _pages = []
+            for item in files:
+                if isinstance(item, dict):
+                    for dir_title, dir_files in item.items():
+                        if not dir_files:
+                            continue
+                        dir_pages = iter_pages(dir_files, section)
+                        page = PageData(
+                            section=section,
+                            title=dir_title,
+                            pages=dir_pages,
+                            url=dir_pages[0].url if dir_pages else "",
+                        )
+                        _pages.append(page)
+                else:
+                    page = self.process_page(item, section)
+                    pages_list.append(page)
+                    _pages.append(page)
+            return _pages
 
         for section_name, files in self.pages.items():
             section = SectionRef(
@@ -195,19 +214,13 @@ class Docs:
                 title=section_name,
                 url="",
             )
-            sec_pages = []
-
-            for filename in files:
-                page = self.process_page(filename, section)
-                sec_pages.append(page)
-
+            sec_pages = iter_pages(files, section)
             if sec_pages:
                 section["url"] = sec_pages[0].url
             proc_pages.append((section, sec_pages))
 
         # --- Add prev/next navigation links ---
 
-        pages_list = [page for _, sec_pages in proc_pages for page in sec_pages]
         last_index_with_next = len(pages_list) - 1
 
         for i, page in enumerate(pages_list):
@@ -239,6 +252,9 @@ class Docs:
         if self.prefix:
             url = f"/{self.prefix}{url}"
 
+        mtime = filepath.stat().st_mtime
+        mtime_str = datetime.datetime.fromtimestamp(mtime).strftime("%Y-%m-%d %H:%M")
+
         return PageData(
             section=section,
             title=meta.pop("title", filepath.name),
@@ -246,6 +262,7 @@ class Docs:
             url=url,
             meta=meta,
             content=html,
+            updated_at=mtime_str,
         )
 
     def process_file(self, filepath: Path) -> tuple[dict[str, t.Any], str]:
@@ -295,9 +312,11 @@ class Docs:
 
         return html
 
-    def render_pages(self, proc_pages: TProcPages) -> None:
-        for _, sec_pages in proc_pages:
-            for page in sec_pages:
+    def render_pages(self, pages: list[PageData]) -> None:
+        for page in pages:
+            if page.pages:
+                self.render_pages(page.pages)
+            else:
                 self.render_page(page)
 
     def render_page(self, page: PageData) -> None:
@@ -330,11 +349,11 @@ class Docs:
         outpath.write_text(html, encoding="utf-8")
 
     def render_docs_redirect_page(self) -> None:
-        section = self.site.pages[0]if self.site.pages else None
+        section = self.site.pages[0] if self.site.pages else None
         if not section:
             return
         # Use the first page in the section or the section itself if no pages
-        url = section[1][0]["url"] if section[1] else section[0]["url"]
+        url = section[1][0].url if section[1] else section[0]["url"]
         if self.prefix:
             url = url.removeprefix(f"/{self.prefix}/docs/")
         else:
@@ -357,14 +376,19 @@ class Docs:
 
         md_index = self.pages_dir / self.prefix / "index.md"
         if md_index.exists():
+            mtime = md_index.stat().st_mtime
+            mtime_str = datetime.datetime.fromtimestamp(mtime).strftime("%Y-%m-%d %H:%M")
+
             meta, html = self.process_file(md_index)
             page = PageData(
+                id="index",
                 section=SectionRef(id="", title=self.site.name, url=url),
                 title=meta.get("title", self.site.name),
                 url=url,
                 view="index.jinja",
                 description=meta.get("description", ""),
                 content=html,
+                updated_at=mtime_str,
             )
         else:
             # Just render the template page
@@ -427,3 +451,12 @@ class Docs:
         """
         string = self.strings.get(key, key)
         return string.format(**kwargs)
+
+    def insert_asset(self, asset: str) -> str:
+        """
+        Read the asset and return the content
+        """
+        asset_path = self.assets_dir / asset
+        if asset_path.exists():
+            return Markup(asset_path.read_text(encoding="utf-8").strip())
+        return ""

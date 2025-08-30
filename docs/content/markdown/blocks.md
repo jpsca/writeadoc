@@ -1,5 +1,6 @@
 ---
 title: Block elements
+icon: icons/blocks.svg
 ---
 
 ## Headers

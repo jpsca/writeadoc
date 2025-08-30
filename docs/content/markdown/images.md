@@ -1,5 +1,6 @@
 ---
 title: Images
+icon: icons/image.svg
 ---
 
 To add an image, use an exclamation mark (`!`), followed by the alt text in brackets, and the path or URL to the image asset in parentheses. You can optionally add a title in quotation marks after the path or URL.
@@ -159,9 +160,9 @@ Modern browsers provide [native support for lazy-loading images](https://caniuse
 /// example | Image, centered
 
 ```md
-![Alt text](/assets/images/opengraph.png){ loading=lazy }
+![Alt text](/assets/images/opengraph.jpg){ loading=lazy }
 ```
 
-![Alt text](/assets/images/opengraph.png){ loading=lazy width=600 }
+![Alt text](/assets/images/opengraph.jpg){ loading=lazy width=600 }
 
 ///
