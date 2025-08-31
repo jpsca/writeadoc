@@ -7,9 +7,9 @@ import signal
 import typing as t
 from multiprocessing import Process
 from pathlib import Path
-from uuid import uuid4
 from tempfile import mkdtemp
 from textwrap import dedent
+from uuid import uuid4
 
 import jx
 import markdown
@@ -17,8 +17,9 @@ from markupsafe import Markup
 
 from . import search, utils
 from .autodoc import Autodoc
-from .types import PageData, PageRef, SectionRef, SiteData, TSiteData, TSearchData
+from .types import PageData, PageRef, SectionRef, SiteData, TSearchData, TSiteData
 from .utils import logger
+
 
 TPages = dict[str, list[str]]
 TProcPages = list[tuple[SectionRef, list[PageData]]]
@@ -439,7 +440,7 @@ class Docs:
                 attr = match.group(1)
                 quote = match.group(2)
                 url = match.group(3)
-                return f'{attr}={quote}/{self.prefix}/{url}/'
+                return f"{attr}={quote}/{self.prefix}/{url}/"
 
             new_content = rx_urls.sub(replace_url, content)
             html_file.write_text(new_content)

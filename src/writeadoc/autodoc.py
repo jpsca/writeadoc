@@ -12,6 +12,7 @@ from docstring_parser.common import (
     DocstringReturns,
 )
 
+
 @dataclass(slots=True)
 class AttrDocstring:
     symbol: str = ""

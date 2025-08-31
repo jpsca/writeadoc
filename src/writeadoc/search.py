@@ -1,7 +1,7 @@
 import re
 from html.parser import HTMLParser
 
-from .types import TSearchData, PageData
+from .types import PageData, TSearchData
 
 
 def extract_search_data(pages) -> TSearchData:

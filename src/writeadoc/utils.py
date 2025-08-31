@@ -8,11 +8,11 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 import yaml
 from watchdog.events import (
-    FileSystemEventHandler,
+    FileCreatedEvent,
     FileDeletedEvent,
     FileModifiedEvent,
-    FileCreatedEvent,
     FileMovedEvent,
+    FileSystemEventHandler,
 )
 from watchdog.observers import Observer
 from yaml import SafeLoader
@@ -92,7 +92,7 @@ def extract_metadata(source: str) -> tuple[TMetadata, str]:
     try:
         meta = yaml.load(front_matter, SafeLoader)
     except Exception as err:
-        raise InvalidFrontMatter(truncate(source), *err.args)
+        raise InvalidFrontMatter(truncate(source), *err.args) from err
 
     return meta, source.strip().lstrip("- ")
 
