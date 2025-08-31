@@ -1,9 +1,10 @@
-from pathlib import Path
 import argparse
+from pathlib import Path
+
 import hecto
 
 
-BLUEPRINT = Path(__file__).parent / "starter"
+BLUEPRINT = Path(__file__).parent / "blueprint"
 
 def init(dst: Path | None = None):
     dst = Path(dst).resolve() if dst else Path.cwd()

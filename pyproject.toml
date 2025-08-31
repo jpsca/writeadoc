@@ -3,7 +3,7 @@ name = "writeadoc"
 version = "0.1.0"
 description = "Write your documentation"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "docstring-parser>=0.17.0",
     "hecto>=2.0.1",
@@ -28,3 +28,145 @@ test = [
 
 [project.scripts]
 writeadoc = "writeadoc.cli:run"
+
+
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+writeadoc = [
+    "blueprint/**",
+]
+[tool.setuptools.exclude-package-data]
+"*" = [
+    "**/__pycache__",
+    "*.pyc",
+    "*.pyo",
+]
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "TYPE_CHECKING",
+    "def __repr__",
+    "def __str__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:"
+]
+omit = [
+    "src/writeadoc/blueprint/**",
+]
+
+[tool.coverage.html]
+directory = "covreport"
+
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules --ignore=src/writeadoc/blueprint"
+
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+env_list =
+    3.10
+    3.11
+    3.12
+    3.13
+    3.14
+
+[testenv]
+runner = uv-venv-lock-runner
+dependency_groups =
+    dev
+    test
+commands =
+    pytest -x src/writeadoc tests
+"""
+
+[tool.ruff]
+line-length = 90
+indent-width = 4
+target-version = "py311"
+exclude = [
+  ".*",
+  "_build",
+  "build",
+  "covreport",
+  "dist",
+  "src/writeadoc/blueprint/*",
+]
+include = ["*.py"]
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+# Enable auto-formatting of code examples in docstrings. Markdown,
+# reStructuredText code/literal blocks and doctests are all supported.
+#
+# This is currently disabled by default, but it is planned for this
+# to be opt-out in the future.
+docstring-code-format = false
+
+# Set the line length limit used when formatting code snippets in
+# docstrings.
+#
+# This only has an effect when the `docstring-code-format` setting is
+# enabled.
+docstring-code-line-length = "dynamic"
+
+[tool.ruff.lint]
+fixable = ["ALL"]
+
+ignore = [
+	# x is too complex
+	"C901",
+	# whitespace before ':'
+	"E203",
+	"E501",
+	# x defined from star imports
+	"F405",
+	# line break before binary operator
+	"W505",
+	"W605",
+]
+select = [
+	# bugbear
+	"B",
+	# mccabe"", comprehensions, commas
+	"C",
+	# pycodestyle errors
+	"E",
+	# pyflakes
+	"F",
+	# logging format
+	"G",
+	# imports
+	"I",
+	# quotes
+	"Q",
+	# pycodestyle warnings
+	"W",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["writeadoc"]
+known-local-folder = ["src/writeadoc"]
+
+# Use two line after imports.
+lines-after-imports = 2
