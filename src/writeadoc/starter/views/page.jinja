@@ -22,7 +22,7 @@
       </aside>
 
       <article>
-        {% if "<h1" not in page.content or content %}<h1>{{ page.title }}</h1>{% endif %}
+        <h1>{{ page.title }}</h1>
         {{ page.content or content }}
         <nav>
           {%- if page.prev %}

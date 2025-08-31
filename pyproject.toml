@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "docstring-parser>=0.17.0",
+    "hecto>=2.0.1",
     "jinja2>=3.1.6",
     "jx>=0.2.0",
     "markdown>=3.8.2",
@@ -24,3 +25,6 @@ dev = [
 test = [
     "pytest>=8.4.1",
 ]
+
+[project.scripts]
+writeadoc = "writeadoc.cli:run"

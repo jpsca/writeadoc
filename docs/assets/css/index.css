@@ -42,7 +42,6 @@ html.cs-dark .page-index {
   flex-direction: column;
   padding: var(--space-medium);
 }
-
 .headline header {
   max-width: 60rem;
   margin: 0 auto;
