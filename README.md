@@ -1,4 +1,6 @@
-# WriteADoc
+<img src="./docs/logo.png" align="middle" />
+
+# Write-A-Doc
 
 **TODO:**
 
