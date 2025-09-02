@@ -118,7 +118,7 @@ class Autodoc:
             elif param.args[0] == "attribute":
                 attrs.append(doc)
 
-        for name, value in  inspect.getmembers(obj):
+        for name, value in inspect.getmembers(obj):
             if name.startswith("_") and name not in include:
                 continue
             if name in exclude:
@@ -155,11 +155,7 @@ class Autodoc:
             raises=ds.raises,
             examples=ds.examples,
             many_returns=ds.many_returns,
-
-            bases=[
-                base.__name__ for base in obj.__bases__
-                if base.__name__ != "object"
-            ],
+            bases=[base.__name__ for base in obj.__bases__ if base.__name__ != "object"],
             attrs=attrs,
             properties=properties,
             methods=methods,
@@ -200,7 +196,9 @@ class Autodoc:
             many_returns=ds.many_returns,
         )
 
-    def autodoc_property(self, name: str, obj: t.Any, *, symbol: str = "attr") -> Docstring:
+    def autodoc_property(
+        self, name: str, obj: t.Any, *, symbol: str = "attr"
+    ) -> Docstring:
         ds = parse(obj.__doc__ or "")
         description = (ds.description or "").strip()
         short_description, long_description = self.split_description(description)
@@ -219,7 +217,9 @@ class Autodoc:
             many_returns=ds.many_returns,
         )
 
-    def autodoc_attr(self, attr: DocstringParam, *, symbol: str = "attr") -> AttrDocstring:
+    def autodoc_attr(
+        self, attr: DocstringParam, *, symbol: str = "attr"
+    ) -> AttrDocstring:
         if attr.type_name:
             name = f"{attr.arg_name}: {attr.type_name}"
         else:
@@ -240,9 +240,7 @@ class Autodoc:
     def get_signature(self, obj_name: str, obj: t.Any) -> str:
         sig = inspect.signature(obj)
         str_sig = (
-            sig.format(max_width=5)
-            .replace("    self,\n", "")
-            .replace("(self)", "()")
+            format_signature(sig, max_width=5).replace("    self,\n", "").replace("(self)", "()")
         )
         return f"{obj_name}{str_sig}"
 
@@ -251,3 +249,57 @@ class Autodoc:
             return description, ""
         head, rest = description.split("\n\n", 1)
         return head, rest
+
+
+def format_signature(sig, *, max_width=None):
+    """Create a string representation of the Signature object.
+
+    If *max_width* integer is passed,
+    signature will try to fit into the *max_width*.
+    If signature is longer than *max_width*,
+    all parameters will be on separate lines.
+    """
+    result = []
+    render_pos_only_separator = False
+    render_kw_only_separator = True
+    for param in sig.parameters.values():
+        formatted = str(param)
+
+        kind = str(param.kind).lower().replace("_", "-")
+        if kind == "positional-only":
+            render_pos_only_separator = True
+        elif render_pos_only_separator:
+            # It's not a positional-only parameter, and the flag
+            # is set to 'True' (there were pos-only params before.)
+            result.append("/")
+            render_pos_only_separator = False
+
+        if kind == "variadic positional":
+            # OK, we have an '*args'-like parameter, so we won't need
+            # a '*' to separate keyword-only arguments
+            render_kw_only_separator = False
+        elif kind == "keyword-only" and render_kw_only_separator:
+            # We have a keyword-only parameter to render and we haven't
+            # rendered an '*args'-like parameter before, so add a '*'
+            # separator to the parameters list ("foo(arg1, *, arg2)" case)
+            result.append("*")
+            # This condition should be only triggered once, so
+            # reset the flag
+            render_kw_only_separator = False
+
+        result.append(formatted)
+
+    if render_pos_only_separator:
+        # There were only positional-only parameters, hence the
+        # flag was not reset to 'False'
+        result.append("/")
+
+    rendered = "({})".format(", ".join(result))
+    if max_width is not None and len(rendered) > max_width:
+        rendered = "(\n    {}\n)".format(",\n    ".join(result))
+
+    if sig.return_annotation is not inspect._empty:
+        anno = inspect.formatannotation(sig.return_annotation)
+        rendered += " -> {}".format(anno)
+
+    return rendered
