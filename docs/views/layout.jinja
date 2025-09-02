@@ -1,3 +1,4 @@
+{# import "./metadata.jinja" as Metadata #}
 {# import "./color_scheme.jinja" as ColorScheme #}
 {# import "./toc.jinja" as Toc #}
 {# import "./language_popover.jinja" as LanguagePopover #}
@@ -7,36 +8,25 @@
 <html lang="{{ site.lang }}" class="cs-system">
 
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <title>{{ site.name }} — {{ page.title }}</title>
-  <meta content="ie=edge" http-equiv="x-ua-compatible" />
-  <meta name="handheldfriendly" content="true" />
-  <meta name="viewport" content="initial-scale=1, width=device-width" />
-  <meta name="description" content="{{ (page.description or site.description) | e }}" />
-  <meta property="og:site_name" content="{{ site.name | e }}" />
-  <meta property="og:title" content="{{ page.title | e }}" />
-  <meta property="og:description" content="{{ (page.description or site.description) | e }}" />
-  <meta property="og:image" content="{{ site.base_url }}{{ page.image or site.image }}" />
-  <meta property="og:url" content="{{ site.base_url }}{{ page.url }}" />
-  <meta property="og:type" content="website" />
-  <meta name="twitter:title" content="{{ page.title | e }}" />
-  <meta name="twitter:description" content="{{ (page.description or site.description) | e }}" />
-  <meta name="twitter:image" content="{{ site.base_url }}{{ page.image or site.image }}" />
-  <meta name="twitter:image:alt" content="{{ site.name | e }}" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <link rel="canonical" href="{{ site.base_url }}{{ page.url }}" />
-  <link rel="icon" href="/assets/images/favicon.svg" />
-  <link rel="icon" href="/assets/images/favicon.png" />
-  <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png" />
-  <script src="/assets/js/color-scheme.js"></script>
-  <link rel="stylesheet" href="/assets/css/style.css" />
-  <script type="module" src="/assets/js/turbo.min.js"></script>
-  <script type="module" src="/assets/js/code.js"></script>
-  <script type="module" src="/assets/js/search.js"></script>
-  <script type="module" src="/assets/js/video.js"></script>
-  {{ assets.render() }}
-  <script src="/assets/js/lunr.min.js"></script>
-  {% if site.lang != "en" %}<script src="/assets/js/lunr.{{ site.lang }}.min.js"></script>{% endif %}
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>{{ page.title | striptags }} | {{ site.name | striptags }}</title>
+<meta content="ie=edge" http-equiv="x-ua-compatible" />
+<meta name="handheldfriendly" content="true" />
+<meta name="viewport" content="initial-scale=1, width=device-width" />
+<link rel="canonical" href="{{ site.base_url }}{{ page.url }}" />
+<link rel="icon" href="/assets/images/favicon.png" />
+<link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png" />
+<script src="/assets/js/color-scheme.js"></script>
+<link rel="stylesheet" href="/assets/css/style.css" />
+<script type="module" src="/assets/js/turbo.min.js"></script>
+<script type="module" src="/assets/js/code.js"></script>
+<script type="module" src="/assets/js/search.js"></script>
+{{ assets.render() -}}
+<script src="/assets/js/lunr.min.js"></script>
+{%- if site.lang != "en" %}
+<script src="/assets/js/lunr.{{ site.lang }}.min.js"></script>
+{%- endif %}
+<Metadata />
 </head>
 
 <body class="page-{{ page.id }}">
@@ -71,13 +61,11 @@
             <Toc />
           </li>
           <li>
-            <a href="{{ site.source_url }}" target="_blank" rel="noopener">{{ _('SOURCE_CODE') }}</a>
+            <a href="#" target="_blank" rel="noopener">{{ _('SOURCE_CODE') }}</a>
           </li>
-          {%- if site.help_url %}
           <li>
-            <a href="{{ site.help_url }}" target="_blank" rel="noopener">{{ _('HELP') }}</a>
+            <a href="#" target="_blank" rel="noopener">{{ _('HELP') }}</a>
           </li>
-          {%- endif %}
         </ul>
       </div>
     </nav>
@@ -88,19 +76,21 @@
           <a class="logo" href="/" aria-label="{{ site.name }}">{{ site.name }}</a>
           <VersionPopover />
         </div>
-
         <div class="header__links">
+          <a href="/search/">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+          </a>
           <a href="/docs/">
             <span>{{ _('DOCUMENTATION') }}</span>
           </a>
-          <a href="{{ site.source_url }}" target="_blank" rel="noopener">
+          <a href="#" target="_blank" rel="noopener">
             <span>{{ _('SOURCE_CODE') }}</span>
           </a>
-          {%- if site.help_url %}
-          <a href="{{ site.help_url }}" target="_blank" rel="noopener">
+          <a href="#" target="_blank" rel="noopener">
             <span>{{ _('HELP') }}</span>
           </a>
-          {%- endif %}
         </div>
         <LanguagePopover />
         <ColorScheme />

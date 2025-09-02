@@ -22,6 +22,10 @@ lint:
 docs:
 	cd docs && uv run python docs.py
 
+.PHONY: blueprint
+blueprint:
+	cd src/writeadoc/blueprint && uv run python docs.py
+
 .PHONY: docs-build
 docs-build:
 	cd docs && uv run python docs.py build

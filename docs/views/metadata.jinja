@@ -1,0 +1,33 @@
+{% set name = site.name | striptags -%}
+{% set title = page.title | striptags -%}
+{% set description = (page.meta.get('description', site.description) or '') | striptags -%}
+{% set image = site.base_url ~ (page.meta.get('image', '/assets/images/opengraph.jpg')) -%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "{{ title }}",
+  "description": "{{ description }}",
+  "url": "{{ site.base_url }}{{ page.url }}",
+  "image": "{{ image }}",
+  "datePublished": "{{ page.meta.get('date', _now.strftime('%Y-%m-%d')) }}",
+	{%- if page.meta.get('keywords') %}
+	"keywords": "{{ page.meta.get('keywords') | join(', ') | striptags }}"
+	{%- endif %}
+}
+</script>
+<meta name="description" content="{{ description }}" />
+{#- OpenGraph #}
+<meta property="og:site_name" content="{{ name }}" />
+<meta property="og:title" content="{{ title }}" />
+<meta property="og:description" content="{{ description }}" />
+<meta property="og:image" content="{{ image }}" />
+<meta property="og:url" content="{{ site.base_url }}{{ page.url }}" />
+<meta property="og:type" content="website" />
+{#- Twitter #}
+<meta name="twitter:title" content="{{ title }}" />
+<meta name="twitter:description" content="{{ description }}" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="{{ image }}" />
+<meta name="twitter:image:alt" content="{{ name }}" />

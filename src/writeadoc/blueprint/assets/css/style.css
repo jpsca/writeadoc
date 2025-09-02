@@ -620,6 +620,32 @@ html.cs-dark .highlight {
   }
 }
 
+.header a {
+  align-items: center;
+  border-radius: 2.5em;
+  display: flex;
+  font-size: var(--font-size-xx-small);
+  font-weight: 600;
+  gap: 0.6em;
+  justify-content: center;
+  letter-spacing: -0.01em;
+  line-height: 1em;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+  padding: 0.9em 1em 0.75em 1em;
+  text-align: center;
+  text-decoration: none;
+  color: var(--color-accent);
+  transition: background var(--transition), color var(--transition);
+}
+
+.header a svg {
+  width: 1em;
+  height: 1em;
+  stroke-width: 3px;
+}
+
+
 .header nav {
   align-items: center;
   display: flex;
@@ -661,6 +687,7 @@ html.cs-dark .highlight {
   color: var(--color-accent);
   height: 1.2em;
   padding: 0.5em 0.4em;
+  transition: background var(--transition), color var(--transition);
 }
 .header nav button svg:not(.arrow) {
   fill: currentColor;
@@ -701,35 +728,10 @@ html.cs-dark .highlight {
     display: flex;
   }
 }
-.header__links a {
-  align-items: center;
-  border-radius: 2.5em;
-  display: flex;
-  font-size: var(--font-size-xx-small);
-  font-weight: 600;
-  gap: 0.6em;
-  justify-content: center;
-  letter-spacing: -0.01em;
-  line-height: 1em;
-  margin-bottom: 0.5em;
-  margin-top: 0.5em;
-  padding: 0.9em 1em 0.75em 1em;
-  text-align: center;
-  text-decoration: none;
-  color: var(--color-accent);
-}
 
-.header__links a svg {
-  height: 0.75em;
-  width: 0.75em
-}
 
 @media (hover: hover) {
-  .header nav button,
-  .header__links a {
-    transition: background var(--transition), color var(--transition)
-  }
-  .header__links a:is(:focus,:hover),
+  .header a:is(:focus,:hover),
   .header nav button:is(:focus,:hover) {
     background: var(--color-base-darker);
     color: var(--color-grey);

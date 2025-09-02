@@ -24,44 +24,16 @@ class PageRef(t.TypedDict):
     url: str
 
 
-
-class TSiteData(t.TypedDict, total=False):
-    name: str
-    description: str
-    image: str
-    version: str
-    base_url: str
-    source_url: str
-    help_url: str
-    lang: str
-
-
-DEFAULT_SITE_DATA = {
-    "name": "WriteADoc",
-    "description": "",
-    "image": "/assets/images/opengraph.png",
-    "version": "1.0",
-    "base_url": "",
-    "source_url": "",
-    "help_url": "",
-    "lang": "en",
-    "archived": False,
-}
-
-
 class PageData:
     id: str
     section: SectionRef
     title: str
     url: str
     view: str
-    description: str
-    image: str
     meta: dict[str, t.Any]
     content: str
     prev: PageRef | None = None
     next: PageRef | None = None
-    updated_at: str
     pages: list["PageData"]
 
     def __init__(
@@ -71,12 +43,9 @@ class PageData:
         id: str = "",
         title: str,
         url: str = "",
-        description: str = "",
-        image: str = "",
         meta: dict[str, t.Any] | None = None,
         view: str = "page.jinja",
         content: str = "",
-        updated_at: str = "",
         pages: list["PageData"] | None = None,
     ):
         meta = meta or {}
@@ -90,37 +59,36 @@ class PageData:
         self.id = id or slug or uuid4().hex
         self.section = section
         self.title = title
-        self.description = description
-        self.image = image
         self.url = url
         self.view = meta.get("view", view)
         self.meta = meta
         self.content = content
-        self.updated_at = updated_at
         self.pages = pages or []
 
 
 class SiteData:
-    name: str
-    description: str
-    image: str
-    version: str
-    base_url: str
-    source_url: str
-    help_url: str
-    lang: str
-    archived: bool
+    name: str = "WriteADoc"
+    version: str = "1.0"
+    base_url: str = ""
+    lang: str = "en"
+    archived: bool = False
     pages: list[tuple[SectionRef, list[PageData]]]
 
     def __init__(self, **data: t.Any):
-        for key, value in DEFAULT_SITE_DATA.items():
-            setattr(self, key, data.get(key, value))
+        for key, value in data.items():
+            if key.startswith("_"):
+                continue
+            setattr(self, key, value)
 
+        self.base_url = self.base_url or ""
         if self.base_url.endswith("/"):
             self.base_url = self.base_url.rstrip("/")
 
         self.archived = False
         self.pages = []
+
+    def __getattr__(self, name: str) -> t.Any:
+        return None
 
 
 class SearchPageData(t.TypedDict):

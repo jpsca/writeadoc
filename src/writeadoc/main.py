@@ -17,7 +17,7 @@ from markupsafe import Markup
 
 from . import search, utils
 from .autodoc import Autodoc
-from .types import PageData, PageRef, SectionRef, SiteData, TSearchData, TSiteData
+from .types import PageData, PageRef, SectionRef, SiteData, TSearchData
 from .utils import logger
 
 
@@ -45,7 +45,7 @@ class Docs:
         /,
         *,
         pages: TPages,
-        site: TSiteData | None = None,
+        site: dict[str, t.Any] | None = None,
         variants: dict[str, t.Self] | None = None,
         md_extensions: list[t.Any] = utils.DEFAULT_MD_EXTENSIONS,
         md_config: dict[str, dict[str, t.Any]] = utils.DEFAULT_MD_CONFIG,
@@ -66,8 +66,7 @@ class Docs:
             variant.prefix = prefix
         self.variants = variants or {}
 
-        site = site or {}
-        self.site = SiteData(**site)
+        self.site = SiteData(**(site or {}))
 
         self.md_renderer = markdown.Markdown(
             extensions=[
@@ -86,6 +85,7 @@ class Docs:
             },
             site=self.site,
             _=self.translate,
+            _now=datetime.datetime.now(tz=datetime.timezone.utc),
             _insert_asset=self.insert_asset,
         )
 
@@ -174,6 +174,7 @@ class Docs:
         self.render_search_page()
         self.render_index_page()
         self.render_docs_redirect_page()
+        self.render_extra()
 
         if devmode:
             self.symlink_assets()
@@ -253,17 +254,12 @@ class Docs:
         if self.prefix:
             url = f"/{self.prefix}{url}"
 
-        mtime = filepath.stat().st_mtime
-        mtime_str = datetime.datetime.fromtimestamp(mtime).strftime("%Y-%m-%d %H:%M")
-
         return PageData(
             section=section,
-            title=meta.pop("title", filepath.name),
-            description=meta.pop("description", ""),
+            title=meta.get("title", filepath.name),
             url=url,
             meta=meta,
             content=html,
-            updated_at=mtime_str,
         )
 
     def process_file(self, filepath: Path) -> tuple[dict[str, t.Any], str]:
@@ -349,6 +345,37 @@ class Docs:
         )
         outpath.write_text(html, encoding="utf-8")
 
+    def render_index_page(self) -> None:
+        outpath = self.build_dir / self.prefix / "index.html"
+        outpath.parent.mkdir(parents=True, exist_ok=True)
+        url = f"/{self.prefix}/" if self.prefix else "/"
+
+        md_index = self.pages_dir / self.prefix / "index.md"
+        if md_index.exists():
+            meta, html = self.process_file(md_index)
+            page = PageData(
+                id="index",
+                section=SectionRef(id="", title=self.site.name, url=url),
+                title=meta.get("title", self.site.name),
+                url=url,
+                view="index.jinja",
+                content=html,
+            )
+        else:
+            # Just render the template page
+            page = PageData(
+                section=SectionRef(id="", title=self.site.name, url=url),
+                title=self.site.name,
+                url=url,
+                view="index.jinja",
+            )
+
+        html = self.catalog.render(
+            page.view,
+            globals={"page": page}
+        )
+        outpath.write_text(html, encoding="utf-8")
+
     def render_docs_redirect_page(self) -> None:
         section = self.site.pages[0] if self.site.pages else None
         if not section:
@@ -370,41 +397,20 @@ class Docs:
         )
         outpath.write_text(html, encoding="utf-8")
 
-    def render_index_page(self) -> None:
-        outpath = self.build_dir / self.prefix / "index.html"
-        outpath.parent.mkdir(parents=True, exist_ok=True)
-        url = f"/{self.prefix}/" if self.prefix else "/"
-
-        md_index = self.pages_dir / self.prefix / "index.md"
-        if md_index.exists():
-            mtime = md_index.stat().st_mtime
-            mtime_str = datetime.datetime.fromtimestamp(mtime).strftime("%Y-%m-%d %H:%M")
-
-            meta, html = self.process_file(md_index)
-            page = PageData(
-                id="index",
-                section=SectionRef(id="", title=self.site.name, url=url),
-                title=meta.get("title", self.site.name),
-                url=url,
-                view="index.jinja",
-                description=meta.get("description", ""),
-                content=html,
-                updated_at=mtime_str,
-            )
-        else:
-            # Just render the template page
-            page = PageData(
-                section=SectionRef(id="", title=self.site.name, url=url),
-                title=self.site.name,
-                url=url,
-                view="index.jinja",
-            )
-
-        html = self.catalog.render(
-            page.view,
-            globals={"page": page}
-        )
-        outpath.write_text(html, encoding="utf-8")
+    def render_extra(self) -> None:
+        for file in (
+            "sitemap.xml",
+            "robots.txt",
+            "humans.txt"
+        ):
+            outpath = self.build_dir / self.prefix / file
+            outpath.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                body = self.catalog.render(f"{file}.jinja")
+            except jx.ImportError:
+                logger.warning("No view found for %s, skipping...", file)
+                continue
+            outpath.write_text(body, encoding="utf-8")
 
     def symlink_assets(self) -> None:
         if not self.assets_dir.exists():
