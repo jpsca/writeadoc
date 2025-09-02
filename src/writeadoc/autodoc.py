@@ -254,10 +254,8 @@ class Autodoc:
 def format_signature(sig, *, max_width=None):
     """Create a string representation of the Signature object.
 
-    If *max_width* integer is passed,
-    signature will try to fit into the *max_width*.
-    If signature is longer than *max_width*,
-    all parameters will be on separate lines.
+    If *max_width* integer is passed, signature will try to fit into the *max_width*.
+    If signature is longer than *max_width*, all parameters will be on separate lines.
     """
     result = []
     render_pos_only_separator = False
