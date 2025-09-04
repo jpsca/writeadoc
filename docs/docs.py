@@ -34,13 +34,10 @@ docs = Docs(
     pages=pages,
     site={
         "name": "WriteADoc",
-        "description": "Write your documentation",
-        "lang": "en",
-        "version": "1.0",
-        "image": "/assets/images/opengraph.png",
-        "source_url": "https://github.com/jpsca/writeadoc",
         "base_url": "https://writeadoc.scaletti.dev/",
-        "help_url": "",
+        "description": "Professional static documentation for your project. Searchable, fast, and infinitely customizable.",
+        "lang": "en",
+        "version": "0.1",
     },
 )
 

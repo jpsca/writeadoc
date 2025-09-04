@@ -1,7 +1,7 @@
 {% set name = site.name | striptags -%}
 {% set title = page.title | striptags -%}
 {% set description = (page.meta.get('description', site.description) or '') | striptags -%}
-{% set image = site.base_url ~ (page.meta.get('image', '/assets/images/opengraph.jpg')) -%}
+{% set image = site.base_url ~ (page.meta.get('image', '/assets/images/opengraph.png')) -%}
 
 <script type="application/ld+json">
 {

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="64mm"
+   height="64mm"
+   viewBox="0 0 64 64"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
+   sodipodi:docname="favicon.svg"
+   inkscape:export-filename="apple-touch-icon.png"
+   inkscape:export-xdpi="76.199997"
+   inkscape:export-ydpi="76.199997"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#111111"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.96212121"
+     inkscape:cx="159.02362"
+     inkscape:cy="293.10236"
+     inkscape:window-width="1085"
+     inkscape:window-height="1348"
+     inkscape:window-x="26"
+     inkscape:window-y="23"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-88.106251,-70.908333)">
+    <rect
+       style="fill:#fafafa;fill-opacity:1;stroke:none;stroke-width:2.64583;stroke-dasharray:none;stroke-opacity:1"
+       id="rect10"
+       width="64"
+       height="64"
+       x="88.115776"
+       y="70.908333" />
+    <g
+       id="g10"
+       transform="matrix(1.0039703,0,0,0.99968369,-21.150022,-50.268579)">
+      <path
+         style="font-weight:900;font-size:74.6667px;line-height:1.4em;font-family:Inter;-inkscape-font-specification:'Inter Heavy';white-space:pre;fill:#ffffff;stroke:#ffffff;stroke-width:6.89387"
+         d="m 124.47517,171.94333 -11.04067,-37.4359 h 11.33314 l 5.11818,23.03185 h 0.29248 l 6.0687,-23.03185 h 8.92028 l 6.06871,23.10496 h 0.29246 l 5.11819,-23.10496 h 11.33315 l -11.04068,37.4359 h -9.72456 l -6.36118,-20.91147 h -0.29246 l -6.36118,20.91147 z"
+         id="text8-4"
+         aria-label="W" />
+      <path
+         style="font-weight:900;font-size:74.6667px;line-height:1.4em;font-family:Inter;-inkscape-font-specification:'Inter Heavy';white-space:pre;fill:#4995f7;stroke:#4995f7;stroke-width:2.06816"
+         d="m 124.81987,171.59864 -11.04068,-37.4359 h 11.33315 l 5.11818,23.03184 h 0.29246 l 6.06872,-23.03184 h 8.92026 l 6.06872,23.10496 h 0.29247 l 5.11819,-23.10496 h 11.33314 l -11.04067,37.4359 h -9.72456 l -6.36119,-20.91147 h -0.29245 l -6.36119,20.91147 z"
+         id="text4-5"
+         aria-label="W" />
+    </g>
+  </g>
+</svg>

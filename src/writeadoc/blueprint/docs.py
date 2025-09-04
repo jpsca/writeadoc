@@ -1,10 +1,22 @@
+"""
+# WriteaDoc Documentation
+
+- `python docs.py run` to start a local server with live reload.
+- `python docs.py build` to build the documentation for deployment.
+
+"""
 from writeadoc import Docs
 
 
 pages = {
     "Welcome": [
         "welcome.md",
-        "api/example.md",
+        {
+            "Subsection": [
+                "sub/lorem.md",
+                "sub/ipsum.md",
+            ],
+        }
     ],
 }
 
@@ -14,12 +26,9 @@ docs = Docs(
     site={
         "name": "Project Name",
         "description": "Description of your project",
+        "base_url": "https://project.example.com",
         "lang": "en",
         "version": "1.0",
-        "image": "/assets/images/opengraph.jpg",
-        "source_url": "https://github.com/example/project",
-        "base_url": "https://project.example.com",
-        "help_url": "",
     },
 )
 

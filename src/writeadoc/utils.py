@@ -1,5 +1,6 @@
 import logging
 import os
+import random
 import time
 import typing as t
 from collections.abc import Callable
@@ -174,3 +175,37 @@ class ChangeHandler(FileSystemEventHandler):
             print(f"File changed ({event.event_type}):", rel_path)
             self.run_callback()
             print("Watching for changes. Press Ctrl+C to exit.\n")
+
+
+RANDOM_MESSAGES = [
+    "Distilling enjoyment",
+    "Adding emotional depth",
+    "Filtering the ozone",
+    "Testing for perfection",
+    "Optimizing for happiness",
+    "Swapping time and space",
+    "Reversing the bits polarity",
+    "Extracting meaning",
+    "Counting to 42 backwards",
+    "Aligning the stars",
+    "Polishing the pixels",
+    "Tuning the entropy",
+    "Summoning the muses",
+    "Refactoring the universe",
+    "Chasing Schrödinger's cat",
+    "Calibrating the flux capacitor",
+    "Rendering inspiration",
+    "Bending the event horizon",
+    "Brewing fresh markdown",
+    "Folding sections with care",
+    "Sifting through syntax",
+    "Mixing metadata magic",
+    "Formatting with finesse",
+    "Distilling delight",
+    "Embedding code blocks",
+]
+
+
+def print_random_messages(num=2) -> None:
+    for message in random.sample(RANDOM_MESSAGES, num):
+        print(f"{message}...")

@@ -1,10 +1,8 @@
 ---
 title: WriteADoc
-description: Create a professional static site for your project in minutes. Searchable, fast, and infinitely customizable
 ---
 
-\{{ 2+ 3 }}
-Focus on your content and let WriteADoc create beautiful documentation your users will love.
+Focus on your content and let *WriteADoc* take care of the rest
 
 ### Simple yet powerful formatting
 

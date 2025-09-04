@@ -1,34 +1,41 @@
+.page-index .hero {
+  background: rgba(var(--rgb-base), 0.4);
+}
+
+
 .headline {
-  display: flex;
-  flex-direction: column;
   padding: var(--space-medium);
+  padding-bottom: var(--space-large);
 }
 .headline header {
-  max-width: 60rem;
-  margin: 0 auto;
-  align-items: center;
   display: flex;
   flex-direction: column;
-  gap: 0.6em;
-  margin-bottom: -0.4em;
-  margin-top: -0.2em;
-  text-align: center
+  gap: var(--space-medium);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 60rem;
+  margin: 0 auto;
+  font-weight: 500;
 }
 .headline header h1 {
-  font-size: var(--font-size-xx-large)
+  font-size: var(--font-size-xx-large);
+  font-weight: 900;
+  text-align: center;
 }
-.headline header br {
-  display: none
+.headline header p {
+  transform: skew(-4deg);
+}
+.headline header p span {
+  background-color: var(--color-base-darker);
+  padding: 0.1em;
 }
 
 @media (min-width: 64em) {
   .headline {
-    padding: var(--space-x-large);
+    padding: var(--space-x-large) var(--space-large);
   }
   .headline header h1 {
-    font-size: var(--font-size-xxx-large)
-  }
-  .headline header br {
-    display: inline
+    font-size: var(--font-size-xxx-large);
   }
 }

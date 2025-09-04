@@ -18,7 +18,7 @@ from markupsafe import Markup
 from . import search, utils
 from .autodoc import Autodoc
 from .types import PageData, PageRef, SectionRef, SiteData, TSearchData
-from .utils import logger
+from .utils import logger, print_random_messages
 
 
 TPages = dict[str, list[str]]
@@ -124,6 +124,7 @@ class Docs:
 
     def cli_build(self, archive: bool) -> None:
         """Build the documentation for deployment."""
+        self.build_dir = self.root_dir / "build"
         self.build(devmode=False, archive=archive)
         print("Documentation built successfully.")
         if archive:
@@ -133,7 +134,8 @@ class Docs:
 
     def cli_run(self) -> None:
         """Run the documentation server and watch for changes."""
-        self.build()  # Initial buil
+        self.build_dir = Path(mkdtemp(prefix="wad-"))
+        self.build()  # Initial build
         p = Process(
             target=utils.start_server,
             args=(str(self.build_dir),),
@@ -151,9 +153,7 @@ class Docs:
         signal.signal(signal.SIGTERM, shutdown)
 
     def build(self, devmode: bool = True, archive: bool = False) -> None:
-        print("Building documentation...")
-
-        self.build_dir = Path(mkdtemp(prefix="wad-")) if devmode else self.root_dir / "build"
+        print_random_messages()
         self.init_catalog()
 
         if archive:
@@ -408,7 +408,7 @@ class Docs:
             try:
                 body = self.catalog.render(f"{file}.jinja")
             except jx.ImportError:
-                logger.warning("No view found for %s, skipping...", file)
+                logger.info("No view found for %s, skipping...", file)
                 continue
             outpath.write_text(body, encoding="utf-8")
 

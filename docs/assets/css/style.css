@@ -1,14 +1,7 @@
 @font-face {
-    font-family: "Inter";
-    font-style: normal;
-    src: url("../fonts/Inter-roman.var.woff2") format("woff2");
-    font-display: swap
-}
-@font-face {
-    font-family: "Inter";
-    font-style: italic;
-    src: url("../fonts/Inter-italic.var.woff2") format("woff2");
-    font-display: swap
+  font-family: "Inter";
+  src: url("../fonts/Inter-Variable.woff2") format("woff2");
+  font-display: swap
 }
 
 html {
@@ -22,8 +15,7 @@ html {
   --rgb-grey-light: 105, 115, 125;
   --rgb-grey-lighter: 170, 180, 190;
 
-  --rgb-accent: 63,146,233;
-  --rgb-accent-light: 81,156,235;
+  --rgb-accent: 73,149,247;
 
   --color-base: rgb(var(--rgb-base));
   --color-base-dark: rgb(var(--rgb-base-dark));
@@ -36,11 +28,10 @@ html {
   --color-grey-lighter: rgb(var(--rgb-grey-lighter));
 
   --color-accent: rgb(var(--rgb-accent));
-  --color-accent-light: rgb(var(--rgb-accent-light));
 
-  --font-family: "Inter", Sans-Serif;
+  --font-family: "Inter", sans-serif;
   --font-family-mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, Monospace;
-  --font-size: min(calc(1.5em + 1vw), 2.1rem);
+  --font-size: min(calc(1.6em + 1vw), 2.3rem);
   --font-size-xx-small: 50%;
   --font-size-x-small: 60%;
   --font-size-small: 75%;
@@ -67,11 +58,10 @@ html {
     --rgb-base-darkest: var(--rgb-base-darker);
     --rgb-grey: 236, 239, 244;
     --rgb-grey-light: 241, 244, 249;
-    --rgb-accent: 65, 146, 223;
-    --rgb-accent-light: 121, 179, 233;
     --color-base-dark: var(--color-base);
     --color-black: rgb(var(--rgb-white));
     --color-white: rgb(var(--rgb-base-dark));
+    --rgb-accent: 104,167,249;
   }
 }
 html.cs-dark {
@@ -81,11 +71,10 @@ html.cs-dark {
   --rgb-base-darkest: var(--rgb-base-darker);
   --rgb-grey: 236, 239, 244;
   --rgb-grey-light: 241, 244, 249;
-  --rgb-accent: 65, 146, 223;
-  --rgb-accent-light: 121, 179, 233;
   --color-base-dark: var(--color-base);
   --color-black: rgb(var(--rgb-white));
   --color-white: rgb(var(--rgb-base-dark));
+  --rgb-accent: 104,167,249;
 }
 
 /******* RESET *******/
@@ -625,7 +614,8 @@ html.cs-dark .highlight {
   border-radius: 2.5em;
   display: flex;
   font-size: var(--font-size-xx-small);
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--color-grey);
   gap: 0.6em;
   justify-content: center;
   letter-spacing: -0.01em;
@@ -635,7 +625,6 @@ html.cs-dark .highlight {
   padding: 0.9em 1em 0.75em 1em;
   text-align: center;
   text-decoration: none;
-  color: var(--color-accent);
   transition: background var(--transition), color var(--transition);
 }
 
@@ -678,13 +667,12 @@ html.cs-dark .highlight {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-accent);
   height: 100%;
   line-height: 1em;
   cursor: pointer;
+  color: var(--color-grey);
   letter-spacing: normal;
   border-radius: 2.5em;
-  color: var(--color-accent);
   height: 1.2em;
   padding: 0.5em 0.4em;
   transition: background var(--transition), color var(--transition);
@@ -731,7 +719,7 @@ html.cs-dark .highlight {
 
 
 @media (hover: hover) {
-  .header a:is(:focus,:hover),
+  .header__links a:is(:focus,:hover),
   .header nav button:is(:focus,:hover) {
     background: var(--color-base-darker);
     color: var(--color-grey);
@@ -882,7 +870,6 @@ html.cs-light .color-scheme button.light {
 }
 
 .nav__options > ul > li > a {
-  color: var(--color-accent);
   padding-top: 0.1em;
   text-decoration: none
 }
@@ -900,8 +887,7 @@ html.cs-light .color-scheme button.light {
 
 .header,
 .nav__options {
-  backdrop-filter: saturate(180%) blur(20px);
-  background: rgba(var(--rgb-base), 0.4);
+  background: var(--color-base);
 }
 
 
@@ -984,46 +970,23 @@ html.cs-light .color-scheme button.light {
   display: flex;
   flex: 1;
   flex-direction: column;
-  font-size: var(--font-size-xx-small);
   gap: var(--space-medium);
-  letter-spacing: -0.01em
-}
-
-.footer div ul {
-  align-items: center;
-  display: flex;
-  gap: var(--space-medium);
-  padding: 0
-}
-
-.footer div ul li {
-  display: flex;
-  margin: 0
-}
-
-.footer div ul li a {
-  display: flex
-}
-
-.footer div ul li a img {
-  height: 1.75em;
-  width: auto
-}
-
-.footer div ul li span {
-  display: flex;
-  font-size: var(--font-size-small);
-  font-style: italic;
+  font-size: 1rem;
   letter-spacing: -0.01em;
-  margin-top: 0.3em
 }
 
-@media (prefers-color-scheme: dark) {
-  .footer div ul li a img {
-    filter: invert(100%)
-  }
+.footer div p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-medium);
 }
 
+.footer .copy {
+  display: inline-block;
+  padding-right: var(--space-medium);
+  border-right: 1px solid var(--color-base-darkest);
+}
 
 .sidebar {
   display: none;
