@@ -141,7 +141,8 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-tap-highlight-color: rgba(var(--rgb-black), 0);
-  text-rendering: optimizeLegibility
+  text-rendering: optimizeLegibility;
+  accent-color: var(--color-accent);
 }
 
 @supports (-webkit-touch-callout: none) {
@@ -997,19 +998,25 @@ html.cs-light .color-scheme button.light {
   margin-top: -0.5em
 }
 
-.sidebar div {
+.sidebar > div {
   display: flex;
   flex-direction: column;
   position: sticky;
-  top: var(--space-large)
+  top: var(--space-large);
+  max-height: calc(100vh - var(--space-large) * 2);
 }
 
 .sidebar form.search {
-  margin: 0 -0.8em 1.4em -0.8em;
+  margin: 0 0 1.4em 0;
 }
 
 .sidebar .toc {
   font-size: 85%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  margin-right: -0.8em;
+  padding-right: 0.8em;
 }
 
 
@@ -1035,13 +1042,20 @@ html.cs-light .color-scheme button.light {
 /******* ToC  *******/
 
 .toc {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3em;
   letter-spacing: -0.01em;
-  list-style: none;
   padding: 0;
   margin: 0;
+  line-height: 1.3;
+  user-select: none;
+}
+
+.toc img,
+.toc svg {
+  display: inline-block;
+  max-width: 1em;
+  max-height: 90%;
+  stroke: currentColor;
+  margin-right: 0.5em;
 }
 
 .toc a {
@@ -1050,28 +1064,24 @@ html.cs-light .color-scheme button.light {
 }
 
 .toc__section {
-  margin: 0 0 0.25em 0;
-  position: relative
+  margin: 1em 0.5rem 1em 0.8rem;
+  padding: 0;
 }
 
-.toc__section > a {
+.toc__section > summary {
   border-radius: 0.3em;
   color: var(--color-grey);
   font-weight: 500;
+  font-size: 75%;
   display: flex;
-  margin-left: -0.5rem;
-  margin-right: -0.5rem;
-  padding: 0.6rem 0.8rem;
+  padding: 0.5rem calc(3px + 0.8rem);
   text-decoration: none;
-  transition: background var(--transition), color var(--transition);
-  z-index: 1
+  transition: border var(--transition), color var(--transition);
+  position: relative;
+  background-color: rgba(var(--rgb-base-darkest), 0.2);
+  cursor: pointer;
 }
-
-.toc__section--selected > a {
-  background: var(--color-accent);
-  color: var(--color-white)
-}
-.toc__section--has-pages > a::after {
+.toc__section > summary::after {
   background-color: currentcolor;
   border-radius: 100%;
   content: "";
@@ -1084,30 +1094,26 @@ html.cs-light .color-scheme button.light {
   vertical-align: -.1rem;
   position: absolute;
   top: 0;
-  right: 1em;
+  right: 0.5rem;
   width: 1.2em;
   height: 100%;
 }
-.toc__section--has-pages.toc__section--selected > a::after {
+.toc__section[open] > summary::after {
   transform: rotate(90deg);
 }
 
-.toc__pages {
-  line-height: 1.3;
-  padding: 0.6em 0 0;
-  border-left: 3px solid rgba(var(--rgb-base-darkest), 0.4);
-  margin-bottom: 1em;
+.toc__section > div {
+  border: 1px solid rgba(var(--rgb-base-darkest), 0.3);
+  border-top: none
 }
 
 .toc__page {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   margin: 0;
   padding: 0;
-}
-
-.toc__page > a {
-  border-radius: 0 0.3em 0.3em 0;
+  border-radius: 0.3em;
+  border-left: 3px solid transparent;
   background: none;
   color: var(--color-grey-light);
   display: flex;
@@ -1116,40 +1122,20 @@ html.cs-light .color-scheme button.light {
   margin-left: 0;
   margin-right: 0;
   overflow: hidden;
-  padding: 0.5rem 0.6rem;
+  padding: 0.5rem 0.8rem;
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%
 }
-.toc__page--selected > a {
-  border-left: 3px solid var(--color-accent);
-  margin-left: -3px;
+.toc__page--selected {
+  border-radius: 0 0.3em 0.3em 0;
+  border-left-color: var(--color-accent);
   color: var(--color-grey);
   font-weight: 700;
 }
 
-.toc__page > a > img,
-.toc__page > a > svg {
-  display: inline-block;
-  max-width: 1em;
-  max-height: 90%;
-  stroke: currentColor;
-  margin-right: 0.5em;
-}
-
-
-.toc__page > ul {
-  display: block;
-  padding: 0;
-  border-left: 3px solid rgba(var(--rgb-base-darkest), 0.4);
-  margin: 0 0 0.5em 1em;
-}
-
 @media (hover: hover) {
-  .toc__section:not(.toc__section--selected) > a:is(:focus,:hover) {
-    background: var(--color-base-dark);
-  }
-  .toc__page > a:is(:focus,:hover) {
+  .toc__page:is(:focus,:hover) {
     color: var(--color-grey);
     background: var(--color-base-dark);
   }
@@ -1617,12 +1603,12 @@ html.cs-light .color-scheme button.light {
   }
   .page article img.left {
     float: left;
-    margin: 1em 1em 1em 0;
+    margin: 0 1em 1em 0;
     max-width: 40%;
   }
   .page article img.right {
     float: right;
-    margin: 1em 0 1em 1em;
+    margin: 0 0 1em 1em;
     max-width: 40%;
   }
 }

@@ -5,13 +5,11 @@
 		<loc>{{ site.base_url }}/</loc>
 		<lastmod>{{ now }}</lastmod>
 	</url>
-	{% for section, pages in site.pages -%}
-		{% for page in pages -%}
+	{% for page in site.pages -%}
 	<url>
 		<loc>{{ site.base_url }}{{ page.url }}</loc>
 		<lastmod>{{ page.meta.get('date', now) }}</lastmod>
 	</url>
-		{%- endfor %}
 	{%- endfor %}
 	<url>
 		<loc>{{ site.base_url }}/search/</loc>

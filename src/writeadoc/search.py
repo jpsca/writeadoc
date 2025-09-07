@@ -4,26 +4,7 @@ from html.parser import HTMLParser
 from .types import PageData, TSearchData
 
 
-def extract_search_data(pages) -> TSearchData:
-    """
-    Extract search data from processed pages.
-
-    Arguments:
-        pages: List of processed pages.
-
-    Returns:
-        SearchData object containing the search data.
-    """
-    data = {}
-    for _, sec_pages in pages:
-        for page in sec_pages:
-            docs = extract_search_data_from_page(page)
-            data.update(docs)
-
-    return data
-
-
-def extract_search_data_from_page(page: PageData) -> TSearchData:
+def extract_search_data(page: PageData) -> TSearchData:
     """
     Extract search data from a single page.
 
@@ -250,7 +231,7 @@ class TextExtractor(HTMLParser):
         self.docs[f"{url}{self._id}"] = {
             "title": title,
             "content": content,
-            "section": self._page.url,
+            "section": self._page.section,
             "url": url,
         }
         self._content = []

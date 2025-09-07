@@ -1,42 +1,37 @@
-{# def show_pages: bool = False #}
+{# def folded: bool = False #}
 
-{% macro render_pages(pages) %}
-  {% for navpage in pages %}
-  <li class="toc__page {% if navpage.id == page.id %}toc__page--selected{% endif %}">
-    <a href="{{ navpage.url }}" aria-label="{{ navpage.title }}">
-      {% if navpage.meta.get('icon') -%}
-        {% if navpage.meta.icon.endswith('.svg') -%}
-          {{ _insert_asset(navpage.meta.icon) }}
-        {%- else -%}
-          <img src="/assets/{{ navpage.meta.icon }}" class="icon" />
-        {%- endif -%}
-      {%- endif %} {{ navpage.title }}
+{% macro render_icon(item) -%}
+  {%- if item.icon -%}
+    {% if item.icon.endswith('.svg') -%}
+      {{ _insert_asset(item.icon) }}
+    {%- else -%}
+      <img src="/assets/{{ item.icon }}" class="icon" />
+    {%- endif -%}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro render_pages(items) -%}
+  {% for item in items -%}
+  {%- if item.pages -%}
+  <details class="toc__section" {% if not folded %}open{% endif %}>
+    <summary>
+      {{ render_icon(item) }} {{ item.title }}
+    </summary>
+    {{ render_pages(item.pages) }}
+  </details>
+  {%- else %}
+    <a
+      class="toc__page {% if item.id == page.id %}toc__page--selected{% endif %}"
+      href="{{ item.url }}"
+      aria-label="{{ item.title }}"
+    >
+      {{ render_icon(item) }} {{ item.title }}
     </a>
-    {% if navpage.pages %}
-      <ul>{{ render_pages(navpage.pages) }}</ul>
-    {% endif %}
-  </li>
+  {%- endif %}
   {% endfor %}
+
 {% endmacro %}
 
-<ul class="toc">
-  {% for section, pages in site.pages %}
-  <li class="toc__section
-    {%- if section.id == page.section.id %} toc__section--selected{% endif -%}
-    {%- if pages %} toc__section--has-pages{% endif -%}
-  ">
-    <a href="{{ section.url }}" aria-label="{{ section.title }}">
-      {{ section.title }}
-    </a>
-    {% if
-      (show_pages or section.id == page.section.id)
-      and pages
-      and ((pages|length > 1) or pages[0].pages)
-    %}
-    <ul class="toc__pages">
-      {{ render_pages(pages) }}
-    </ul>
-    {% endif %}
-  </li>
-  {% endfor %}
-</ul>
+<div class="toc">
+  {{ render_pages(site.nav) }}
+</div>

@@ -1,5 +1,5 @@
 ---
-title: Introduction
+title: Markdown syntax
 ---
 
 WriteADoc uses common Markdown syntax with some extensions. This section is a showcase of all the supported syntax.

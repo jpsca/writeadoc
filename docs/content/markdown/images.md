@@ -48,22 +48,24 @@ the colors of the image **only in dark mode**. It doesn't look great for some im
 
 ## Image alignment
 
-If the screen is wide enough, you can align images to the left or right, by adding those classes.
+If the screen is wide enough, you can align images to the left or right, by wrapping the content in a `<div markdown="1"></div>` tag and adding the "left" or "right" class to the image.
 
 /// example | Image, aligned to the left
 
 ![Alt text](/assets/images/image.png){ .invert .left }
 
 ```md
+<div markdown="1">
+
 ![Alt text](/assets/images/image.png){ .left }
-```
+
 
 Aliqua id elit sint ullamco cillum consequat.
-Proident ad elit laboris consectetur duis sint proident ad voluptate incididunt nulla excepteur culpa tempor.
-Nulla culpa reprehenderit labore exercitation laborum aute occaecat proident anim.
 
-Aute voluptate cillum ex cillum esse eiusmod sit ut ipsum ex enim ea dolore aute proident.
-Ipsum aliquip proident nisi velit magna tempor magna laborum.
+Proident ad elit laboris consectetur duis sint proident voluptate
+incididunt nulla excepteur culpa tempor.
+</div>
+```
 
 ///
 
@@ -72,29 +74,29 @@ Ipsum aliquip proident nisi velit magna tempor magna laborum.
 ![Alt text](/assets/images/image.png){ .invert .right }
 
 ```md
+<div markdown="1">
+
 ![Alt text](/assets/images/image.png){ .right }
-```
 
 Aliqua id elit sint ullamco cillum consequat.
-Proident ad elit laboris consectetur duis sint proident ad voluptate incididunt nulla excepteur culpa tempor.
-Nulla culpa reprehenderit labore exercitation laborum aute occaecat proident anim.
 
-Aute voluptate cillum ex cillum esse eiusmod sit ut ipsum ex enim ea dolore aute proident.
-Ipsum aliquip proident nisi velit magna tempor magna laborum.
+Proident ad elit laboris consectetur duis sint proident voluptate
+incididunt nulla excepteur culpa tempor.
+</div>
+```
 
 ///
+
+To center an image, just add the class
 
 /// example | Image, centered
 
 ```md
 ![Alt text](/assets/images/image.png){ .center }
+
 ```
 
 ![Alt text](/assets/images/image.png){ .invert .center }
-
-Aliqua id elit sint ullamco cillum consequat.
-Proident ad elit laboris consectetur duis sint proident ad voluptate incididunt nulla excepteur culpa tempor.
-
 ///
 
 

@@ -1,4 +1,4 @@
-from writeadoc import PageData, SectionRef
+from writeadoc import PageData, TSectionRef
 from writeadoc.search import extract_search_data_from_page
 
 
@@ -26,7 +26,7 @@ def test_extractor():
         title="Test Page",
         content=html,
         url="/docs/foobar/test-page/",
-        section=SectionRef(id="test", title="Test Section", url="/docs/test-section/"),
+        section=TSectionRef(id="test", title="Test Section", url="/docs/test-section/"),
     )
     page.id = "page"
     result = extract_search_data_from_page(page)

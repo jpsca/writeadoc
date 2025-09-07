@@ -78,6 +78,7 @@ DEFAULT_MD_CONFIG = {
     },
 }
 
+
 TMetadata = dict[str, t.Any]
 META_START = "---"
 META_END = "\n---"
@@ -209,3 +210,4 @@ RANDOM_MESSAGES = [
 def print_random_messages(num=2) -> None:
     for message in random.sample(RANDOM_MESSAGES, num):
         print(f"{message}...")
+    print()

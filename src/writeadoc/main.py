@@ -9,7 +9,6 @@ from multiprocessing import Process
 from pathlib import Path
 from tempfile import mkdtemp
 from textwrap import dedent
-from uuid import uuid4
 
 import jx
 import markdown
@@ -17,18 +16,20 @@ from markupsafe import Markup
 
 from . import search, utils
 from .autodoc import Autodoc
-from .types import PageData, PageRef, SectionRef, SiteData, TSearchData
+from .types import (
+    NavItem,
+    PageData,
+    SiteData,
+    PageRef,
+    TUserPages,
+)
 from .utils import logger, print_random_messages
 
-
-TPages = dict[str, list[str]]
-TProcPages = list[tuple[SectionRef, list[PageData]]]
 
 RX_AUTODOC = re.compile(r"<p>\s*:::\s+([\w\.]+)((?:\s+\w+=\w+)*)\s*</p>")
 
 
 class Docs:
-    pages: TPages
     site: SiteData
     prefix: str = ""
 
@@ -37,14 +38,12 @@ class Docs:
     build_dir: Path
     assets_dir: Path
 
-    search_data: TSearchData
-
     def __init__(
         self,
         root: str,
         /,
         *,
-        pages: TPages,
+        pages: TUserPages,
         site: dict[str, t.Any] | None = None,
         variants: dict[str, t.Self] | None = None,
         md_extensions: list[t.Any] = utils.DEFAULT_MD_EXTENSIONS,
@@ -60,7 +59,6 @@ class Docs:
         self.archive_dir = root_dir / "archive"
         self.build_dir = root_dir / "build"
 
-
         self.pages = pages
         for prefix, variant in (variants or {}).items():
             variant.prefix = prefix
@@ -69,10 +67,8 @@ class Docs:
         self.site = SiteData(**(site or {}))
 
         self.md_renderer = markdown.Markdown(
-            extensions=[
-                *utils.DEFAULT_MD_EXTENSIONS,
-            ],
-            extension_configs={**utils.DEFAULT_MD_CONFIG},
+            extensions=[*md_extensions],
+            extension_configs={**md_config},
             output_format="html",
             tab_length=2,
         )
@@ -156,6 +152,11 @@ class Docs:
         print_random_messages()
         self.init_catalog()
 
+        nav, pages = self._process_pages(self.pages)
+        self.site.nav = nav
+        self.site.pages = pages
+
+
         if archive:
             self.prefix = f"{self.prefix}/{self.site.version}" if self.prefix else self.site.version
             self.site.archived = True
@@ -164,120 +165,21 @@ class Docs:
         if self.prefix:
             self.site.base_url = f"{self.site.base_url}/{self.prefix}"
 
-        proc_pages = self.process_pages()
-        self.site.pages = proc_pages
-        self.search_data = search.extract_search_data(proc_pages)
-
-        for _, sec_pages in proc_pages:
-            self.render_pages(sec_pages)
-
-        self.render_search_page()
-        self.render_index_page()
-        self.render_docs_redirect_page()
-        self.render_extra()
+        for page in pages:
+            self._render_page(page)
+        self._render_search_page()
+        self._render_index_page()
+        self._render_docs_redirect_page()
+        self._render_extra()
 
         if devmode:
-            self.symlink_assets()
+            self._symlink_assets()
         else:
-            self.add_prefix_to_urls()
-            self.copy_assets()
+            self._add_prefix_to_urls()
+            self._copy_assets()
 
         for variant in self.variants.values():
             variant.build(devmode=devmode, archive=archive)
-
-    def process_pages(self) -> TProcPages:
-        proc_pages = []
-        pages_list = []
-
-        def iter_pages(files, section):
-            _pages = []
-            for item in files:
-                if isinstance(item, dict):
-                    for dir_title, dir_files in item.items():
-                        if not dir_files:
-                            continue
-                        dir_pages = iter_pages(dir_files, section)
-                        page = PageData(
-                            section=section,
-                            title=dir_title,
-                            pages=dir_pages,
-                            url=dir_pages[0].url if dir_pages else "",
-                        )
-                        _pages.append(page)
-                else:
-                    page = self.process_page(item, section)
-                    pages_list.append(page)
-                    _pages.append(page)
-            return _pages
-
-        for section_name, files in self.pages.items():
-            section = SectionRef(
-                id=uuid4().hex,
-                title=section_name,
-                url="",
-            )
-            sec_pages = iter_pages(files, section)
-            if sec_pages:
-                section["url"] = sec_pages[0].url
-            proc_pages.append((section, sec_pages))
-
-        # --- Add prev/next navigation links ---
-
-        last_index_with_next = len(pages_list) - 1
-
-        for i, page in enumerate(pages_list):
-            if i > 0:
-                page.prev = PageRef(
-                    id=pages_list[i - 1].id,
-                    title=pages_list[i - 1].title,
-                    url=pages_list[i - 1].url,
-                )
-            else:
-                page.prev = None
-
-            if i < last_index_with_next:
-                page.next = PageRef(
-                    id=pages_list[i + 1].id,
-                    title=pages_list[i + 1].title,
-                    url=pages_list[i + 1].url,
-                )
-            else:
-                page.next = None
-
-        return proc_pages
-
-    def process_page(self, filename: str, section: SectionRef) -> PageData:
-        filepath = self.pages_dir / self.prefix / filename
-        meta, html = self.process_file(filepath)
-
-        url = f"/docs/{Path(filename).with_suffix('').as_posix().strip('/')}/"
-        if self.prefix:
-            url = f"/{self.prefix}{url}"
-
-        return PageData(
-            section=section,
-            title=meta.get("title", filepath.name),
-            url=url,
-            meta=meta,
-            content=html,
-        )
-
-    def process_file(self, filepath: Path) -> tuple[dict[str, t.Any], str]:
-        if not filepath.exists():
-            raise FileNotFoundError(f"File {filepath} does not exist.")
-
-        logger.debug("Processing page: %s", filepath.relative_to(self.pages_dir / self.prefix))
-        source = filepath.read_text(encoding="utf-8")
-        meta, source = utils.extract_metadata(source)
-        html = self.render_markdown(source)
-        return meta, Markup(html)
-
-    def render_markdown(self, source: str) -> str:
-        source = source.strip()
-        html = self.md_renderer.convert(source).strip()
-        html = html.replace("<pre><span></span>", "<pre>")
-        html = self.render_autodoc(html)
-        return html
 
     def markdown_filter(self, source: str, code: str = "") -> str:
         source = dedent(source.strip("\n")).strip()
@@ -287,7 +189,198 @@ class Docs:
         html = html.replace("<pre><span></span>", "<pre>")
         return Markup(html)
 
-    def render_autodoc(self, html: str):
+    def translate(self, key: str, **kwargs) -> str:
+        """
+        Translate a key using the strings dictionary.
+        If the key does not exist, return the key itself.
+        """
+        string = self.strings.get(key, key)
+        return string.format(**kwargs)
+
+    def insert_asset(self, asset: str) -> str:
+        """
+        Read the asset and return the content
+        """
+        asset_path = self.assets_dir / asset
+        if asset_path.exists():
+            return Markup(asset_path.read_text(encoding="utf-8").strip())
+        return ""
+
+    # Private
+
+    def _process_pages(self, user_pages: TUserPages) -> tuple[list[NavItem], list[PageData]]:
+        """Recursively process the given pages list and returns navigation and flat page list.
+
+        Input:
+
+        ```python
+        pages= [
+            "intro.md",
+            {
+                "title": "Getting Started",
+                "icon": "icons/rocket.svg",
+                "pages": [
+                    "start/installation.md",
+                    "start/usage.md",
+                    {
+                        "title": "Migrating from MkDocs",
+                        "pages": [
+                            "start/advanced/configuration.md",
+                            "start/advanced/themes.md",
+                        ],
+                    },
+                ]
+            },
+        ]
+        ```
+
+        Output:
+
+        ```python
+        # nav (actually a list of NavItem objects, not dicts)
+        [
+            {
+                "id": "intro",
+                "title": "Introduction",
+                "url": "/docs/intro/",
+                "icon": "",
+                "pages": []
+            },
+            {
+                "id": "65139efb38a24794b11c253e3aa72fc2",
+                "title": "Getting Started",
+                "icon": "icons/rocket.svg",
+                "pages": [
+                    {
+                        "id": "start-installation",
+                        "title": "Installation",
+                        "url": "/docs/start/installation/",
+                        "icon": "",
+                        "pages": []
+                    },
+                    {
+                        "id": "start-usage",
+                        "title": "Usage",
+                        "url": "/docs/start/usage/",
+                        "icon": "",
+                        "pages": []
+                    },
+                {
+                    "id": "6513943434324794b11c253e3aa72fa3",
+                    "title": "Migrating from MkDocs",
+                    "icon": "",
+                    "pages": [
+                        {
+                            "id": "start-advanced-configuration",
+                            "title": "Configuration",
+                            "url": "/docs/start/advanced/configuration/",
+                            "icon": "icons/cog.svg",
+                            "pages": []
+                        },
+                        {
+                            "id": "start-advanced-themes",
+                            "title": "Themes",
+                            "url": "/docs/start/advanced/themes/",
+                            "icon": "icons/themes.svg",
+                            "pages": []
+                        },
+                    ]
+                },
+                ]
+            },
+        ]
+        ```
+
+        ```python
+        # pages
+        [
+            <Page /docs/intro/>,
+            <Page /docs/start/installation/>,
+            <Page /docs/start/usage/>,
+            <Page /docs/start/advanced/configuration/>,
+            <Page /docs/start/advanced/themes/>,
+        ]
+        ```
+        """
+        pages: list[PageData] = []
+
+        def _process(user_pages: TUserPages, section: str = "") -> list[NavItem]:
+            items = []
+
+            for user_page in user_pages:
+                # Section
+                if isinstance(user_page, dict):
+                    us_title = user_page.get("title")
+                    if not us_title:
+                        raise ValueError(f"Section entry is missing 'title': {user_page}")
+                    us_pages = user_page.get("pages", [])
+                    if not isinstance(us_pages, list) or not us_pages:
+                        raise ValueError(f"Section entry has invalid or empty 'pages': {user_page}")
+                    item = NavItem(
+                        title=us_title,
+                        url="",
+                        icon=user_page.get("icon") or "",
+                        pages=_process(us_pages, section=us_title),
+                    )
+                    items.append(item)
+
+                # Page
+                elif isinstance(user_page, str):
+                    page = self._process_page(user_page, section=section)
+                    pages.append(page)
+                    item = NavItem(
+                        title=page.title,
+                        url=page.url,
+                        icon=page.icon,
+                    )
+                    items.append(item)
+
+                else:
+                    raise ValueError(f"Invalid page entry: {user_page}")
+
+            return items
+
+        nav = _process(user_pages)
+        self._set_prev_next(pages)
+        for page in pages:
+            page.search_data = search.extract_search_data(page)
+        return nav, pages
+
+    def _process_page(self, filename: str, section: str = "") -> PageData:
+        filepath = self.pages_dir / self.prefix / filename
+        meta, html = self._process_file(filepath)
+
+        url = f"/docs/{Path(filename).with_suffix('').as_posix().strip('/')}/"
+        if self.prefix:
+            url = f"/{self.prefix}{url}"
+
+        return PageData(
+            section=section,
+            title=meta.get("title", filepath.name),
+            icon=meta.get("icon", ""),
+            url=url,
+            meta=meta,
+            content=html,
+        )
+
+    def _process_file(self, filepath: Path) -> tuple[dict[str, t.Any], str]:
+        if not filepath.exists():
+            raise FileNotFoundError(f"File {filepath} does not exist.")
+
+        logger.debug("Processing page: %s", filepath.relative_to(self.pages_dir / self.prefix))
+        source = filepath.read_text(encoding="utf-8")
+        meta, source = utils.extract_metadata(source)
+        html = self._render_markdown(source)
+        return meta, Markup(html)
+
+    def _render_markdown(self, source: str) -> str:
+        source = source.strip()
+        html = self.md_renderer.convert(source).strip()
+        html = html.replace("<pre><span></span>", "<pre>")
+        html = self._render_autodoc(html)
+        return html
+
+    def _render_autodoc(self, html: str):
         while True:
             match = RX_AUTODOC.search(html)
             if not match:
@@ -309,14 +402,36 @@ class Docs:
 
         return html
 
-    def render_pages(self, pages: list[PageData]) -> None:
-        for page in pages:
-            if page.pages:
-                self.render_pages(page.pages)
-            else:
-                self.render_page(page)
+    def _set_prev_next(self, pages: list[PageData]) -> None:
+        """Set the previous and next references for each page in the
+        given list of pages. This modifies the pages in place.
+        """
+        last_index_with_next = len(pages) - 1
 
-    def render_page(self, page: PageData) -> None:
+        for i, page in enumerate(pages):
+            if i > 0:
+                prev_page = pages[i - 1]
+                page.prev = PageRef(
+                    id=prev_page.id,
+                    title=prev_page.title,
+                    url=prev_page.url,
+                    section=prev_page.section
+                )
+            else:
+                page.prev = None
+
+            if i < last_index_with_next:
+                next_page = pages[i + 1]
+                page.next = PageRef(
+                    id=next_page.id,
+                    title=next_page.title,
+                    url=next_page.url,
+                    section=next_page.section
+                )
+            else:
+                page.next = None
+
+    def _render_page(self, page: PageData) -> None:
         outpath = self.build_dir / str(page.url).strip("/") / "index.html"
         outpath.parent.mkdir(parents=True, exist_ok=True)
 
@@ -326,36 +441,37 @@ class Docs:
         )
         outpath.write_text(html, encoding="utf-8")
 
-    def render_search_page(self) -> None:
+    def _render_search_page(self) -> None:
         outpath = self.build_dir / self.prefix / "search" / "index.html"
         outpath.parent.mkdir(parents=True, exist_ok=True)
         url = f"/{self.prefix}/search/" if self.prefix else "/search/"
 
         page = PageData(
-            section=SectionRef(id="", title="Search", url=url),
             title="Search",
             url=url,
             view="search.jinja"
         )
+        search_data = {}
+        for page in self.site.pages:
+            search_data.update(page.search_data or {})
 
         html = self.catalog.render(
             page.view,
-            search_data=self.search_data,
+            search_data=search_data,
             globals={"page": page}
         )
         outpath.write_text(html, encoding="utf-8")
 
-    def render_index_page(self) -> None:
+    def _render_index_page(self) -> None:
         outpath = self.build_dir / self.prefix / "index.html"
         outpath.parent.mkdir(parents=True, exist_ok=True)
         url = f"/{self.prefix}/" if self.prefix else "/"
 
         md_index = self.pages_dir / self.prefix / "index.md"
         if md_index.exists():
-            meta, html = self.process_file(md_index)
+            meta, html = self._process_file(md_index)
             page = PageData(
                 id="index",
-                section=SectionRef(id="", title=self.site.name, url=url),
                 title=meta.get("title", self.site.name),
                 url=url,
                 view="index.jinja",
@@ -364,7 +480,6 @@ class Docs:
         else:
             # Just render the template page
             page = PageData(
-                section=SectionRef(id="", title=self.site.name, url=url),
                 title=self.site.name,
                 url=url,
                 view="index.jinja",
@@ -376,12 +491,12 @@ class Docs:
         )
         outpath.write_text(html, encoding="utf-8")
 
-    def render_docs_redirect_page(self) -> None:
-        section = self.site.pages[0] if self.site.pages else None
-        if not section:
+    def _render_docs_redirect_page(self) -> None:
+        first_page = self.site.pages[0] if self.site.pages else None
+        if not first_page:
             return
-        # Use the first page in the section or the section itself if no pages
-        url = section[1][0].url if section[1] else section[0]["url"]
+        # Use the first page
+        url = first_page.url
         if self.prefix:
             url = url.removeprefix(f"/{self.prefix}/docs/")
         else:
@@ -397,7 +512,7 @@ class Docs:
         )
         outpath.write_text(html, encoding="utf-8")
 
-    def render_extra(self) -> None:
+    def _render_extra(self) -> None:
         for file in (
             "sitemap.xml",
             "robots.txt",
@@ -412,7 +527,7 @@ class Docs:
                 continue
             outpath.write_text(body, encoding="utf-8")
 
-    def symlink_assets(self) -> None:
+    def _symlink_assets(self) -> None:
         if not self.assets_dir.exists():
             return
         target_path = self.build_dir / self.prefix / "assets"
@@ -423,7 +538,7 @@ class Docs:
 
         target_path.symlink_to(self.assets_dir, target_is_directory=True)
 
-    def copy_assets(self) -> None:
+    def _copy_assets(self) -> None:
         if not self.assets_dir.exists():
             return
         target_path = self.build_dir / self.prefix / "assets"
@@ -433,7 +548,7 @@ class Docs:
             dirs_exist_ok=True,
         )
 
-    def add_prefix_to_urls(self) -> None:
+    def _add_prefix_to_urls(self) -> None:
         """Update URLs in the site data for archived documentation."""
         if not self.prefix:
             return
@@ -450,20 +565,3 @@ class Docs:
 
             new_content = rx_urls.sub(replace_url, content)
             html_file.write_text(new_content)
-
-    def translate(self, key: str, **kwargs) -> str:
-        """
-        Translate a key using the strings dictionary.
-        If the key does not exist, return the key itself.
-        """
-        string = self.strings.get(key, key)
-        return string.format(**kwargs)
-
-    def insert_asset(self, asset: str) -> str:
-        """
-        Read the asset and return the content
-        """
-        asset_path = self.assets_dir / asset
-        if asset_path.exists():
-            return Markup(asset_path.read_text(encoding="utf-8").strip())
-        return ""
