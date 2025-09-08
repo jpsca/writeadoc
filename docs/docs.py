@@ -10,7 +10,7 @@ pages = [
     {
         "title": "Markdown",
         "pages": [
-            "markdown/intro.md",
+            "markdown.md",
             "markdown/blocks.md",
             "markdown/formatting.md",
             "markdown/links.md",

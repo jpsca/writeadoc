@@ -5,41 +5,27 @@ from uuid import uuid4
 
 
 __all__ = (
-    "TUserPage",
     "TUserSection",
     "TUserPages",
     "PageRef",
-    "SearchPageData",
+    "TSearchPageData",
     "NavItem",
     "PageData",
     "SiteData",
 )
 
 
-class TUserPage(t.TypedDict):
-    path: str
-    icon: str | None
-
-
 class TUserSection(t.TypedDict):
     title: str
+    path: str
     icon: str | None
     pages: "TUserPages"
 
 
-TUserPages = Sequence[str | TUserPage | TUserSection]
+TUserPages = Sequence[str | TUserSection]
 
 
-@dataclass
-class PageRef:
-    id: str
-    title: str
-    url: str
-    section: str
-
-
-@dataclass
-class SearchPageData:
+class TSearchPageData(t.TypedDict):
     """
     SearchData represents the data structure for search functionality.
     It contains a mapping of page identifiers to their searchable content.
@@ -51,7 +37,7 @@ class SearchPageData:
     url: str
 
 
-TSearchData = dict[str, SearchPageData]
+TSearchData = dict[str, TSearchPageData]
 
 
 class NavItem:
@@ -96,30 +82,42 @@ class NavItem:
         return str(self.dict())
 
 
+@dataclass
+class PageRef:
+    id: str
+    title: str
+    url: str
+    section: str
+
+
 class PageData:
     id: str
     title: str
     url: str
     icon: str
     view: str
-    section: str
+    section_title: str
+    section_url: str
     meta: dict[str, t.Any]
     content: str
     prev: PageRef | None = None
     next: PageRef | None = None
     search_data: TSearchData | None = None
+    toc: list[dict[str, t.Any]]
 
     def __init__(
         self,
         *,
-        section: str = "",
+        section_title: str = "",
+        section_url: str = "",
         id: str = "",
         title: str,
         url: str = "",
         icon: str = "",
         meta: dict[str, t.Any] | None = None,
-        view: str = "page.jinja",
+        view: str = "",
         content: str = "",
+        toc: list[dict[str, t.Any]] | None = None,
     ):
         meta = meta or {}
         slug = (
@@ -130,13 +128,15 @@ class PageData:
             .strip("-")
         )
         self.id = id or slug or uuid4().hex
-        self.section = section
+        self.section_title = section_title
+        self.section_url = section_url
         self.title = title
         self.url = url
         self.icon = icon
-        self.view = meta.get("view", view)
+        self.view = view or meta.get("view", "page.jinja")
         self.meta = meta
         self.content = content
+        self.toc = toc or []
 
     def __repr__(self) -> str:
         return f"<Page {self.url}>"

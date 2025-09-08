@@ -1,5 +1,7 @@
 {# import "./layout.jinja" as Layout #}
 {# import "./toc.jinja" as Toc #}
+{# import "./pagetoc.jinja" as PageToc #}
+{# import "./pagetoc_select.jinja" as PageTocSelect #}
 
 <Layout>
   <div class="page page--docs">
@@ -23,6 +25,7 @@
 
       <article>
         <h1>{{ page.title }}</h1>
+        {# <PageTocSelect /> #}
         {{ page.content or content }}
         <nav>
           {%- if page.prev %}
@@ -43,6 +46,8 @@
           {%- endif %}
         </nav>
       </article>
+
+      <PageToc />
     </div>
   </div>
 </Layout>

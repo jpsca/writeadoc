@@ -19,9 +19,10 @@ from .autodoc import Autodoc
 from .types import (
     NavItem,
     PageData,
-    SiteData,
     PageRef,
+    SiteData,
     TUserPages,
+    TUserSection,
 )
 from .utils import logger, print_random_messages
 
@@ -224,9 +225,10 @@ class Docs:
                     "start/usage.md",
                     {
                         "title": "Migrating from MkDocs",
+                        "path": "start/migrating.md",
                         "pages": [
-                            "start/advanced/configuration.md",
-                            "start/advanced/themes.md",
+                            "start/migrating/configuration.md",
+                            "start/migrating/themes.md",
                         ],
                     },
                 ]
@@ -268,19 +270,20 @@ class Docs:
                 {
                     "id": "6513943434324794b11c253e3aa72fa3",
                     "title": "Migrating from MkDocs",
+                    "url": "/docs/start/migrating/",
                     "icon": "",
                     "pages": [
                         {
-                            "id": "start-advanced-configuration",
+                            "id": "start-migrating-configuration",
                             "title": "Configuration",
-                            "url": "/docs/start/advanced/configuration/",
+                            "url": "/docs/start/migrating/configuration/",
                             "icon": "icons/cog.svg",
                             "pages": []
                         },
                         {
-                            "id": "start-advanced-themes",
+                            "id": "start-migrating-themes",
                             "title": "Themes",
-                            "url": "/docs/start/advanced/themes/",
+                            "url": "/docs/start/migrating/themes/",
                             "icon": "icons/themes.svg",
                             "pages": []
                         },
@@ -297,71 +300,97 @@ class Docs:
             <Page /docs/intro/>,
             <Page /docs/start/installation/>,
             <Page /docs/start/usage/>,
-            <Page /docs/start/advanced/configuration/>,
-            <Page /docs/start/advanced/themes/>,
+            <Page /docs/start/migrating/>,
+            <Page /docs/start/migrating/configuration/>,
+            <Page /docs/start/migrating/themes/>,
         ]
         ```
         """
         pages: list[PageData] = []
 
-        def _process(user_pages: TUserPages, section: str = "") -> list[NavItem]:
+        def _process(
+            user_pages: TUserPages,
+            section_title: str = "",
+            section_url: str = "",
+        ) -> list[NavItem]:
             items = []
 
             for user_page in user_pages:
                 # Section
                 if isinstance(user_page, dict):
-                    us_title = user_page.get("title")
-                    if not us_title:
-                        raise ValueError(f"Section entry is missing 'title': {user_page}")
-                    us_pages = user_page.get("pages", [])
-                    if not isinstance(us_pages, list) or not us_pages:
-                        raise ValueError(f"Section entry has invalid or empty 'pages': {user_page}")
-                    item = NavItem(
-                        title=us_title,
-                        url="",
-                        icon=user_page.get("icon") or "",
-                        pages=_process(us_pages, section=us_title),
-                    )
+                    item = _process_section(user_page, section_title=section_title, section_url=section_url)
                     items.append(item)
-
                 # Page
                 elif isinstance(user_page, str):
-                    page = self._process_page(user_page, section=section)
-                    pages.append(page)
-                    item = NavItem(
-                        title=page.title,
-                        url=page.url,
-                        icon=page.icon,
-                    )
+                    item = _process_page(user_page, section_title=section_title, section_url=section_url)
                     items.append(item)
-
                 else:
                     raise ValueError(f"Invalid page entry: {user_page}")
 
             return items
+
+        def _process_section(
+            user_page: TUserSection,
+            section_title: str = "",
+            section_url: str = "",
+        ) -> NavItem:
+            title = user_page.get("title")
+            if not title:
+                raise ValueError(f"Section entry is missing 'title': {user_page}")
+
+            user_pages = user_page.get("pages", [])
+            if not isinstance(user_pages, list) or not user_pages:
+                raise ValueError(f"Section entry has invalid or empty 'pages': {user_page}")
+
+            sec_path = user_page.get("path")
+            item = None
+            if sec_path:
+                item = _process_page(sec_path, section_title=section_title, section_url=section_url)
+
+            return NavItem(
+                title=title,
+                id=item.id if item else "",
+                url=item.url if item else "",
+                icon=user_page.get("icon") or (item.icon if item else ""),
+                pages=_process(user_pages, section_title=title),
+            )
+
+        def _process_page(
+            filename: str,
+            section_title: str = "",
+            section_url: str = "",
+        ) -> NavItem:
+            filepath = self.pages_dir / self.prefix / filename
+            meta, html = self._process_file(filepath)
+
+            url = f"/docs/{Path(filename).with_suffix('').as_posix().strip('/')}/"
+            if self.prefix:
+                url = f"/{self.prefix}{url}"
+
+            page = PageData(
+                section_title=section_title,
+                section_url=section_url,
+                title=meta.get("title", filepath.name),
+                icon=meta.get("icon", ""),
+                url=url,
+                meta=meta,
+                content=html,
+                toc=self.md_renderer.toc_tokens,  # type: ignore
+            )
+            pages.append(page)
+
+            return NavItem(
+                title=page.title,
+                id=page.id,
+                url=page.url,
+                icon=page.icon,
+            )
 
         nav = _process(user_pages)
         self._set_prev_next(pages)
         for page in pages:
             page.search_data = search.extract_search_data(page)
         return nav, pages
-
-    def _process_page(self, filename: str, section: str = "") -> PageData:
-        filepath = self.pages_dir / self.prefix / filename
-        meta, html = self._process_file(filepath)
-
-        url = f"/docs/{Path(filename).with_suffix('').as_posix().strip('/')}/"
-        if self.prefix:
-            url = f"/{self.prefix}{url}"
-
-        return PageData(
-            section=section,
-            title=meta.get("title", filepath.name),
-            icon=meta.get("icon", ""),
-            url=url,
-            meta=meta,
-            content=html,
-        )
 
     def _process_file(self, filepath: Path) -> tuple[dict[str, t.Any], str]:
         if not filepath.exists():
@@ -415,7 +444,7 @@ class Docs:
                     id=prev_page.id,
                     title=prev_page.title,
                     url=prev_page.url,
-                    section=prev_page.section
+                    section=prev_page.section_title
                 )
             else:
                 page.prev = None
@@ -426,7 +455,7 @@ class Docs:
                     id=next_page.id,
                     title=next_page.title,
                     url=next_page.url,
-                    section=next_page.section
+                    section=next_page.section_title
                 )
             else:
                 page.next = None
@@ -452,8 +481,8 @@ class Docs:
             view="search.jinja"
         )
         search_data = {}
-        for page in self.site.pages:
-            search_data.update(page.search_data or {})
+        for p in self.site.pages:
+            search_data.update(p.search_data or {})
 
         html = self.catalog.render(
             page.view,

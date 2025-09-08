@@ -24,17 +24,17 @@ Always put a space between the number signs and the heading name, and use blank 
 ###### Header 6
 ```
 
-# Header 1
+# Header 1 {skip-toc}
 
-## Header 2
+## Header 2 {skip-toc}
 
-### Header 3
+### Header 3 {skip-toc}
 
-#### Header 4
+#### Header 4 {skip-toc}
 
-##### Header 5
+##### Header 5 {skip-toc}
 
-###### Header 6
+###### Header 6 {skip-toc}
 
 ///
 

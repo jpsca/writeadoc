@@ -18,6 +18,7 @@ from watchdog.events import (
 from watchdog.observers import Observer
 
 from .exceptions import InvalidFrontMatter
+from .page_toc import PageTocExtension
 
 
 logger = logging.getLogger("writeadoc")
@@ -26,7 +27,7 @@ DEFAULT_MD_EXTENSIONS = [
     "attr_list",
     "md_in_html",
     "tables",
-    "toc",
+    PageTocExtension(),
     "pymdownx.betterem",
     "pymdownx.blocks.admonition",
     "pymdownx.blocks.details",
@@ -123,10 +124,7 @@ def start_server(build_folder: str) -> None:
 
 
 def start_observer(
-    path,
-    run_callback: Callable,
-    *,
-    path_filter: tuple[str, ...] = ("content", "views")
+    path, run_callback: Callable, *, path_filter: tuple[str, ...] = ("content", "views")
 ) -> None:
     """Start a file system observer to watch for changes."""
     event_handler = ChangeHandler(run_callback, path_filter)
@@ -211,3 +209,4 @@ def print_random_messages(num=2) -> None:
     for message in random.sample(RANDOM_MESSAGES, num):
         print(f"{message}...")
     print()
+

@@ -1,0 +1,18 @@
+{% macro render_toc(items) %}
+	<ul>
+	{% for item in items -%}
+	<li class="level--{{ item.level }}"><a href="#{{ item.id }}">{{ item.html|safe }}</a>
+	{%- if item.children %}{{ render_toc(item.children) }}{% endif -%}
+	</li>
+	{% endfor %}
+	</ul>
+{% endmacro %}
+
+<nav class="pagetoc">
+{% if page.toc -%}
+<div>
+	<h4>{{ _('ON_THIS_PAGE') }}</h4>
+	{{ render_toc(page.toc) }}
+</div>
+{%- endif %}
+</nav>

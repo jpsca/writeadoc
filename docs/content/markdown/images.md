@@ -162,9 +162,9 @@ Modern browsers provide [native support for lazy-loading images](https://caniuse
 /// example | Image, centered
 
 ```md
-![Alt text](/assets/images/opengraph.jpg){ loading=lazy }
+![Alt text](/assets/images/opengraph.png){ loading=lazy }
 ```
 
-![Alt text](/assets/images/opengraph.jpg){ loading=lazy width=600 }
+![Alt text](/assets/images/opengraph.png){ loading=lazy width=600 }
 
 ///

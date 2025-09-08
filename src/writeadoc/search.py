@@ -231,7 +231,7 @@ class TextExtractor(HTMLParser):
         self.docs[f"{url}{self._id}"] = {
             "title": title,
             "content": content,
-            "section": self._page.section,
+            "section": self._page.section_title,
             "url": url,
         }
         self._content = []
