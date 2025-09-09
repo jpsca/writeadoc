@@ -8,9 +8,8 @@ pages = [
     "languages.md",
     "versions.md",
     {
-        "title": "Markdown",
+        "path": "markdown.md",
         "pages": [
-            "markdown.md",
             "markdown/blocks.md",
             "markdown/formatting.md",
             "markdown/links.md",

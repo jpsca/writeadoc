@@ -95,7 +95,8 @@ This is a note
 WriteADoc include these default types: `note`, `tip`, `warning`, `error`, `new`, `example`, and `question`.
 
 /// note
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et
+Lorem ipsum dolor sit amet, consectetur
+adipiscing elit. Nulla et
 euismod nulla. Curabitur feugiat, tortor non consequat finibus, justo
 purus auctor massa, nec semper lorem quam in massa.
 ///
@@ -103,7 +104,8 @@ purus auctor massa, nec semper lorem quam in massa.
 <!-- -->
 
 /// tip
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et
+Lorem ipsum dolor sit amet, consectetur
+adipiscing elit. Nulla et
 euismod nulla. Curabitur feugiat, tortor non consequat finibus, justo
 purus auctor massa, nec semper lorem quam in massa.
 ///
@@ -111,7 +113,8 @@ purus auctor massa, nec semper lorem quam in massa.
 <!-- -->
 
 /// warning
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et
+Lorem ipsum dolor sit amet, consectetur
+adipiscing elit. Nulla et
 euismod nulla. Curabitur feugiat, tortor non consequat finibus, justo
 purus auctor massa, nec semper lorem quam in massa.
 ///
@@ -119,7 +122,8 @@ purus auctor massa, nec semper lorem quam in massa.
 <!-- -->
 
 /// error
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et
+Lorem ipsum dolor sit amet, consectetur
+adipiscing elit. Nulla et
 euismod nulla. Curabitur feugiat, tortor non consequat finibus, justo
 purus auctor massa, nec semper lorem quam in massa.
 ///
@@ -127,7 +131,8 @@ purus auctor massa, nec semper lorem quam in massa.
 <!-- -->
 
 /// new
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et
+Lorem ipsum dolor sit amet, consectetur
+adipiscing elit. Nulla et
 euismod nulla. Curabitur feugiat, tortor non consequat finibus, justo
 purus auctor massa, nec semper lorem quam in massa.
 ///
@@ -141,7 +146,8 @@ In this type of admonition, the font size is slightly larger.
 <!-- -->
 
 /// question
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et
+Lorem ipsum dolor sit amet, consectetur
+adipiscing elit. Nulla et
 euismod nulla. Curabitur feugiat, tortor non consequat finibus, justo
 purus auctor massa, nec semper lorem quam in massa.
 ///
@@ -196,52 +202,60 @@ extension, and can be configured in the markdown options.
 
 ## Inline admonitions
 
-If the screen is wide enough, you can have inline admonitions, aligned to the left or right, by adding those classes.
+If the screen is wide enough, you can have inline admonitions, aligned to the left or right, by wrapping the content
+in a `<div markdown="1"></div>` tag and adding the "left" or "right" class to the admonition.
+Leave a blank line before and after the admonition.
 
-/// example | Adminition, aligned to the left
+/// example | Admonition, aligned to the left (if your screen width >= 960px)
 
 /// tip | Lorem Ipsum
     attrs: { class: left }
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla.
-Curabitur feugiat, tortor non consequat finibus, justo purus auctor massa,
-nec semper lorem quam in massa.
+Lorem ipsum dolor sit amet, consectetur
+adipiscing elit. Nulla et euismod nulla.
 ///
 
 ```md
+<div markdown="1">
+
 /// tip | Lorem Ipsum
     attrs: { class: left }
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla et euismod nulla. Curabitur feugiat, tortor non
-consequat finibus, justo purus auctor massa, nec semper
-lorem quam in massa.
+Lorem ipsum dolor sit amet, consectetur
+adipiscing elit. Nulla et euismod nulla.
 ///
+
+Some other content
+
+</div>
 ```
 
 ///
 
 <!--  -->
 
-/// example | Adminition, aligned to the right
+/// example | Admonition, aligned to the right (if your screen width >= 960px)
 
 /// tip | Lorem Ipsum
     attrs: { class: right }
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla.
-Curabitur feugiat, tortor non consequat finibus, justo purus auctor massa,
-nec semper lorem quam in massa.
+Lorem ipsum dolor sit amet, consectetur
+adipiscing elit. Nulla et euismod nulla.
 ///
 
 ```md
+<div markdown="1">
+
 /// tip | Lorem Ipsum
     attrs: { class: right }
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nulla et euismod nulla. Curabitur feugiat, tortor non
-consequat finibus, justo purus auctor massa, nec semper
-lorem quam in massa.
+Lorem ipsum dolor sit amet, consectetur
+adipiscing elit. Nulla et euismod nulla.
 ///
+
+Some other content
+
+</div>
 ```
 
 ///

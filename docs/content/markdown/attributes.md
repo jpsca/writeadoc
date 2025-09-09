@@ -10,8 +10,8 @@ An example attribute list might look like this:
 { #someid .someclass somekey='some value' }
 ```
 
-- A word which starts with a hash `#` will set the id of an element.
-- A word which starts with a dot `.` will be added to the list of classes assigned to an element.
+- A word that starts with a hash `#` will set the id of an element.
+- A word that starts with a dot `.` will be added to the list of classes assigned to an element.
 - A key/value pair `somekey="some value"` will assign that pair to the element.
 
 Be aware that while the dot syntax will add to a class, using key/value pairs will always override any previously defined attribute.
@@ -104,4 +104,4 @@ There are a few types of elements with which attribute lists do not work, most n
 For example, the `ul` and `ol` elements do not exist in Markdown. They are only implied by the presence of list items (`li`).
 There is no way to use an attribute list to define attributes on implied elements, including but not limited to: `ul`, `ol`, `dl`, `blockquote`, `table`, `thead`, `tbody`, and `tr`.
 
-As a workaround, because Markdown is a subset of HTML, anything that cannot be expressed in Markdown can always be expressed with raw HTML directly.
+As a workaround, because Markdown is a subset of HTML, anything that cannot be expressed in Markdown can always be expressed directly with raw HTML.

@@ -24,7 +24,7 @@ from .types import (
     TUserPages,
     TUserSection,
 )
-from .utils import logger, print_random_messages
+from .utils import logger, print_random_message
 
 
 RX_AUTODOC = re.compile(r"<p>\s*:::\s+([\w\.]+)((?:\s+\w+=\w+)*)\s*</p>")
@@ -73,6 +73,13 @@ class Docs:
             output_format="html",
             tab_length=2,
         )
+        self.md_filter_renderer = markdown.Markdown(
+            extensions=[*md_extensions],
+            extension_configs={**md_config},
+            output_format="html",
+            tab_length=2,
+        )
+
 
         self.autodoc = Autodoc()
 
@@ -150,7 +157,7 @@ class Docs:
         signal.signal(signal.SIGTERM, shutdown)
 
     def build(self, devmode: bool = True, archive: bool = False) -> None:
-        print_random_messages()
+        print("Building documentation...")
         self.init_catalog()
 
         nav, pages = self._process_pages(self.pages)
@@ -166,12 +173,16 @@ class Docs:
         if self.prefix:
             self.site.base_url = f"{self.site.base_url}/{self.prefix}"
 
+        print_random_message()
         for page in pages:
             self._render_page(page)
+        print_random_message()
         self._render_search_page()
+        print_random_message()
         self._render_index_page()
         self._render_docs_redirect_page()
         self._render_extra()
+        print()
 
         if devmode:
             self._symlink_assets()
@@ -186,7 +197,8 @@ class Docs:
         source = dedent(source.strip("\n")).strip()
         if code:
             source = f"\n```{code}\n{source}\n```\n"
-        html = self.md_renderer.convert(source).strip()
+        self.md_filter_renderer.reset()
+        html = self.md_filter_renderer.convert(source).strip()
         html = html.replace("<pre><span></span>", "<pre>")
         return Markup(html)
 
@@ -334,24 +346,31 @@ class Docs:
             section_title: str = "",
             section_url: str = "",
         ) -> NavItem:
-            title = user_page.get("title")
-            if not title:
-                raise ValueError(f"Section entry is missing 'title': {user_page}")
-
             user_pages = user_page.get("pages", [])
             if not isinstance(user_pages, list) or not user_pages:
                 raise ValueError(f"Section entry has invalid or empty 'pages': {user_page}")
 
+            title = user_page.get("title")
+            icon = user_page.get("icon") or ""
+            id = user_page.get("id") or ""
+            url = ""
+
             sec_path = user_page.get("path")
-            item = None
             if sec_path:
                 item = _process_page(sec_path, section_title=section_title, section_url=section_url)
+                title = title or item.title
+                icon = icon or item.icon
+                id = id or item.id
+                url = item.url
+
+            if not title:
+                raise ValueError(f"Section entry is missing 'title': {user_page}")
 
             return NavItem(
                 title=title,
-                id=item.id if item else "",
-                url=item.url if item else "",
-                icon=user_page.get("icon") or (item.icon if item else ""),
+                id=id,
+                url=url,
+                icon=icon,
                 pages=_process(user_pages, section_title=title),
             )
 
@@ -375,7 +394,7 @@ class Docs:
                 url=url,
                 meta=meta,
                 content=html,
-                toc=self.md_renderer.toc_tokens,  # type: ignore
+                toc=getattr(self.md_renderer, "toc_tokens", []),
             )
             pages.append(page)
 
@@ -404,6 +423,7 @@ class Docs:
 
     def _render_markdown(self, source: str) -> str:
         source = source.strip()
+        self.md_renderer.reset()
         html = self.md_renderer.convert(source).strip()
         html = html.replace("<pre><span></span>", "<pre>")
         html = self._render_autodoc(html)
@@ -505,6 +525,7 @@ class Docs:
                 url=url,
                 view="index.jinja",
                 content=html,
+                toc=getattr(self.md_renderer, "toc_tokens", []),
             )
         else:
             # Just render the template page

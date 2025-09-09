@@ -70,7 +70,7 @@ __This will all be bold __ because of the placement of the center underscores.__
 
 __This will NOT all be bold__ because of the placement of the center underscores.__
 
-__This will all be bold_ because of the token is less than that of the surrounding.__
+__This will all be bold_ because the token is less than that of the surrounding.__
 
 ///
 
@@ -126,6 +126,10 @@ CH~3~CH~2~OH
 
 text~a\ subscript~
 
+a^2^ + 2ab + b^2^
+
+text^a\ superscript^
+
 ///
 
 
@@ -152,7 +156,7 @@ To highlight text, surround it with double `=`. To highlight an insertion, use d
 
 ## Symbols
 
-Although Markdown doesn't have native support for including special symbols, WriteADoc makes it easy to create *some* special characters such as trademarks, arrows, fractions, etc.
+Although Markdown doesn't have native support for including special symbols, WriteADoc makes it easy to create *some* special characters, such as trademarks, arrows, fractions, etc.
 
 | Markdown         | Result
 | ---------------- | -------------
@@ -168,4 +172,4 @@ Although Markdown doesn't have native support for including special symbols, Wri
 | `1/2, 1/4, etc.` | 1/2, 1/4, etc.
 | `1st 2nd etc.`   | 1st 2nd etc.
 
-For anything else, you can use HTML code or Unicode characters: 👈 😍 👍 🐱 👀.
+For anything else, you can use HTML code or Unicode characters: 👈 😍

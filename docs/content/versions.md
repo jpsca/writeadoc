@@ -5,8 +5,8 @@ icon: icons/versions.svg
 
 When we talk about documentation versioning, we refer to two different things:
 
-A) One is to archive a particular version of your docs for future reference, so you never need to edit those files again.
-B) The other is to have two or more separate "live" versions of your documentation that you need to keep separate but want to keep updating.
+A) One is archiving a particular version of your docs for future reference, so you never need to edit those files again.
+B) The other is having two or more separate "live" versions of your documentation that you need to keep separate but want to keep updating.
 
 Luckily, WriteADoc makes it easy to do either or both.
 
@@ -52,9 +52,9 @@ If you haven't removed it from your template, a banner will be added to every pa
 
 ### 3. Add the version to the selector
 
-Add a link to the list of options of the version selector at `views/layout.jinja` and rebuild your current documentation. You might need to un-comment the selector if it's your first time using it.
+Add a link to the list of options in the version selector at `views/layout.jinja` and rebuild your current documentation. You might need to uncomment the selector if it's your first time using it.
 
-```html+jinja {title="views/laguage_popover.jinja" linenums="7"}
+```html+jinja {title="views/language_popover.jinja" linenums="7"}
 <div id="version-selector" popover="auto">
   <div>
     <a href="/1.0/" {% if site.version == "1.0" %}class="selected"{% endif %}>1.0</a>
@@ -65,12 +65,12 @@ Add a link to the list of options of the version selector at `views/layout.jinja
 
 /// note
 
-The version selector does not render in archived versions. Otherwise they would link only to versions that existed when created and that could not even be available anymore.
+The version selector does not render in archived versions. Otherwise, it would link only to versions that existed when created, which might not even be available anymore.
 ///
 
 ### 4. Deploy
 
-You can now copy the generated version folder with the rest of your live documentation, so your main documentation will be at `http://example.com/`, and the documentation for the archived version will be available at `http://example.com/{VERSION}/`.
+You can now copy the generated version folder along with the rest of your live documentation, so your main documentation will be at `http://example.com/`, and the documentation for the archived version will be available at `http://example.com/{VERSION}/`.
 
 Make sure you also commit the `archive/` folder to your source code.
 
@@ -131,7 +131,7 @@ build/
 
 /// note
 
-The prefixes doesn't need to be equal to the version numbers. They can be any string, for example:
+The prefixes don't need to be equal to the version numbers. They can be any string, for example:
 
 ```python
 variants={
@@ -139,5 +139,3 @@ variants={
   "v2": docs_v2,
 }
 ```
-
-///

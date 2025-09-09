@@ -986,7 +986,7 @@ html.cs-light .color-scheme button.light {
 
 .footer {
   display: flex;
-  padding: var(--space-medium)
+  padding: var(--space-large) var(--space-medium);
 }
 
 .footer div {
@@ -997,6 +997,7 @@ html.cs-light .color-scheme button.light {
   gap: var(--space-medium);
   font-size: var(--font-size-xx-small);
   letter-spacing: -0.01em;
+  color: var(--color-grey-light);
 }
 
 .footer div p {
@@ -1418,7 +1419,8 @@ html.cs-light .color-scheme button.light {
   width: 100%;
 }
 
-.page article>*+* {
+.page article > *+*,
+.page article blockquote> *+* {
   margin-top: var(--flow-space, 1.4em);
 }
 

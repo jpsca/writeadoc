@@ -3,22 +3,22 @@ title: HTML
 icon: icons/html.svg
 ---
 
-Markdown is a subset of HTML, anything that cannot be expressed in Markdown can always be expressed with raw HTML directly.
-HTML is way less readable than plain Markdown so you should only use it as a last resort.
+Markdown is a subset of HTML; anything that cannot be expressed in Markdown can always be expressed directly with raw HTML.
+HTML is much less readable than plain Markdown, so you should only use it as a last resort.
 
 Use blank lines to separate block-level HTML elements, like `<div>`, `<table>`, `<p>`, etc., from the surrounding content.
 
 ## Markdown in HTML
 
-By default, Markdown ignores any content within a raw HTML block-level element. However, you can enable the parsing the content of a raw HTML block-level element as Markdown by including a `markdown` attribute on the opening tag. The markdown attribute will be stripped from the output, while all other attributes will be preserved.
+By default, Markdown ignores any content within a raw HTML block-level element. However, you can enable parsing of the content inside a raw HTML block-level element as Markdown by including a `markdown` attribute on the opening tag. The markdown attribute will be stripped from the output, while all other attributes will be preserved.
 
 The markdown attribute can be assigned one of three values: "1", "block", or "span".
 
 ### `markdown="1"`
 
-When the markdown attribute is set to "1", then the parser will use the default behavior for that specific tag.
+When the markdown attribute is set to "1", the parser will use the default behavior for that specific tag.
 
-The following tags have the block behavior by default: `article`, `aside`, `blockquote`, `body`, `colgroup`, `details`, `div`, `dl`, `fieldset`, `figcaption`, `figure`, `footer`, `form`, `group`, `header`, `hgroup`, `hr`, `iframe`, `main`, `map`, `menu`, `nav`, `noscript`, `object`, `ol`, `output`, `progress`, `section`, `table`, `tbody`, `tfoot`, `thead`, `tr`, `ul` and `video`.
+The following tags have block behavior by default: `article`, `aside`, `blockquote`, `body`, `colgroup`, `details`, `div`, `dl`, `fieldset`, `figcaption`, `figure`, `footer`, `form`, `group`, `header`, `hgroup`, `hr`, `iframe`, `main`, `map`, `menu`, `nav`, `noscript`, `object`, `ol`, `output`, `progress`, `section`, `table`, `tbody`, `tfoot`, `thead`, `tr`, `ul`, and `video`.
 
 /// example | Default "block" markdown parsing
 
@@ -38,7 +38,7 @@ renders as:
 
 ///
 
-The following tags have the span behavior by default: `address`, `dd`, `dt`, `h[1-6]`, `legend`, `li`, `p`, `td`, and `th`.
+The following tags have span behavior by default: `address`, `dd`, `dt`, `h[1-6]`, `legend`, `li`, `p`, `td`, and `th`.
 
 /// example | Default "span" markdown parsing
 
@@ -62,7 +62,7 @@ Note how an implicit paragraph was added in the first example but not in the sec
 
 ### `markdown="block"`
 
-When the markdown attribute is set to "block", then the parser will force the block behavior on the contents of the element so long as it is one of the block or span tags.
+When the markdown attribute is set to "block", the parser will force block behavior on the contents of the element, as long as it is one of the block or span tags.
 
 The content of a block element is parsed into block-level content. In other words, the text is rendered as paragraphs, headers, lists, blockquotes, etc. Any inline syntax within those elements is processed as well.
 
@@ -100,14 +100,14 @@ renders as:
 /// warning
 Forcing elements to be parsed as `block` elements when they are not by default could result in invalid HTML.
 
-For example, one could force a `<p>` element to be nested within another `<p>` element. In most cases it is
+For example, one could force a `<p>` element to be nested within another `<p>` element. In most cases, it is
 recommended to use the default behavior of `markdown="1"`.
 ///
 
 
 ### `markdown="span"`
 
-When the markdown attribute is set to "span", then the parser will force the span behavior on the contents of the element so long as it is one of the block or span tags.
+When the markdown attribute is set to "span", the parser will force span behavior on the contents of the element, as long as it is one of the block or span tags.
 
 The content of a span element is not parsed into block-level content. In other words, the content will not be rendered as paragraphs, headers, etc. Only inline syntax will be rendered, such as links, strong, emphasis, etc.
 
@@ -175,5 +175,3 @@ renders as:
 </section>
 </article>
 ```
-
-///

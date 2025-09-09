@@ -18,7 +18,6 @@ from watchdog.events import (
 from watchdog.observers import Observer
 
 from .exceptions import InvalidFrontMatter
-from .page_toc import PageTocExtension
 
 
 logger = logging.getLogger("writeadoc")
@@ -27,7 +26,7 @@ DEFAULT_MD_EXTENSIONS = [
     "attr_list",
     "md_in_html",
     "tables",
-    PageTocExtension(),
+    "writeadoc.pagetoc",
     "pymdownx.betterem",
     "pymdownx.blocks.admonition",
     "pymdownx.blocks.details",
@@ -47,7 +46,7 @@ DEFAULT_MD_CONFIG = {
     "keys": {
         "camel_case": True,
     },
-    "toc": {
+    "writeadoc.pagetoc": {
         "permalink": True,
         "permalink_title": "",
         "toc_depth": 3,
@@ -142,7 +141,7 @@ def start_observer(
         ],
     )
     observer.start()
-    print("Watching for changes. Press Ctrl+C to exit.\n")
+    print("Watching for changes. Press Ctrl+C to exit.")
     try:
         while True:
             time.sleep(1)
@@ -173,7 +172,7 @@ class ChangeHandler(FileSystemEventHandler):
         ):
             print(f"File changed ({event.event_type}):", rel_path)
             self.run_callback()
-            print("Watching for changes. Press Ctrl+C to exit.\n")
+            print("Watching for changes. Press Ctrl+C to exit.")
 
 
 RANDOM_MESSAGES = [
@@ -205,8 +204,7 @@ RANDOM_MESSAGES = [
 ]
 
 
-def print_random_messages(num=2) -> None:
-    for message in random.sample(RANDOM_MESSAGES, num):
-        print(f"{message}...")
-    print()
+def print_random_message() -> None:
+    message = random.choice(RANDOM_MESSAGES)
+    print(f"{message}...")
 

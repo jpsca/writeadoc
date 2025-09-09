@@ -15,7 +15,6 @@ To add an image, use an exclamation mark (`!`), followed by the alt text in brac
 
 ///
 
-
 ## Light and dark mode
 
 You can show different images for light and dark color schemes by using the `only-light` or `only-dark` classes.
@@ -32,10 +31,10 @@ You can show different images for light and dark color schemes by using the `onl
 
 ///
 
-If you don't want to have two versions of the images, you can instead use the `invert` class, that invert
+If you don't want to have two versions of the images, you can instead use the `invert` class, which inverts
 the colors of the image **only in dark mode**. It doesn't look great for some images, but it's good enough most of the time.
 
-/// example | Image, inverted colors in and dark mode
+/// example | Image, inverted colors in dark mode
 
 ```md
 ![Lamp diagram](/assets/images/diagram-light.png){ .invert }
@@ -45,12 +44,12 @@ the colors of the image **only in dark mode**. It doesn't look great for some im
 
 ///
 
-
 ## Image alignment
 
-If the screen is wide enough, you can align images to the left or right, by wrapping the content in a `<div markdown="1"></div>` tag and adding the "left" or "right" class to the image.
+If the screen is wide enough, you can align images to the left or right by wrapping the content
+in a `<div markdown="1"></div>` tag and adding the "left" or "right" class to the image.
 
-/// example | Image, aligned to the left
+/// example | Image, aligned to the left (if your screen width >= 960px)
 
 ![Alt text](/assets/images/image.png){ .invert .left }
 
@@ -58,7 +57,6 @@ If the screen is wide enough, you can align images to the left or right, by wrap
 <div markdown="1">
 
 ![Alt text](/assets/images/image.png){ .left }
-
 
 Aliqua id elit sint ullamco cillum consequat.
 
@@ -69,7 +67,7 @@ incididunt nulla excepteur culpa tempor.
 
 ///
 
-/// example | Image, aligned to the right
+/// example | Image, aligned to the right (if your screen width >= 960px)
 
 ![Alt text](/assets/images/image.png){ .invert .right }
 
@@ -99,7 +97,6 @@ To center an image, just add the class
 ![Alt text](/assets/images/image.png){ .invert .center }
 ///
 
-
 ## Image captions
 
 Unfortunately, the Markdown syntax doesn't provide native support for image captions, but you can use the [Markdown in HTML](/docs/md/markdown/html/#markdown-in-html) feature with literal `figure` and `figcaption` tags:
@@ -120,7 +117,6 @@ Unfortunately, the Markdown syntax doesn't provide native support for image capt
 
 ///
 
-
 ## Image links
 
 To add a link to an image, enclose the Markdown for the image in brackets, and then add the link in parentheses.
@@ -134,7 +130,6 @@ To add a link to an image, enclose the Markdown for the image in brackets, and t
 [![Alt text](/assets/images/image.png "My title"){ .invert }](https://example.com/)
 
 ///
-
 
 ## Forcing image size
 
@@ -153,7 +148,6 @@ You can force an image to have a specific width and/or height by adding attribut
 ![Alt text](/assets/images/image.png "My title"){ .invert width=300 height=50 }
 
 ///
-
 
 ## Lazy-loading images
 

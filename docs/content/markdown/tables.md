@@ -3,7 +3,7 @@ title: Tables
 icon: icons/table.svg
 ---
 
-To add a table, use three or more hyphens (`---`) to create each column’s header, and use pipes (`|`) to separate each column. You can also add a pipe on either end of the row, but it is not necessary.
+To add a table, use three or more hyphens (`---`) to create each column’s header, and use pipes (`|`) to separate each column. You can also add a pipe at either end of the row, but it is not necessary.
 
 /// example | Table
 
@@ -32,7 +32,6 @@ You don't have to make each cell the same width, but it looks clearer if you do.
 Creating tables with hyphens and pipes can be tedious. To speed up the process, try using the [Markdown Tables Generator](https://www.tablesgenerator.com/markdown_tables). Build a table using the graphical interface, and then copy the generated Markdown-formatted text into your file.
 
 ///
-
 
 ## Alignment
 

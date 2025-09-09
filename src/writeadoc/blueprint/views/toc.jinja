@@ -5,31 +5,29 @@
     {% if item.icon.endswith('.svg') -%}
       {{ _insert_asset(item.icon) }}
     {%- else -%}
-      <img src="/assets/{{ item.icon }}" class="icon" />
+      <img src="/assets/{{ item.icon }}" />
     {%- endif -%}
   {%- endif -%}
 {%- endmacro %}
+
+{% macro render_item(item) %}
+<a class="toc__page {% if item.id == page.id %}toc__page--selected{% endif %}"
+  {%- if item.url %} href="{{ item.url }}"{% endif %} aria-label="{{ item.title }}">
+  {{ render_icon(item) }} {{ item.title }}
+</a>
+{% endmacro %}
 
 {% macro render_pages(items) -%}
   {% for item in items -%}
   {%- if item.pages -%}
   <details class="toc__section" {% if not folded %}open{% endif %}>
-    <summary>
-      {{ render_icon(item) }} {{ item.title }}
-    </summary>
-    {{ render_pages(item.pages) }}
+    <summary>{{ render_item(item) }}</summary>
+    <div>{{ render_pages(item.pages) }}</div>
   </details>
   {%- else %}
-    <a
-      class="toc__page {% if item.id == page.id %}toc__page--selected{% endif %}"
-      href="{{ item.url }}"
-      aria-label="{{ item.title }}"
-    >
-      {{ render_icon(item) }} {{ item.title }}
-    </a>
+    {{ render_item(item) }}
   {%- endif %}
   {% endfor %}
-
 {% endmacro %}
 
 <div class="toc">
