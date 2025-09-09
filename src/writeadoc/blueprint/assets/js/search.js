@@ -1,11 +1,14 @@
 function showResults(results, store, searchTerm) {
   var searchResults = document.getElementById('search-results');
-
   document.querySelector('#search-query mark').textContent = searchTerm;
+
   var appendString = '';
   var shownUrls = new Set();
 
   if (results.length) {
+      const words = searchTerm.toLowerCase().split(/\s+/gi).join('|'); // Support multiple words
+      const highlightRegex = new RegExp(`\\b${words}\\b`, 'gi');
+
     results.forEach(result => {
       var item = store[result.ref];
       if (shownUrls.has(item.url)) {
@@ -16,17 +19,20 @@ function showResults(results, store, searchTerm) {
       appendString += '<div class="search-result">';
       appendString += '  <h3><a href="' + item.url + '">' + item.title + '</a></h3>';
       appendString += '  <small><a href="' + item.url + '">' + item.section + '</a></small>';
+      var content = item.content;
 
       if (item.content.startsWith('<pre>')) {
-        var content = item.content.replace(/<pre>/g, '').replace(/<\/pre>/g, '');
+        content = content.replace(/<pre>/g, '').replace(/<\/pre>/g, '');
         if (content.length > 200) {
           content = content.slice(0, 200) + ' &hellip;';
         } else {
           content = content.slice(0, 200);
         }
+        content = content.replace(highlightRegex, '<mark>$&</mark>');
         appendString += '  <div><pre>' + content + '</pre></div>';
       } else {
-        appendString += '  <div>' + item.content.slice(0, 300) + ' &hellip;</div>';
+        content = content.slice(0, 300).replace(highlightRegex, '<mark>$&</mark>');
+        appendString += '  <div>' + content + ' &hellip;</div>';
       }
 
       appendString += '</div>';

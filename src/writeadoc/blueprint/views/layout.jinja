@@ -61,7 +61,7 @@
             <Toc />
           </li>
           <li>
-            <a href="#" target="_blank" rel="noopener">{{ _('SOURCE_CODE') }}</a>
+            <a href="https://github.com/jpsca/writeadoc/" target="_blank" rel="noopener">{{ _('SOURCE_CODE') }}</a>
           </li>
           {#<li>
             <a href="#" target="_blank" rel="noopener">{{ _('HELP') }}</a>
@@ -73,7 +73,9 @@
     <header class="header">
       <nav>
         <div class="brand">
-          <a class="logo" href="/" aria-label="{{ site.name }}">{{ site.name }}</a>
+          <a class="logo" href="/" aria-label="{{ site.name }}">
+            <img src="/assets/images/logo.svg" height="42" alt="{{ site.name }}" />
+          </a>
           <VersionPopover />
         </div>
         <div class="header__links">
@@ -85,7 +87,7 @@
           <a href="/docs/">
             <span>{{ _('DOCUMENTATION') }}</span>
           </a>
-          <a href="#" target="_blank" rel="noopener">
+          <a href="https://github.com/jpsca/writeadoc/" target="_blank" rel="noopener">
             <span>{{ _('SOURCE_CODE') }}</span>
           </a>
           {#<a href="#" target="_blank" rel="noopener">

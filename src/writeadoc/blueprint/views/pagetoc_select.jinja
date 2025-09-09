@@ -1,0 +1,13 @@
+{% macro render_toc(items) %}
+	{% for item in items -%}
+	<option value="{{ item.id }}">{{ "-" * (item.level - 2) }} {{ item.name }}</option>
+	{%- if item.children %}{{ render_toc(item.children) }}{% endif -%}
+	{% endfor %}
+{% endmacro %}
+
+{% if page.toc -%}
+<select class="pagetoc--select" onchange="if (this.value){window.location.hash=this.value}">
+	<option value="" selected>{{ _('ON_THIS_PAGE') }}</option>
+	{{ render_toc(page.toc) }}
+</select>
+{%- endif %}

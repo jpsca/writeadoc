@@ -8,17 +8,16 @@
 from writeadoc import Docs
 
 
-pages = {
-    "Welcome": [
-        "welcome.md",
-        {
-            "Subsection": [
-                "sub/lorem.md",
-                "sub/ipsum.md",
-            ],
-        }
-    ],
-}
+pages = [
+    "welcome.md",
+    {
+        "title": "Subsection",
+        "pages": [
+            "sub/lorem.md",
+            "sub/ipsum.md",
+        ],
+    },
+]
 
 docs = Docs(
     __file__,
