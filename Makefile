@@ -2,8 +2,6 @@
 install:
 	uv sync --group dev --group test
 	uv pip install -e .
-	uv pip install -e ../jx
-# 	uv run pre-commit install
 
 .PHONY: test
 test:
@@ -30,3 +28,8 @@ blueprint:
 docs-build:
 	cd docs && uv run python docs.py build
 
+.PHONY: docs-publish
+docs-publish:
+	cd docs && \
+	uv run python docs.py build && \
+	rsync --recursive --delete --progress build code:/var/www/writeadoc/
