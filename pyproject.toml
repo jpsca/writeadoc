@@ -2,6 +2,10 @@
 name = "writeadoc"
 version = "0.1.0"
 description = "Focus on your content and let WriteADoc take care of the rest"
+authors = [
+    {name = "Juan Pablo Scaletti", email = "juanpablo@jpscaletti.com"},
+]
+license = { "file" = "MIT-LICENSE" }
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -15,6 +19,10 @@ dependencies = [
     "strictyaml>=1.7.3",
     "watchdog>=6.0.0",
 ]
+
+[project.urls]
+Homepage = "https://writeadoc.scaletti.dev/"
+GitHub = "https://github.com/jpsca/writeadoc"
 
 [dependency-groups]
 dev = [
