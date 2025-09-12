@@ -50,6 +50,7 @@ class Docs:
         md_extensions: list[t.Any] = utils.DEFAULT_MD_EXTENSIONS,
         md_config: dict[str, dict[str, t.Any]] = utils.DEFAULT_MD_CONFIG,
     ):
+        print("Initializing...")
         root_dir = Path(root).resolve().parent
         if not root_dir.exists():
             raise FileNotFoundError(f"Path {root} does not exist.")
@@ -530,6 +531,7 @@ class Docs:
         else:
             # Just render the template page
             page = PageData(
+                id="index",
                 title=self.site.name,
                 url=url,
                 view="index.jinja",

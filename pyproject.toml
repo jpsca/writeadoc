@@ -1,7 +1,7 @@
 [project]
 name = "writeadoc"
 version = "0.1.0"
-description = "Write your documentation"
+description = "Focus on your content and let WriteADoc take care of the rest"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

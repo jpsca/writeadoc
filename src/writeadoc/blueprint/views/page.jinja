@@ -5,7 +5,7 @@
 
 <Layout>
   <div class="page page--docs">
-    <div class="page__content">
+    <div class="page__wrapper">
       <aside class="sidebar">
         <div>
           <form class="search" action="/search/" method="get">
@@ -23,7 +23,7 @@
         </div>
       </aside>
 
-      <article>
+      <div class="page__content">
         <h1>{{ page.title }}</h1>
         {# <PageTocSelect /> #}
         {{ page.content or content }}
@@ -45,7 +45,7 @@
           </a>
           {%- endif %}
         </nav>
-      </article>
+      </div>
 
       <PageToc />
     </div>

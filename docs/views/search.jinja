@@ -4,7 +4,7 @@
 
 <Layout>
   <div class="page page--docs">
-    <div class="page__content">
+    <div class="page__wrapper">
       <aside class="sidebar">
         <div>
           <form class="search" action="/search/" method="get">
@@ -20,13 +20,13 @@
         </div>
       </aside>
 
-      <article>
+      <div class="page__content">
         <h1 id="search-query">{{ _('SEARCH_RESULTS_FOR') }} <mark>&nbsp;</mark></h1>
         <div id="search-results">
           <p>{{ _('NO_RESULTS_FOUND') }}</p>
         </div>
         <script>window.store = {{ search_data | tojson(indent=2) }};</script>
-      </article>
+      </div>
     </div>
   </div>
 </Layout>

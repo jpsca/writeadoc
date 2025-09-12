@@ -28,6 +28,7 @@ docs = Docs(
         "base_url": "https://project.example.com",
         "lang": "en",
         "version": "1.0",
+        "source_code": "https://github.com/yourusername/yourproject/",
     },
 )
 

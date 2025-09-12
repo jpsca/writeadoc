@@ -37,9 +37,10 @@ docs = Docs(
     site={
         "name": "WriteADoc",
         "base_url": "https://writeadoc.scaletti.dev/",
-        "description": "Professional static documentation for your project. Searchable, fast, and infinitely customizable.",
+        "description": "Focus on your content and let WriteADoc take care of the rest",
         "lang": "en",
         "version": "0.1",
+        "source_code": "https://github.com/jpsca/writeadoc/",
     },
 )
 

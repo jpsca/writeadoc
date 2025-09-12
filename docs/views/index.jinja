@@ -7,13 +7,84 @@
     <header>
       <h1>Documentation your users will&nbsp;love.</h1>
       <p><span>Searchable, fast, and infinitely&nbsp;customizable.</span></p>
+
+      <div class="headline__actions">
+        <a class="button button--primary" href="/docs/">
+          Get started
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.92 11.62a1.001 1.001 0 0 0-.21-.33l-5-5a1.003 1.003 0 1 0-1.42 1.42l3.3 3.29H7a1 1 0 0 0 0 2h7.59l-3.3 3.29a1.002 1.002 0 0 0 .325 1.639 1 1 0 0 0 1.095-.219l5-5a1 1 0 0 0 .21-.33 1 1 0 0 0 0-.76Z"></path>
+          </svg>
+        </a>
+        <a class="button button--minimal" href="{{ site.source_code }}" target="_blank" rel="noopener">
+          View on GitHub
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.33 10.18a1 1 0 0 1-.77 0 1 1 0 0 1-.62-.93l.01-1.83-8.2 8.2a1 1 0 0 1-1.41-1.42l8.2-8.2H14.7a1 1 0 0 1 0-2h4.25a1 1 0 0 1 1 1v4.25a1 1 0 0 1-.62.93Z"></path><path d="M11 4a1 1 0 1 1 0 2H7a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-4a1 1 0 1 1 2 0v4a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h4Z"></path>
+          </svg>
+        </a>
+      </div>
     </header>
   </div>
   {% endfill %}
 
   <div class="page page--docs">
-    <div class="page__content">
-      <article>{{ page.content }}</article>
+    <div class="page__wrapper">
+      <div class="page__content">
+        <p>Focus on your content and let <em>WriteADoc</em> take care of the&nbsp;rest.</p>
+
+        <div class="grid">
+          <article>
+            <div>
+              <img src="/assets/images/grid-markdown.png" aria-hidden="true" />
+              <div>
+                <h3>Simple yet powerful&nbsp;formatting</h3>
+                <p>Write in Markdown, plus enjoy powerful features like callbacks, flexible code blocks, and much&nbsp;more.</p>
+              </div>
+            </div>
+          </article>
+
+          <article>
+            <div>
+              <div>
+                <h3>Built-in full-text&nbsp;search</h3>
+                <p>Automatically generates a full-text search index for you. No third-party service&nbsp;required.</p>
+              </div>
+              <img src="/assets/images/grid-search.png" aria-hidden="true" />
+            </div>
+          </article>
+
+          <article>
+            <div>
+              <img src="/assets/images/grid-marbles.png" aria-hidden="true" />
+              <div>
+                <h3>Multi-language & multi-version&nbsp;capable</h3>
+                <p>Easily manage documentation for multiple versions and languages, right out of the box. No plugins or complicated setup&nbsp;needed.</p>
+              </div>
+            </div>
+          </article>
+
+          <article>
+            <div>
+              <div>
+                <h3>Works on all devices and with light/dark&nbsp;modes</h3>
+                <p>WriteADoc automatically adapts to perfectly fit the available screen, no matter the type or size of the viewing device and whether you're an early bird or a night owl.</p>
+              </div>
+              <img src="/assets/images/grid-devices.png" aria-hidden="true" />
+            </div>
+          </article>
+
+          <article>
+            <div>
+              <img src="/assets/images/grid-yours.png" aria-hidden="true" />
+              <div>
+                <h3>Always yours</h3>
+                <p>A static site means you can host it anywhere. You own your content and your site. No need to trust your product knowledge to third-party&nbsp;platforms.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <hr />
+      </div>
     </div>
   </div>
 </Layout>
