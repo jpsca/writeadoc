@@ -26,10 +26,12 @@ blueprint:
 
 .PHONY: docs-build
 docs-build:
+	rm -rf docs/build
 	cd docs && uv run python docs.py build
 
 .PHONY: docs-publish
 docs-publish:
+	rm -rf docs/build
 	cd docs && \
 	uv run python docs.py build && \
 	rsync --recursive --delete --progress build code:/var/www/writeadoc/
