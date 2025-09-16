@@ -50,9 +50,9 @@ When mixing bold and italic, WriteADoc will try to prioritize the most sensible 
 
 ///
 
-Complex examples:
 
-/// example |
+/// details | Complex examples
+    type: example
 
 ```md
 __This will all be bold __because of the placement of the center underscores.__

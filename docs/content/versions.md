@@ -41,7 +41,7 @@ python docs.py build --archive
 
 This will build your documentation and save it into the folder `archive/{VERSION}/` (e.g., `archive/1.0/`), with all relative URLs updated to point to the files in that version.
 
-If you haven't removed it from your template, a banner will be added to every page as well.
+If you haven't removed it from your view, a banner will be added to every page as well.
 
 <figure markdown="span">
 ![Version banner](/assets/images/version-banner-light.png){ .only-light }

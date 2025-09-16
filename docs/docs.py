@@ -2,11 +2,14 @@ from writeadoc import Docs
 
 
 pages = [
-    "intro.md",
-    "pages.md",
-    "autodoc.md",
-    "languages.md",
-    "versions.md",
+    {
+        "title": "Quickstart",
+        "pages": [
+            "quickstart/setup.md",
+            "quickstart/config.md",
+            "quickstart/write.md",
+        ]
+    },
     {
         "path": "markdown.md",
         "pages": [
@@ -28,19 +31,22 @@ pages = [
             "markdown/attributes.md",
             "markdown/html.md",
         ],
-    }
+    },
+    "autodoc.md",
+    "languages.md",
+    "versions.md",
 ]
 
 docs = Docs(
     __file__,
     pages=pages,
     site={
-        "name": "WriteADoc",
-        "base_url": "https://writeadoc.scaletti.dev/",
-        "description": "Focus on your content and let WriteADoc take care of the rest",
+        "name": "Project Name",
+        "base_url": "https://project.example.com",
+        "version": "1.0",
         "lang": "en",
-        "version": "0.1",
-        "source_code": "https://github.com/jpsca/writeadoc/",
+        "description": "Description of your project",
+        "source_code": "https://github.com/yourusername/yourproject/",
     },
 )
 

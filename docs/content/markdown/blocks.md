@@ -3,6 +3,29 @@ title: Block elements
 icon: icons/blocks.svg
 ---
 
+## Paragraphs
+
+To create paragraphs, use a blank line to separate blocks of text.
+
+/// example |
+
+```md
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at
+faucibus quam, sit amet condimentum mi.
+
+Donec tellus turpis, posuere sit amet sem vitae, blandit efficitur erat.
+Sed faucibus mollis enim ac molestie.
+```
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at
+faucibus quam, sit amet condimentum mi.
+
+Donec tellus turpis, posuere sit amet sem vitae, blandit efficitur erat.
+Sed faucibus mollis enim ac molestie.
+
+///
+
+
 ## Headers
 
 To create a header, add number signs (#) in front of a word or phrase.
@@ -40,27 +63,6 @@ blank lines before and after a header.
 
 ///
 
-## Paragraphs
-
-To create paragraphs, use a blank line to separate blocks of text.
-
-/// example |
-
-```md
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at
-faucibus quam, sit amet condimentum mi.
-
-Donec tellus turpis, posuere sit amet sem vitae, blandit efficitur erat.
-Sed faucibus mollis enim ac molestie.
-```
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at
-faucibus quam, sit amet condimentum mi.
-
-Donec tellus turpis, posuere sit amet sem vitae, blandit efficitur erat.
-Sed faucibus mollis enim ac molestie.
-
-///
 
 ## Line breaks
 
@@ -85,26 +87,6 @@ And the next line.
 
 ///
 
-## Horizontal Rules
-
-To create a horizontal rule, use three or more asterisks (`***`),
-dashes (`---`), or underscores (`___`) on a line by themselves.
-
-/// example |
-
-```md
-***
-
----
-
-_________________
-```
-
-The rendered output of all three looks identical:
-
----
-
-///
 
 ## Blockquote
 
@@ -141,5 +123,27 @@ Blockquotes can contain multiple paragraphs. Add a `>` on the blank lines betwee
 >
 > The Witch bade her clean the pots and kettles and sweep the
 > floor and keep the fire fed with wood.
+
+///
+
+
+## Horizontal Rules
+
+To create a horizontal rule, use three or more asterisks (`***`),
+dashes (`---`), or underscores (`___`) on a line by themselves.
+
+/// example |
+
+```md
+***
+
+---
+
+_________________
+```
+
+The rendered output of all three looks identical:
+
+---
 
 ///
