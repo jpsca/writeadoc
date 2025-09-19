@@ -120,8 +120,6 @@ html {
   background: var(--color-base);
   font-size: 16px;
   min-height: -webkit-fill-available;
-  scroll-behavior: smooth;
-  scroll-padding-top: 2.9em
 }
 
 body {

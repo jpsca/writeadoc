@@ -377,6 +377,13 @@ html.cs-light .color-scheme button.light {
   letter-spacing: -0.01em;
 }
 
+@media (min-width: 64em) {
+  .sidebar {
+    display: flex;
+  }
+}
+
+
 .sidebar > div {
   display: flex;
   flex-direction: column;
@@ -754,8 +761,7 @@ html.cs-light .color-scheme button.light {
 .page__wrapper {
   display: flex;
   gap: var(--space-large);
-  margin-inline: auto;
-  width: min(100%, 32em);
+  justify-content: space-between;
   position: relative;
 }
 
@@ -765,6 +771,9 @@ html.cs-light .color-scheme button.light {
   font-size: var(--font-size-x-small);
   letter-spacing: -0.01em;
   width: 100%;
+  max-width: 52em;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .page__content > *+*,
@@ -890,22 +899,6 @@ html.cs-light .color-scheme button.light {
     box-shadow: 0 0 0 1px rgba(var(--rgb-black), 0.09),
                 0 10px 30px -15px rgba(var(--rgb-black), 0.18),
                 0 20px 20px -30px rgba(var(--rgb-black), 0.18);
-  }
-}
-
-@media (min-width: 64em) {
-  .banner__content,
-  .page__wrapper {
-    width: min(100%, 116rem);
-  }
-
-  .page--docs .sidebar {
-    display: flex;
-    flex: 2;
-  }
-
-  .page--docs .page__content {
-    flex: 7;
   }
 }
 
