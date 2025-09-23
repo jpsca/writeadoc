@@ -1,38 +1,32 @@
 {# import "./layout.jinja" as Layout #}
-{# import "./sidebar.jinja" as Sidebar #}
 {# import "./pagetoc.jinja" as PageToc #}
-{# import "./pagetoc_select.jinja" as PageTocSelect #}
 
 <Layout>
-  <div class="page page--docs">
-    <div class="page__wrapper">
-      <Sidebar />
+  <div class="page__wrapper">
+    <div class="page__content">
+      <h1>{{ page.title }}</h1>
+      {{ page.content or content }}
 
-      <div class="page__content">
-        <h1>{{ page.title }}</h1>
-        {# <PageTocSelect /> #}
-        {{ page.content or content }}
-        <nav>
-          {%- if page.prev %}
-          <a href="{{ page.prev.url }}" aria-label="{{ page.prev.title }}" class="prev">
-            <dl>
-              <dt>{{ _('PREVIOUS') }}</dt>
-              <dd>{{ page.prev.title }}</dd>
-            </dl>
-          </a>
-          {%- endif %}
-          {%- if page.next %}
-          <a href="{{ page.next.url }}" aria-label="{{ page.next.title }}" class="next">
-            <dl>
-              <dt>{{ _('NEXT') }}</dt>
-              <dd>{{ page.next.title }}</dd>
-            </dl>
-          </a>
-          {%- endif %}
-        </nav>
-      </div>
-
-      <PageToc />
+      <nav class="page__nav">
+        {%- if page.prev %}
+        <a href="{{ page.prev.url }}" aria-label="{{ page.prev.title }}" class="prev">
+          <dl>
+            <dt>{{ _('PREVIOUS') }}</dt>
+            <dd>{{ page.prev.title }}</dd>
+          </dl>
+        </a>
+        {%- endif %}
+        {%- if page.next %}
+        <a href="{{ page.next.url }}" aria-label="{{ page.next.title }}" class="next">
+          <dl>
+            <dt>{{ _('NEXT') }}</dt>
+            <dd>{{ page.next.title }}</dd>
+          </dl>
+        </a>
+        {%- endif %}
+      </nav>
     </div>
+
+    <PageToc />
   </div>
 </Layout>

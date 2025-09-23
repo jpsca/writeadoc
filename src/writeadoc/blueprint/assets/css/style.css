@@ -924,7 +924,7 @@ html.cs-light .color-scheme button.light {
 .nav__options .toc {
   font-size: 90%;
   padding: 0 1rem 1rem;
-  border-radius: 0.3em;
+  border-radius: 0.4rem;
 }
 
 .nav__options form.search {
@@ -988,7 +988,7 @@ html.cs-light .color-scheme button.light {
   height: 100%;
 }
 .variant-popover [popover] > div > a {
-  border-radius: 0.3em;
+  border-radius: 0.4rem;
   color: var(--color-grey);
   font-size: 1rem;
   letter-spacing: normal;
@@ -1155,7 +1155,7 @@ html.cs-light .color-scheme button.light {
   align-items: center;
   margin: 0;
   padding: 0.5rem 0.8rem;
-  border-radius: 0.3em;
+  border-radius: 0.4rem;
   border-left: 3px solid transparent;
   background: none;
   color: var(--color-grey-light);
@@ -1251,7 +1251,7 @@ html.cs-light .color-scheme button.light {
   padding: 0.8em 0.5em;
   border: none;
   border-right: 0.5em solid transparent;
-  border-radius: 0.3em;
+  border-radius: 0.4rem;
   background: var(--color-base);
   color: var(--color-grey-light);
   cursor: pointer;
@@ -1272,7 +1272,7 @@ html.cs-light .color-scheme button.light {
 .search {
   align-items: center;
   background: var(--color-base);
-  border-radius: 0.3em;
+  border-radius: 0.4rem;
   box-shadow: 0 0 0 1px rgba(var(--rgb-grey), 0.2);
   display: flex;
   font-size: 80%;
@@ -1515,7 +1515,7 @@ html.cs-light .color-scheme button.light {
 
 .page__content nav a {
   background: var(--color-white);
-  border-radius: 0.3em;
+  border-radius: 0.4rem;
   outline: 1px solid rgb(var(--rgb-grey-light), 0.075);
   box-shadow: 0 0 0 1px rgba(var(--rgb-black), 0.075),
               0 10px 30px -15px rgba(var(--rgb-black), 0.15),
@@ -1591,7 +1591,7 @@ html.cs-light .color-scheme button.light {
 }
 
 .page__content .highlight {
-  border-radius: 0.3em;
+  border-radius: 0.4rem;
   position: relative;
   display: flow-root;
 }
@@ -1745,7 +1745,7 @@ html.cs-dark .page__content img.invert {
 
 .page__content table {
   display: table;
-  border-radius: 0.3em;
+  border-radius: 0.4rem;
   text-align: left;
   width: 100%;
   font-size: 0.80em;
