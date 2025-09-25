@@ -65,9 +65,11 @@ html {
     --rgb-grey: 236, 239, 244;
     --rgb-grey-light: 241, 244, 249;
     --color-base-dark: var(--color-base);
-    --color-black: rgb(var(--rgb-white));
-    --color-white: rgb(var(--rgb-base-dark));
-    --rgb-accent: 104,167,249;
+    /* --color-black: rgb(var(--rgb-white));
+    --color-white: rgb(var(--rgb-base-dark)); */
+    --rgb-white: var(--rgb-base-dark);
+    --rgb-black: 255, 255, 255;
+    --rgb-accent: 104, 167, 249;
   }
 }
 
@@ -110,6 +112,10 @@ table {
 
 /******* BASE *******/
 
+html {
+  scroll-padding-top: 4rem;
+}
+
 body {
   background: var(--color-white);
   color: var(--color-grey);
@@ -118,7 +124,7 @@ body {
 
   font-family: var(--font-family);
   font-size: 16px;
-  line-height: 24px;
+  line-height: 1;
   font-style: normal;
   font-weight: 400;
   font-synthesis: style;
@@ -144,7 +150,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
-  line-height: 1.2
+  line-height: 1.3;
 }
 
 h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
@@ -156,7 +162,7 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
 h1 {
   font-size: var(--font-size-xxx-large);
   letter-spacing: -0.03em;
-  line-height: 1.1
+  line-height: 1.2
 }
 
 h2 {
@@ -329,7 +335,7 @@ code {
   font-style: normal;
   font-weight: 400;
   letter-spacing: normal;
-  line-height: 1em;
+  line-height: 1.2;
   padding: 0.2em 0.4em
 }
 
@@ -526,9 +532,9 @@ code {
   opacity: 0;
   padding: 0.25em 0.6em;
   position: absolute;
-  right: 0.8em;
+  right: 0.4em;
   text-transform: uppercase;
-  top: 0.8em;
+  bottom: 0.4em;
   transition: background var(--transition), opacity var(--transition);
 }
 @media (min-width: 64em) {
@@ -607,7 +613,7 @@ code {
 
 .page__content {
   --flow-space: 1.4rem;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .page__content > *+*,

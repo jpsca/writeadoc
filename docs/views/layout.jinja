@@ -1,12 +1,12 @@
 {# import "./metadata.jinja" as Metadata #}
 {# import "./banner_archived.jinja" as BannerArchived #}
-{# import "./color_scheme.jinja" as ColorScheme #}
-{# import "./toc.jinja" as Toc #}
-{# import "./language_popover.jinja" as LanguagePopover #}
 {# import "./version_popover.jinja" as VersionPopover #}
+{# import "./language_popover.jinja" as LanguagePopover #}
+{# import "./color_scheme.jinja" as ColorScheme #}
 {# import "./sidebar.jinja" as Sidebar #}
+{# import "./page_nav.jinja" as PageNav #}
 {# import "./footer.jinja" as Footer #}
-
+{# def sidebar=False #}
 <!DOCTYPE html>
 <html lang="{{ site.lang }}" class="cs-system">
 
@@ -35,10 +35,8 @@
 <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
 </head>
 
-<body class="page-{{ page.id }}">
+<body class="page-{{ page.id }}{% if sidebar %} has-sidebar{% endif %}">
   <div class="layout">
-    <BannerArchived />
-
     <header class="header">
       <nav class="wrapper">
         <div class="header__brand">
@@ -47,8 +45,10 @@
           </a>
         </div>
         <VersionPopover />
+        <LanguagePopover />
         <div class="header__links">
-          <a href="/search/">
+          <ColorScheme />
+          <a class="header__link-search" href="/search/">
             <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
@@ -63,15 +63,14 @@
             <span>{{ _('HELP') }}</span>
           </a>#}
         </div>
-        <LanguagePopover />
-        <ColorScheme />
       </nav>
-      {% slot hero %}{% endslot %}
     </header>
 
     <main class="main">
       <Sidebar />
       <div class="page">
+        <PageNav />
+        <BannerArchived />
         {{ content }}
       </div>
     </main>

@@ -1,8 +1,8 @@
 {# import "./layout.jinja" as Layout #}
+{# import "./footer.jinja" as Footer #}
 {# css "/assets/css/index.css?v=2" #}
 
 <Layout>
-  {% fill hero %}
   <div class="headline">
     <header>
       <h1>Documentation your users will&nbsp;love.</h1>
@@ -24,67 +24,65 @@
       </div>
     </header>
   </div>
-  {% endfill %}
 
-  <div class="page page--docs">
-    <div class="page__wrapper">
-      <div class="page__content">
-        <p>Focus on your content and let <em>WriteADoc</em> take care of the&nbsp;rest.</p>
+  <div class="page__wrapper">
+    <div class="page__content">
+      <p>Focus on your content and let <em>WriteADoc</em> take care of the&nbsp;rest.</p>
 
-        <div class="grid">
-          <article>
+      <div class="grid">
+        <article>
+          <div>
+            <img src="/assets/images/grid-markdown.png" aria-hidden="true" />
             <div>
-              <img src="/assets/images/grid-markdown.png" aria-hidden="true" />
-              <div>
-                <h3>Simple yet powerful&nbsp;formatting</h3>
-                <p>Write in Markdown, plus enjoy powerful features like callbacks, flexible code blocks, and much&nbsp;more.</p>
-              </div>
+              <h3>Simple yet powerful&nbsp;formatting</h3>
+              <p>Write in Markdown, plus enjoy powerful features like callbacks, flexible code blocks, and much&nbsp;more.</p>
             </div>
-          </article>
+          </div>
+        </article>
 
-          <article>
+        <article>
+          <div>
             <div>
-              <div>
-                <h3>Built-in full-text&nbsp;search</h3>
-                <p>Automatically generates a full-text search index for you. No third-party service&nbsp;required.</p>
-              </div>
-              <img src="/assets/images/grid-search.png" aria-hidden="true" />
+              <h3>Built-in full-text&nbsp;search</h3>
+              <p>Automatically generates a full-text search index for you. No third-party service&nbsp;required.</p>
             </div>
-          </article>
+            <img src="/assets/images/grid-search.png" aria-hidden="true" />
+          </div>
+        </article>
 
-          <article>
+        <article>
+          <div>
+            <img src="/assets/images/grid-marbles.png" aria-hidden="true" />
             <div>
-              <img src="/assets/images/grid-marbles.png" aria-hidden="true" />
-              <div>
-                <h3>Multi-language & multi-version&nbsp;capable</h3>
-                <p>Easily manage documentation for multiple versions and languages, right out of the box. No plugins or complicated setup&nbsp;needed.</p>
-              </div>
+              <h3>Multi-language & multi-version&nbsp;capable</h3>
+              <p>Easily manage documentation for multiple versions and languages, right out of the box. No plugins or complicated setup&nbsp;needed.</p>
             </div>
-          </article>
+          </div>
+        </article>
 
-          <article>
+        <article>
+          <div>
             <div>
-              <div>
-                <h3>Works on all devices and with light/dark&nbsp;modes</h3>
-                <p>WriteADoc automatically adapts to perfectly fit the available screen, no matter the type or size of the viewing device and whether you're an early bird or a night owl.</p>
-              </div>
-              <img src="/assets/images/grid-devices.png" aria-hidden="true" />
+              <h3>Works on all devices and with light/dark&nbsp;modes</h3>
+              <p>WriteADoc automatically adapts to perfectly fit the available screen, no matter the type or size of the viewing device and whether you're an early bird or a night owl.</p>
             </div>
-          </article>
+            <img src="/assets/images/grid-devices.png" aria-hidden="true" />
+          </div>
+        </article>
 
-          <article>
+        <article>
+          <div>
+            <img src="/assets/images/grid-yours.png" aria-hidden="true" />
             <div>
-              <img src="/assets/images/grid-yours.png" aria-hidden="true" />
-              <div>
-                <h3>Always yours</h3>
-                <p>A static site means you can host it anywhere. You own your content and your site. No need to trust your product knowledge to third-party&nbsp;platforms.</p>
-              </div>
+              <h3>Always yours</h3>
+              <p>A static site means you can host it anywhere. You own your content and your site. No need to trust your product knowledge to third-party&nbsp;platforms.</p>
             </div>
-          </article>
-        </div>
-
-        <hr />
+          </div>
+        </article>
       </div>
+
+      <hr />
     </div>
   </div>
+  <Footer />
 </Layout>

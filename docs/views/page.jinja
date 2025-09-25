@@ -1,32 +1,14 @@
 {# import "./layout.jinja" as Layout #}
-{# import "./pagetoc.jinja" as PageToc #}
+{# import "./page_pager.jinja" as PagePager #}
+{# import "./page_toc.jinja" as PageToc #}
 
-<Layout>
+<Layout sidebar>
   <div class="page__wrapper">
     <div class="page__content">
       <h1>{{ page.title }}</h1>
       {{ page.content or content }}
-
-      <nav class="page__nav">
-        {%- if page.prev %}
-        <a href="{{ page.prev.url }}" aria-label="{{ page.prev.title }}" class="prev">
-          <dl>
-            <dt>{{ _('PREVIOUS') }}</dt>
-            <dd>{{ page.prev.title }}</dd>
-          </dl>
-        </a>
-        {%- endif %}
-        {%- if page.next %}
-        <a href="{{ page.next.url }}" aria-label="{{ page.next.title }}" class="next">
-          <dl>
-            <dt>{{ _('NEXT') }}</dt>
-            <dd>{{ page.next.title }}</dd>
-          </dl>
-        </a>
-        {%- endif %}
-      </nav>
+      <PagePager />
     </div>
-
     <PageToc />
   </div>
 </Layout>

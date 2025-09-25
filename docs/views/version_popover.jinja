@@ -1,14 +1,13 @@
+{# {% if not site.archived -%}
 <div class="version variant-popover">
-	<button class="button"type="button" popovertarget="version-selector">
+	<button type="button" popovertarget="version-selector" tabindex="0">
 		{{ site.version }}
-		<svg class="arrow" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg"><path d="m8 12c-.4012 0-.7369-.149-1.0726-.4885l-6.05895-6.26771c-.245633-.25667-.36845-.55474-.36845-.91076 0-.73689.58133-1.33303 1.30186-1.33303.36026 0 .69596.14903.96615.42226l5.24018 5.46458 5.23201-5.46458c.2702-.27323.6059-.42226.9579-.42226.7206 0 1.3019.59614 1.3019 1.33303 0 .3643-.1228.66237-.3685.91076l-6.0589 6.26771c-.31933.3312-.66321.4885-1.0726.4885z" fill="currentColor"></path></svg>
 	</button>
-	{# {% if not site.archived -%}
-	<div id="version-selector" popover="auto">
+	<div class="popover" role="menu">
 		<div>
-			<a href="/1.0/" {% if site.version == "1.0" %}class="selected"{% endif %}>1.0</a>
-			<a href="/0.5/" {% if site.version == "0.5" %}class="selected"{% endif %}>0.5</a>
+			<a href="/1.0/" {% if site.version == "1.0" %}class="selected"{% endif %} tabindex="0">1.0</a>
+			<a href="/0.5/" {% if site.version == "0.5" %}class="selected"{% endif %} tabindex="0">0.5</a>
 		</div>
 	</div>
-	{%- endif %} #}
 </div>
+{%- endif %} #}

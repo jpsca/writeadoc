@@ -1185,13 +1185,13 @@ html.cs-light .color-scheme button.light {
 
 /******* Page ToC  *******/
 
-.pagetoc {
+.page__toc {
   display: none;
   width: 18rem;
   padding: 0 .6rem;
   line-height: 1;
 }
-.pagetoc > div {
+.page__toc > div {
   position: sticky;
   left: 0;
   top: var(--space-small);
@@ -1200,7 +1200,7 @@ html.cs-light .color-scheme button.light {
   overflow-y: auto;
   scrollbar-width: thin;
 }
-.pagetoc h4 {
+.page__toc h4 {
   font-size: 1rem;
   font-weight: 400;
   color: var(--color-grey-lighter);
@@ -1209,21 +1209,21 @@ html.cs-light .color-scheme button.light {
   margin: 0 0 1rem 0;
   padding: 0.5rem 0;
 }
-.pagetoc ul {
+.page__toc ul {
   list-style: none;
   margin: 0;
   padding: 0;
 }
-.pagetoc ul ul {
+.page__toc ul ul {
   padding-left: 1rem;
   border-left: 1px solid var(--color-base-darkest);
 }
-.pagetoc li {
+.page__toc li {
   list-style: none;
   margin: 0;
   padding: 0;
 }
-.pagetoc a {
+.page__toc a {
   display: block;
   font-size: 1rem;
   line-height: 1.3;
@@ -1237,12 +1237,12 @@ html.cs-light .color-scheme button.light {
   white-space: nowrap;
 }
 @media (hover: hover) {
-  .pagetoc a:is(:focus,:hover) {
+  .page__toc a:is(:focus,:hover) {
     color: var(--color-accent);
   }
 }
 
-.pagetoc--select {
+.page__toc--select {
   display: block;
   box-shadow: 0 0 0 1px rgba(var(--rgb-grey), 0.1);
   width: 100%;
@@ -1258,10 +1258,10 @@ html.cs-light .color-scheme button.light {
 }
 
 @media (min-width: 100em) {
-  .pagetoc {
+  .page__toc {
     display: block;
   }
-  .pagetoc--select {
+  .page__toc--select {
     display: none;
   }
 }

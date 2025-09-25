@@ -6,7 +6,7 @@
 {% endmacro %}
 
 {% if page.toc -%}
-<select class="pagetoc--select" onchange="if (this.value){window.location.hash=this.value}">
+<select class="page__toc--select" onchange="if (this.value){window.location.hash=this.value}">
 	<option value="" selected>{{ _('ON_THIS_PAGE') }}</option>
 	{{ render_toc(page.toc) }}
 </select>

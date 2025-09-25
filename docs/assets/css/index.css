@@ -4,12 +4,12 @@
   }
 
   .headline {
-    padding: var(--space-medium);
+    padding: 1rem;
   }
   .headline header {
     display: flex;
     flex-direction: column;
-    gap: var(--space-medium);
+    gap: 1rem;
     align-items: center;
     justify-content: center;
     text-align: center;
@@ -18,7 +18,7 @@
     font-weight: 500;
   }
   .headline header h1 {
-    font-size: var(--font-size-x-large);
+    font-size: 2rem;
     font-weight: 900;
     text-align: center;
   }
@@ -59,11 +59,12 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    gap: var(--space-large);
+    gap: 0;
     align-items: flex-start;
+    justify-content: space-between;
     box-shadow: 0 0 0 1px rgba(var(--rgb-grey), 0.1);
     border-radius: 1em;
-    padding: var(--space-large);
+    padding: 1rem;
     background: rgba(var(--rgb-grey), 0.02);
     height: 100%;
     width: 100%;
@@ -74,14 +75,16 @@
   .grid > article:hover > div {
     box-shadow: 0 0 0 1px rgba(var(--rgb-grey), 0.3);
   }
+  .grid > article > div > div {
+    padding: 0 1em 0;
+  }
   .grid > article > div h3 {
     font-size: var(--font-size-x-large);
     font-weight: 600;
   }
   .grid > article > div img {
-    flex: 0 0 6em;
+    flex: 0 0 5em;
     place-self: center;
-    display: none;
     filter: saturate(0.8);
     transition: all var(--transition);
   }
@@ -97,11 +100,6 @@
     font-size: 90%;
   }
 }
-@media (min-width: 48em) {
-  .page-index .grid > article > div img {
-    display: block;
-  }
-}
 @media (min-width: 64em) {
   .page-index .headline {
     padding: var(--space-large);
@@ -114,13 +112,13 @@
   .page-index .grid {
     flex-direction: row;
   }
-  .page-index .grid > article:nth-child(1),
-  .page-index .grid > article:nth-child(4),
-  .page-index .grid > article:nth-child(5) {
+  .page-index .grid > article {
+    width: 50%;
+  }
+  .page-index .grid > article:nth-child(1) {
     width: 55%;
   }
-  .page-index .grid > article:nth-child(2),
-  .page-index .grid > article:nth-child(3) {
+  .page-index .grid > article:nth-child(2) {
     width: 45%;
   }
   .page-index .grid > article:nth-child(5) {
