@@ -46,6 +46,8 @@ class NavItem:
     url: str
     icon: str
     pages: "list[NavItem]"
+    # Whether the item is closed (collapsed)
+    closed: bool = False
 
     def __init__(
         self,
@@ -55,6 +57,7 @@ class NavItem:
         url: str = "",
         icon: str = "",
         pages: list["NavItem"] | None = None,
+        closed: bool = False,
     ):
         slug = (
             url.strip()
@@ -68,6 +71,7 @@ class NavItem:
         self.url = url
         self.icon = icon
         self.pages = pages or []
+        self.closed = closed
 
     def dict(self) -> dict[str, t.Any]:
         return {
@@ -104,6 +108,8 @@ class PageData:
     next: PageRef | None = None
     search_data: TSearchData | None = None
     toc: list[dict[str, t.Any]]
+    # IDs of parent items
+    parents: tuple[str, ...]
 
     def __init__(
         self,
@@ -118,6 +124,7 @@ class PageData:
         view: str = "",
         content: str = "",
         toc: list[dict[str, t.Any]] | None = None,
+        parents: tuple[str, ...] = (),
     ):
         meta = meta or {}
         slug = (
@@ -137,6 +144,7 @@ class PageData:
         self.meta = meta
         self.content = content
         self.toc = toc or []
+        self.parents = parents
 
     def __repr__(self) -> str:
         return f"<Page {self.url}>"

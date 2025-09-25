@@ -2,8 +2,7 @@
 title: Configuration
 ---
 
-WriteADoc has a unique take on configuration: the documentation is managed by a python `Docs` class that you import, intantiate with your data,
-and then render by calling a method, All of this happens inside your `docs.py` file.
+WriteADoc has a unique approach to configuration: documentation is managed by a Python `Docs` class that you import, instantiate with your data, and then render by calling a method. All of this happens inside your `docs.py` file.
 
 ```python {title="docs.py"}
 from writeadoc import Docs
@@ -28,11 +27,9 @@ docs = Docs(
 
 if __name__ == "__main__":
     docs.cli()
-
 ```
 
 The main arguments are the list of pages and the site metadata.
-
 
 ## Adding pages
 
@@ -47,14 +44,10 @@ docs = Docs(
 ```
 
 ///warning
-Every page **except** your `index.md` file.
+Include every page **except** your `index.md` file.
 ///
 
-This list can contain three things:
-
-### Pages
-
-A page is specified as the path of a markdown file, relative to the `content` folder.
+A page is specified as the path of a Markdown file, relative to the `content` folder.
 
 <div markdown="1">
 
@@ -73,14 +66,14 @@ docs = Docs(__file__, pages=[
 The title shown will be extracted from the page metadata `title`.
 
 If there is an `icon` in the page metadata, it will also be shown.
-It should be a path, relative to the assets folder, of an image or a svg file.
+It should be a path, relative to the assets folder, of an image or SVG file.
 
 The folder structure of these files doesn't matter; they will all appear at the same level.
 If you want to display them inside a "folder," put them inside a section.
 
-### Sections
+## Adding sections
 
-A section can contain more pages or subsections.
+You can group pages in sections, which can also contain subsections.
 
 <div markdown="1">
 
@@ -97,7 +90,7 @@ docs = Docs(__file__, pages=[
       "markdown/lists/ordered.md",
       "markdown/lists/tasks.md",
       # ...
-    ]
+    ],
   },
   # ...
 ])
@@ -105,19 +98,19 @@ docs = Docs(__file__, pages=[
 
 </div>
 
-The `icon` is optional. If included, it should be a path, relative to the assets folder, of an image or a svg file.
+The `icon` is optional. If included, it should be a path, relative to the assets folder, of an image or SVG file.
 
 The `pages` list of the section can contain page paths or other sections.
 
-Clicking on the section title will fold/unfold their pages tree.
+Clicking on the section title will fold or unfold its pages tree.
 
 ### Section/pages
 
-A section can also be a page. To do this, add a `path` attribute with the path of the markdown
+A section can also be a page. To do this, add a `path` attribute with the path of the Markdown
 file, relative to the `content` folder.
 
 You can still define a `title`, but it is optional, because it will be extracted from the page metadata.
-If there is an `icon` in the page metadata -- a path, relative to the assets folder, of an image or a svg file -- it will also be shown.
+If there is an `icon` in the page metadata—a path, relative to the assets folder, of an image or SVG file—it will also be shown.
 
 <div markdown="1">
 
@@ -133,7 +126,7 @@ docs = Docs(__file__, pages=[
       "markdown/lists/ordered.md",
       "markdown/lists/tasks.md",
       # ...
-    ]
+    ],
   },
   # ...
 ])
@@ -143,15 +136,34 @@ docs = Docs(__file__, pages=[
 
 Clicking on the section title will show its page.
 
+### Sections that start closed
+
+A section is by default "open," meaning it shows all of its pages and subsections. However, sometimes a section with many pages can create too much visual noise. You can specify that a section should be rendered "closed" by default by using the `"closed": True` property:
+
+```python {hl_lines="4"}
+docs = Docs(__file__, pages=[
+  {
+    "title": "Commands",
+    "closed": True,
+    "pages": [
+      "commands/one.md",
+      "commands/two.md",
+      "commands/three.md",
+      # ...
+      "commands/one-hundred.md",
+    ],
+  },
+  # ...
+])
+```
+
+The section will be rendered closed except when viewing a page inside that section (even if it's inside a subsection).
 
 ## Site metadata
 
-Site metadata contains the essential global metadata: `name`, `base_url`, `version`, and `lang`.
-But also any other custom metadata you might want to use in your views.
+Site metadata contains the essential global information: `name`, `base_url`, `version`, and `lang`, as well as any other custom metadata you might want to use in your views.
 
-For example, `description` and `source_code` are two pieces of information that are used in several places
-in the default theme.
-
+For example, `description` and `source_code` are two pieces of information that are used in several places in the default theme.
 
 ```python {title="docs.py" hl_lines="4-11"}
 docs = Docs(
@@ -160,20 +172,23 @@ docs = Docs(
   site={
       "name": "Project Name",                     # required
       "base_url": "https://project.example.com",  # required
-      "version": "1.0",                           # required
-      "lang": "en",                               # required
+      "version": "1.0",
+      "lang": "en",
       "description": "Description of your project",
       "source_code": "https://github.com/yourusername/yourproject/",
   },
 )
 ```
 
+`"version"` is only required if you use [multiple versions](/docs/versions/).
+
+`"lang"` is only required if your docs are translated into [multiple languages](/docs/languages/).
 
 ## The Home page
 
 The home page is special for several reasons:
 
-#. You don't include this file in your `pages` list.
-#. This file **must** be named `index.md` and be directly inside the `content` folder, not in a subfolder.
-#. Unlike other pages, that use the `views/page.jinja` view, the home page uses the `views/index.jinja` view.
-#. You don't even *need* an `index.md` file! If you delete it, the `views/index.jinja` view will be rendered as-is.
+1. You don't include this file in your `pages` list.
+2. This file **must** be named `index.md` and be directly inside the `content` folder, not in a subfolder.
+3. Unlike other pages, which use the `views/page.jinja` view, the home page uses the `views/index.jinja` view.
+4. You don't even *need* an `index.md` file! If you delete it, the `views/index.jinja` view will be rendered as-is.

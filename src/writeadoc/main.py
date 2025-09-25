@@ -9,6 +9,7 @@ from multiprocessing import Process
 from pathlib import Path
 from tempfile import mkdtemp
 from textwrap import dedent
+from uuid import uuid4
 
 import jx
 import markdown
@@ -325,17 +326,28 @@ class Docs:
             user_pages: TUserPages,
             section_title: str = "",
             section_url: str = "",
+            parents: tuple[str, ...] = (),
         ) -> list[NavItem]:
             items = []
 
             for user_page in user_pages:
                 # Section
                 if isinstance(user_page, dict):
-                    item = _process_section(user_page, section_title=section_title, section_url=section_url)
+                    item = _process_section(
+                        user_page,
+                        section_title=section_title,
+                        section_url=section_url,
+                        parents=parents,
+                    )
                     items.append(item)
                 # Page
                 elif isinstance(user_page, str):
-                    item = _process_page(user_page, section_title=section_title, section_url=section_url)
+                    item = _process_page(
+                        user_page,
+                        section_title=section_title,
+                        section_url=section_url,
+                        parents=parents,
+                    )
                     items.append(item)
                 else:
                     raise ValueError(f"Invalid page entry: {user_page}")
@@ -346,6 +358,7 @@ class Docs:
             user_page: TUserSection,
             section_title: str = "",
             section_url: str = "",
+            parents: tuple[str, ...] = (),
         ) -> NavItem:
             user_pages = user_page.get("pages", [])
             if not isinstance(user_pages, list) or not user_pages:
@@ -353,32 +366,47 @@ class Docs:
 
             title = user_page.get("title")
             icon = user_page.get("icon") or ""
-            id = user_page.get("id") or ""
+            closed = bool(user_page.get("closed", False))
             url = ""
+
+            id = user_page.get("id") or f"s-{uuid4().hex}"
+            parents = parents + (id, )
 
             sec_path = user_page.get("path")
             if sec_path:
-                item = _process_page(sec_path, section_title=section_title, section_url=section_url)
+                item = _process_page(
+                    sec_path,
+                    section_title=section_title,
+                    section_url=section_url,
+                    parents=parents,
+                )
                 title = title or item.title
                 icon = icon or item.icon
-                id = id or item.id
                 url = item.url
 
             if not title:
                 raise ValueError(f"Section entry is missing 'title': {user_page}")
 
+            pages = _process(
+                user_pages,
+                section_title=title,
+                section_url=url,
+                parents=parents,
+            )
             return NavItem(
                 title=title,
                 id=id,
                 url=url,
                 icon=icon,
-                pages=_process(user_pages, section_title=title),
+                pages=pages,
+                closed=closed
             )
 
         def _process_page(
             filename: str,
             section_title: str = "",
             section_url: str = "",
+            parents: tuple[str, ...] = (),
         ) -> NavItem:
             filepath = self.pages_dir / self.prefix / filename
             meta, html = self._process_file(filepath)
@@ -396,6 +424,7 @@ class Docs:
                 meta=meta,
                 content=html,
                 toc=getattr(self.md_renderer, "toc_tokens", []),
+                parents=parents,
             )
             pages.append(page)
 
