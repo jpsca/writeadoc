@@ -65,8 +65,6 @@ html {
     --rgb-grey: 236, 239, 244;
     --rgb-grey-light: 241, 244, 249;
     --color-base-dark: var(--color-base);
-    /* --color-black: rgb(var(--rgb-white));
-    --color-white: rgb(var(--rgb-base-dark)); */
     --rgb-white: var(--rgb-base-dark);
     --rgb-black: 255, 255, 255;
     --rgb-accent: 104, 167, 249;
@@ -114,6 +112,7 @@ table {
 
 html {
   scroll-padding-top: 4rem;
+  font-size: 16px;
 }
 
 body {
@@ -123,7 +122,7 @@ body {
   accent-color: var(--color-accent);
 
   font-family: var(--font-family);
-  font-size: 16px;
+
   line-height: 1;
   font-style: normal;
   font-weight: 400;
@@ -1038,7 +1037,6 @@ code {
   border-radius: 0.4rem;
   box-shadow: 0 0 0 1px rgba(var(--rgb-grey), 0.2);
   display: flex;
-  font-size: 80%;
   letter-spacing: -0.01em;
   transition: background var(--transition), box-shadow var(--transition)
 }
@@ -1048,7 +1046,7 @@ code {
   border: none;
   color: var(--color-grey);
   flex: 1;
-  line-height: 1.3em;
+  line-height: 1.4;
   padding: 0.6em 0.8em 0.5em 0.8em;
   vertical-align: middle
 }

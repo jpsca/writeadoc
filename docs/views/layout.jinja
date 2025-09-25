@@ -22,6 +22,7 @@
 <script src="/assets/js/color-scheme.js"></script>
 <link rel="stylesheet" href="/assets/css/style.css?v={{ _get_random_id() }}" />
 <link rel="stylesheet" href="/assets/css/layout.css?v={{ _get_random_id() }}" />
+<link rel="stylesheet" href="/assets/css/index.css?v={{ _get_random_id() }}" />
 <script type="module" src="/assets/js/turbo.min.js"></script>
 <script type="module" src="/assets/js/code.js"></script>
 <script type="module" src="/assets/js/search.js"></script>
@@ -47,7 +48,6 @@
         <VersionPopover />
         <LanguagePopover />
         <div class="header__links">
-          <ColorScheme />
           <a class="header__link-search" href="/search/">
             <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
@@ -63,6 +63,7 @@
             <span>{{ _('HELP') }}</span>
           </a>#}
         </div>
+        <ColorScheme />
       </nav>
     </header>
 

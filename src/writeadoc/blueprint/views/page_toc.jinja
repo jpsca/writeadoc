@@ -8,11 +8,10 @@
 	</ul>
 {% endmacro %}
 
-<nav class="page__toc">
+<nav class="page__toc" id="pagetoc-popover" popover="auto" onclick="this.hidePopover();">
 {% if page.toc -%}
-<div>
-	<h4>{{ _('ON_THIS_PAGE') }}</h4>
-	{{ render_toc(page.toc) }}
-</div>
+<a class="top-link" href="#">{{ _('BACK_TO_TOP') }}</a>
+<h4>{{ _('ON_THIS_PAGE') }}</h4>
+{{ render_toc(page.toc) }}
 {%- endif %}
 </nav>
