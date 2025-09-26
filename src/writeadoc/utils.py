@@ -141,7 +141,7 @@ def start_observer(
         ],
     )
     observer.start()
-    print("Watching for changes. Press Ctrl+C to exit.")
+    print("\nWatching for changes. Press Ctrl+C to exit.")
     try:
         while True:
             time.sleep(1)

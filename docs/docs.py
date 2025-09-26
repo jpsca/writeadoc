@@ -41,12 +41,11 @@ docs = Docs(
     __file__,
     pages=pages,
     site={
-        "name": "Project Name",
-        "base_url": "https://project.example.com",
-        "version": "1.0",
+        "name": "WriteADoc",
+        "base_url": "https://writeadoc.scaletti.dev",
         "lang": "en",
-        "description": "Description of your project",
-        "source_code": "https://github.com/yourusername/yourproject/",
+        "description": "Documentation your users will love",
+        "source_code": "https://github.com/jpsca/writeadoc/",
     },
 )
 
