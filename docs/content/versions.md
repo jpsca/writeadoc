@@ -11,7 +11,7 @@ B) The other is having two or more separate "live" versions of your documentatio
 Luckily, WriteADoc makes it easy to do either or both.
 
 
-## A. Archiving the current version
+## Archiving the current version
 
 To archive the current version of your documentation for future reference, follow these steps.
 
@@ -23,7 +23,6 @@ First, make sure you have specified a version in your site data.
 docs = Docs(
     __file__,
     pages=pages,
-    views=views,
     site={
         "version": "1.0",
         ...
@@ -50,21 +49,29 @@ If you haven't removed it from your view, a banner will be added to every page a
 </figure>
 
 
-### 3. Add the version to the selector
+### 3. Enable the version selector
 
-Add a link to the list of options in the version selector at `views/layout.jinja` and rebuild your current documentation. You might need to uncomment the selector if it's your first time using it.
+Go to the file `views/version_selector.jinja` and remove
+the `{#` at the beginning and the `#}` at the end, so the selector appear in your documentation.
 
-```html+jinja {title="views/language_popover.jinja" linenums="7"}
-<div id="version-selector" popover="auto">
-  <div>
-    <a href="/1.0/" {% if site.version == "1.0" %}class="selected"{% endif %}>1.0</a>
-    <a href="/0.5/" {% if site.version == "0.5" %}class="selected"{% endif %}>0.5</a>
-  </div>
+Add a link to the list of options in the version selector at `views/version_selector.jinja` and rebuild your current documentation.
+
+```html+jinja {title="views/version_selector.jinja" hl_lines="7 8"}
+<div class="version variant-popover">
+	<button type="button" popovertarget="version-selector" tabindex="0">
+		{{ site.version }}
+	</button>
+	<div class="popover" role="menu">
+		<div>
+			<a href="/1.0/" {% if site.version == "1.0" %}class="selected"{% endif %} tabindex="0">1.0</a>
+			<a href="/0.5/" {% if site.version == "0.5" %}class="selected"{% endif %} tabindex="0">0.5</a>
+		</div>
+	</div>
 </div>
+{%- endif %}
 ```
 
 /// note
-
 The version selector does not render in archived versions. Otherwise, it would link only to versions that existed when created, which might not even be available anymore.
 ///
 
@@ -72,18 +79,54 @@ The version selector does not render in archived versions. Otherwise, it would l
 
 You can now copy the generated version folder along with the rest of your live documentation, so your main documentation will be at `http://example.com/`, and the documentation for the archived version will be available at `http://example.com/{VERSION}/`.
 
+/// warning
 Make sure you also commit the `archive/` folder to your source code.
+///
 
 
-## B. Managing separate "live" versions
+## Managing separate "live" versions
 
-The easiest way to work with separate versions of your documentation is to have a separate instance of WriteADoc for each version and collect them in the `variants` dictionary of your main instance:
+If you, for some reason, have to mantain live documentation for two or more versions at the same time, meaning documentation that can change, WriteADoc supports that too.
 
-```python {hl_lines="1 11 26-27"}
+To do so, follow this procedure:
+
+### 1. Set the default version
+
+First, set the default version, the latest one, like before:
+
+```python {hl_lines="5"}
+docs = Docs(
+    __file__,
+    pages=pages,
+    site={
+        "version": "3.0",
+        ...
+    },
+)
+```
+
+### 2. Create a subfolder for the content of each version
+
+Inside the `content` folder, create a subfolder for other versions. For example:
+
+```bash
+content/
+  ├── 1.0/
+  ├── 2.0/
+  │
+  └── welcome.md
+
+```
+
+### 3. Create instances of WriteADoc for each version
+
+Now create separate instance of WriteADoc for each extra version and collect them in the `variants` dictionary of your main instance:
+
+
+```python {hl_lines="1 10 19 26-29"}
 docs_v1 = Docs(
     __file__,
     pages=pages_v1,
-    views=views,
     site={
         "version": "1.0",
         ...
@@ -93,7 +136,6 @@ docs_v1 = Docs(
 docs_v2 = Docs(
     __file__,
     pages=pages_v2,
-    views=views,
     site={
         "version": "2.0",
         ...
@@ -103,31 +145,40 @@ docs_v2 = Docs(
 docs = Docs(
     __file__,
     pages=pages,
-    views=views,
+    site={
+        "version": "3.0",
+        ...
+    },
     variants={
       "1.0": docs_v1,
       "2.0": docs_v2,
-    }
+    },
 )
 ```
 
-The keys of the `variants` dictionary will be used as a **prefix** added to every URL of the generated documentation for each version. Each version will also be generated into the `build/{prefix}` folders, so your `build` folder will look like this:
+The keys of the `variants` dictionary will be used as a **prefix** added to every URL of the generated documentation for each version.
+Each version will also be generated into the `build/{prefix}` folders, so your `build` folder will look like this:
 
 ```bash
 build/
   ├── 1.0/
-  │     ├── assets/
-  │     ├── docs/
-  │     └── index.html
+  │    ├── docs/
+  │    ├── search/
+  │    └── index.html  # redirects
+  |
   └── 2.0/
-  │     ├── assets/
-  │     ├── docs/
-  │     └── index.html
+  │    ├── docs/
+  │    ├── search/
+  │    └── index.html  # redirects
+  |
   ├── assets/
   ├── docs/
-  └── index.html
-
+  ├── search/
+  ├── index.html
+  ├── robots.txt
+  └── sitemap.xml
 ```
+
 
 /// note
 
@@ -139,3 +190,31 @@ variants={
   "v2": docs_v2,
 }
 ```
+
+///
+
+### 4. Enable the version selector
+
+Go to the file `views/version_selector.jinja` and remove
+the `{#` at the beginning and the `#}` at the end, so the selector appear in your documentation.
+
+Add a link to the list of options in the version selector at `views/version_selector.jinja` and rebuild your current documentation.
+
+```html+jinja {title="views/version_selector.jinja" hl_lines="7 8"}
+<div class="version variant-popover">
+	<button type="button" popovertarget="version-selector" tabindex="0">
+		{{ site.version }}
+	</button>
+	<div class="popover" role="menu">
+		<div>
+			<a href="/1.0/" {% if site.version == "1.0" %}class="selected"{% endif %} tabindex="0">1.0</a>
+			<a href="/0.5/" {% if site.version == "0.5" %}class="selected"{% endif %} tabindex="0">0.5</a>
+		</div>
+	</div>
+</div>
+{%- endif %}
+```
+
+----
+
+That's it, you can now change between versions in your documentation.

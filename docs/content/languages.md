@@ -9,13 +9,12 @@ WriteADoc supports internationalization and managing documentation in multiple l
 
 To set your documentation language, use the `lang` argument with a language code ("en" for English, "es" for Spanish, "fr" for French, etc.). English is the default, so you don't need to set it explicitly.
 
-```python {hl_lines="5 6"}
+```python {hl_lines="4 5"}
 docs = Docs(
     __file__,
     pages=pages,
-    views=views,
     site={
-        lang: "es",
+        "lang": "es",
         ...
     },
 )
@@ -25,37 +24,193 @@ This language will be used for two things: translating the few hardcoded strings
 
 For a very small list of languages — Danish (da), German (de), Spanish (es), French (fr), Italian (it), and Portuguese (pt) — this will be done automatically. But don't worry if yours is not in the list, because it's very simple to add support for a new one.
 
-### Translating your views
 
-...
+### Making the search aware of your language
 
-When adding new hardcoded text to your views (meaning, not coming from the markdown files), you can add them to the `strings` dict. However, this is only useful if you want to have variants of your documentation in other languages (see the section ["Working with multiple languages"](#working-with-multiple-languages) later on this page).
+WriteADoc uses [Lunr.js](https://lunrjs.com/) for searching without an external service. If your language is not included with WriteADoc by default, you must
+download the `lunr.[YOUR LANGUAGE].min.js` support file [from here](https://github.com/MihaiValentin/lunr-languages/tree/master/min).
+For example, for Korean you would download the file `lunr.ko.min.js`.
+Save the file to `assets/js/`.
+
+You might want to delete the files already there for languages you are not going to use.
+
+
+## Working with multiple languages
+
+WriteADoc supports having documentation translated to multiple languages. To do so, follow this procedure:
+
+### 1. Set the default language
+
+First, set the default language, the language of the main documentation, like before:
+
+```python {hl_lines="5"}
+docs = Docs(
+    __file__,
+    pages=pages,
+    site={
+        "lang": "en",
+        ...
+    },
+)
+```
+
+### 2. Create a subfolder for the content of each language
+
+Inside the `content` folder, create a subfolder for each translation. For example, to support Spanish and Italian, in addition of the default English:
+
+```bash
+content/
+  ├── es/
+  │     └── welcome.md
+  ├── it/
+  │     └── welcome.md
+  │
+  └── welcome.md
+
+```
+
+### 3. Create instances of WriteADoc for each language
+
+Now create separate instance of WriteADoc for each extra language and collect them in the `variants` dictionary of your main instance:
+
+```python {hl_lines="1 7 13 16-19"}
+docs_es = Docs(
+    __file__,
+    pages=[ "es/welcome.md", ... ],
+    site={ "lang": "es", ... },
+)
+
+docs_it = Docs(
+    __file__,
+    pages=[ "it/welcome.md", ... ],
+    site={ "lang": "it", ... },
+)
+
+docs = Docs(
+    __file__,
+    pages=[ "welcome.md", ... ],
+    variants={
+      "es": docs_es,
+      "it": docs_it,
+    },
+    site={ "lang": "en", ... },
+)
+```
+
+The keys of the `variants` dictionary will be used as a **prefix** added to every URL of the generated documentation for each language.
+Each version will also be generated into the `build/{prefix}` folders, so your `build` folder will look like this:
+
+```bash
+build/
+  ├── es/
+  │    ├── docs/
+  |    |      ├── welcome/
+  |    |      |       └── index.html
+  |    |      └── index.html  # redirects
+  │    ├── search/
+  |    |      └── index.html
+  |    |
+  │    └── index.html  # redirects
+  |
+  └── it/
+  │    ├── docs/
+  |    |      ├── welcome/
+  |    |      |       └── index.html
+  |    |      └── index.html  # redirects
+  │    ├── search/
+  |    |      └── index.html
+  |    |
+  │    └── index.html  # redirects
+  |
+  ├── assets/
+  ├── docs/
+  |      ├── welcome/
+  |      |       └── index.html
+  |      └── index.html  # redirects
+  ├── search/
+  |      └── index.html
+  |
+  ├── index.html
+  ├── robots.txt
+  └── sitemap.xml
+```
+
+### 4. Enable the language selector
+
+Finally, you need to enable the language selector.
+
+Go to the file `views/language_selector.jinja` and remove
+the `{#` at the beginning and the `#}` at the end, so the selector appear in your documentation.
+
+In the same file, add your languages to the list using the keys in the `variants` dictionary. of the last step,
+as URL prefixes:
+
+```html+jinja {title="views/language_selector.jinja" hl_lines="5 7"}
+<div class="language variant-popover">
+	<button type="button" tabindex="0">...</button>
+	<div class="popover" role="menu">
+		<div>
+			<a href="/" {% if site.lang == "en" %}class="selected"{% endif %} tabindex="0">English</a>
+			<a href="/es/" {% if site.lang == "es" %}class="selected"{% endif %} tabindex="0">Español</a>
+			<a href="/it/" {% if site.lang == "it" %}class="selected"{% endif %} tabindex="0">Italiano</a>
+		</div>
+	</div>
+</div>
+```
+
+----
+
+That's it, you can now change between languages in your documentation.
+
+
+
+### Translating hardcoded strings
+
+If your documentation is in more than one language languages, and you add text hardcoded in your views (meaning, not coming from the markdown files),
+you need to add translations for it in all of your languages.
+The translations for those are located in the `views/strings.json` file.
+
+```json {title="views/strings.json"}
+{
+  "en": {
+    "_": "English",
+    "DOCUMENTATION": "Documentation",
+    "SOURCE_CODE": "Code",
+    "HELP": "Help",
+    "MENU": "Menu",
+    "BACK_TO_TOP": "Back to top",
+    "ON_THIS_PAGE": "On this page",
+    "PREVIOUS": "Previous",
+    "NEXT": "Next",
+    "SEARCH": "Search",
+    "SEARCH_RESULTS_FOR": "Search results for",
+    "NO_RESULTS_FOUND": "No results found",
+    "COPY": "Copy",
+    "COPIED": "Copied",
+    "COLOR_SCHEME_SELECTOR": "Color scheme selector",
+    "SWITCH_TO_DARK_MODE": "Switch to dark mode",
+    "SWITCH_TO_LIGHT_MODE": "Switch to light mode",
+    "SWITCH_TO_SYSTEM": "Switch to system preference",
+    "NOT_THE_LATEST_VERSION": "This is not the latest version of the documentation.",
+    "CLICK_TO_GO_TO_LATEST": "Click here to go to latest"
+  },
+  // ...
+```
+
+Remove all the languages you don't need.
+
+In your views, instead of the text, use the variable like this:
+
+```html+jinja
+<button>{{ _('MENU') }}</button>
+```
+
+This will use the value for "MENU" in the language of the page.
+
+---
 
 You can also add translations for URLs or paths of images, videos, etc. Or you can use the `site.lang` attribute instead:
 
 ```html+jinja
 <video href="myvideo_{{ site.lang }}.mp4"></video>
-```
-
-### Making the search aware of your language
-
-WriteADoc uses [Lunr.js](https://lunrjs.com/) for searching without an external service. If your language is not included with WriteADoc by default, you must
-download the `lunr.[YOUR LANGUAGE].min.js` support file [from here](https://github.com/MihaiValentin/lunr-languages/tree/master/min). For example, for Korean you would download the file `lunr.ko.min.js`.
-Save the file to `assets/js/`.
-
-You might want to delete the files already there for languages you are not going to use.
-
-## Working with multiple languages
-
-variants
-
-language selector
-
-```html+jinja {title="views/language_popover.jinja" linenums="7"}
-<div id="language-selector" popover="auto">
-    <div>
-        <a href="/" {% if site.lang == "en" %}class="selected"{% endif %}>English</a>
-        <a href="/es/" {% if site.lang == "es" %}class="selected"{% endif %}>Español</a>
-    </div>
-</div>
 ```

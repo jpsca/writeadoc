@@ -1,7 +1,7 @@
 {# import "./metadata.jinja" as Metadata #}
 {# import "./banner_archived.jinja" as BannerArchived #}
-{# import "./version_popover.jinja" as VersionPopover #}
-{# import "./language_popover.jinja" as LanguagePopover #}
+{# import "./version_selector.jinja" as VersionSelector #}
+{# import "./language_selector.jinja" as LanguageSelector #}
 {# import "./color_scheme.jinja" as ColorScheme #}
 {# import "./sidebar.jinja" as Sidebar #}
 {# import "./page_nav.jinja" as PageNav #}
@@ -42,8 +42,8 @@
           {# <img src="/assets/images/logo.svg" height="42" alt="{{ site.name }}" /> #}
           <span>{{ site.name }}</span>
         </a>
-        <VersionPopover />
-        <LanguagePopover />
+        <VersionSelector />
+        <LanguageSelector />
         <div class="header__links">
           <a class="header__link-search" href="/search/">
             <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">

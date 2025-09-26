@@ -1,13 +1,13 @@
 {# import "./toc.jinja" as Toc #}
 {# import "./color_scheme.jinja" as ColorScheme #}
-{# import "./version_popover.jinja" as VersionPopover #}
-{# import "./language_popover.jinja" as LanguagePopover #}
+{# import "./version_selector.jinja" as VersionSelector #}
+{# import "./language_selector.jinja" as LanguageSelector #}
 
 <aside class="sidebar" id="sidebar-popover" popover="auto">
 	<div>
 		<div class="sidebar__variants">
-			<VersionPopover />
-			<LanguagePopover />
+			<VersionSelector />
+			<LanguageSelector />
 			<ColorScheme />
 		</div>
 		<form class="search" action="/search/" method="get">
