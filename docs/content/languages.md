@@ -76,13 +76,13 @@ Now create separate instance of WriteADoc for each extra language and collect th
 ```python {hl_lines="1 7 13 16-19"}
 docs_es = Docs(
     __file__,
-    pages=[ "es/welcome.md", ... ],
+    pages=[ "welcome.md", ... ],  # Realtive to content/es/
     site={ "lang": "es", ... },
 )
 
 docs_it = Docs(
     __file__,
-    pages=[ "it/welcome.md", ... ],
+    pages=[ "welcome.md", ... ],  # Realtive to content/it/
     site={ "lang": "it", ... },
 )
 
@@ -110,7 +110,7 @@ build/
   │    ├── search/
   |    |      └── index.html
   |    |
-  │    └── index.html  # redirects
+  │    └── index.html
   |
   └── it/
   │    ├── docs/
@@ -120,7 +120,7 @@ build/
   │    ├── search/
   |    |      └── index.html
   |    |
-  │    └── index.html  # redirects
+  │    └── index.html
   |
   ├── assets/
   ├── docs/
@@ -134,6 +134,11 @@ build/
   ├── robots.txt
   └── sitemap.xml
 ```
+
+/// note | One home page
+You can skip generating a home page for each language, by using the option `skip_home=True`
+in each language instance.
+///
 
 ### 4. Enable the language selector
 

@@ -32,9 +32,13 @@ RX_AUTODOC = re.compile(r"<p>\s*:::\s+([\w\.]+)((?:\s+\w+=\w+)*)\s*</p>")
 
 
 class Docs:
-    prefix: str = ""
-    site: SiteData
     pages: TUserPages
+    site: SiteData
+    prefix: str = ""
+    variants: dict[str, t.Self]
+    is_main: bool = True
+    skip_home: bool = False
+
     strings: dict[str, str]
     md_renderer: markdown.Markdown
     md_filter_renderer: markdown.Markdown
@@ -55,19 +59,33 @@ class Docs:
         /,
         *,
         pages: TUserPages,
-        content: str = "content",
-        assets: str = "assets",
         site: dict[str, t.Any] | None = None,
         prefix: str = "",
+        variants: dict[str, t.Self] | None = None,
+        skip_home: bool = False,
         md_extensions: list[t.Any] = utils.DEFAULT_MD_EXTENSIONS,
         md_config: dict[str, dict[str, t.Any]] = utils.DEFAULT_MD_CONFIG,
     ):
+        """
+        Initialize the Docs object.
+
+        Arguments:
+            root: The root directory of the documentation project.
+            pages: The user-defined pages structure.
+            site: The site metadata.
+            prefix: The URL prefix for the documentation.
+            variants: A dictionary of documentation variants.
+            skip_home: Whether to skip generating the home page.
+            md_extensions: List of markdown extensions to use.
+            md_config: Configuration for markdown extensions.
+
+        """
         root_dir = Path(root).resolve().parent
         if not root_dir.exists():
             raise FileNotFoundError(f"Path {root} does not exist.")
         self.root_dir = root_dir
-        self.content_dir = root_dir / content
-        self.assets_dir = root_dir / assets
+        self.content_dir = root_dir / "content"
+        self.assets_dir = root_dir / "assets"
         self.views_dir = root_dir / "views"
         self.archive_dir = root_dir / "archive"
         self.build_dir = root_dir / "build"
@@ -75,6 +93,14 @@ class Docs:
         self.pages = pages
         self.site = SiteData(**(site or {}))
         self.prefix = prefix.strip("/").strip()
+        self.skip_home = skip_home
+
+        variants = variants or {}
+        for prefix, variant in variants.items():
+            variant.content_dir = self.content_dir / prefix
+            variant.prefix = f"{self.prefix}/{prefix}" if self.prefix else prefix
+            variant.is_main = False
+        self.variants = variants
 
         self.md_renderer = markdown.Markdown(
             extensions=[*md_extensions],
@@ -96,6 +122,7 @@ class Docs:
                 "markdown": self.markdown_filter
             },
             site=self.site,
+            docs=self,
             _=self.translate,
             _now=datetime.datetime.now(tz=datetime.timezone.utc),
             _insert_asset=self.insert_asset,
@@ -138,6 +165,8 @@ class Docs:
         """Run the documentation server and watch for changes.
         """
         self.build_dir = Path(mkdtemp(prefix="wad-"))
+        for variant in self.variants.values():
+            variant.build_dir = self.build_dir
 
         self.build()  # Initial build
         p = Process(
@@ -166,6 +195,10 @@ class Docs:
         else:
             self.build_dir = self.root_dir / "build"
 
+        for prefix, variant in self.variants.items():
+            variant.build_dir = self.build_dir
+            variant.prefix = f"{self.prefix}/{prefix}" if self.prefix else prefix
+
         self.build(devmode=False)
         print("\nDocumentation built successfully.")
         if archive:
@@ -174,13 +207,17 @@ class Docs:
             print("Documentation is available in the `build` directory.")
 
     def build(self, devmode: bool = True) -> None:
-        self.init_catalog()
+        print_random_message()
 
+        for variant in self.variants.values():
+            variant.build(devmode=devmode)
+
+        self.init_catalog()
         nav, pages = self._process_pages(self.pages)
         self.site.nav = nav
         self.site.pages = pages
 
-        if self.prefix:
+        if self.prefix and not self.site.base_url.endswith(f"/{self.prefix}"):
             self.site.base_url = f"{self.site.base_url}/{self.prefix}"
 
         self._render_index_page()
@@ -190,15 +227,15 @@ class Docs:
 
         self._render_search_page()
         self._render_redirect_pages()
-        self._render_extra()
+        self._add_prefix_to_urls()
         print_random_message()
 
-        self._add_prefix_to_urls()
-        if devmode:
-            self._symlink_assets()
-        else:
-            self._copy_assets()
-        print_random_message()
+        if self.is_main:
+            self._render_extra()
+            if devmode:
+                self._symlink_assets()
+            else:
+                self._copy_assets()
 
     def markdown_filter(self, source: str, code: str = "") -> str:
         source = dedent(source.strip("\n")).strip()
@@ -454,7 +491,7 @@ class Docs:
         if not filepath.exists():
             raise FileNotFoundError(f"File {filepath} does not exist.")
 
-        logger.debug("Processing page: %s", filepath.relative_to(self.content_dir / self.prefix))
+        logger.debug("Processing page: %s", filepath.relative_to(self.content_dir))
         source = filepath.read_text(encoding="utf-8")
         meta, source = utils.extract_metadata(source)
         html = self._render_markdown(source)
@@ -553,6 +590,9 @@ class Docs:
         self.log(outpath)
 
     def _render_index_page(self) -> None:
+        if self.skip_home:
+            return
+
         outpath = self.build_dir / self.prefix / "index.html"
         outpath.parent.mkdir(parents=True, exist_ok=True)
         url = f"/{self.prefix}/" if self.prefix else "/"
@@ -601,6 +641,11 @@ class Docs:
         outpath.write_text(html, encoding="utf-8")
         self.log(outpath)
 
+        if self.skip_home:
+            outpath = self.build_dir / self.prefix / "index.html"
+            outpath.write_text(html, encoding="utf-8")
+            self.log(outpath)
+
     def _render_extra(self) -> None:
         for file in (
             "sitemap.xml",
@@ -643,7 +688,8 @@ class Docs:
         if not self.prefix:
             return
 
-        rx_urls = re.compile(r"""(href|src|action|poster|data|srcset|data-src)=("|')/(docs|assets|search)/""")
+        folders = "docs|assets|search" if self.is_main else "docs|search"
+        rx_urls = re.compile(fr"""(href|src|action|poster|data|srcset|data-src)=("|')/({folders})/""")
 
         build_dir = self.build_dir / self.prefix
         for html_file in build_dir.rglob("*.html"):

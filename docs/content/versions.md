@@ -126,7 +126,8 @@ Now create separate instance of WriteADoc for each extra version and collect the
 ```python {hl_lines="1 10 19 26-29"}
 docs_v1 = Docs(
     __file__,
-    pages=pages_v1,
+    pages=pages_v1,  # Relative to content/v1/
+    skip_home=True,
     site={
         "version": "1.0",
         ...
@@ -135,7 +136,8 @@ docs_v1 = Docs(
 
 docs_v2 = Docs(
     __file__,
-    pages=pages_v2,
+    pages=pages_v2,  # Relative to content/v2/
+    skip_home=True,
     site={
         "version": "2.0",
         ...
@@ -144,7 +146,7 @@ docs_v2 = Docs(
 
 docs = Docs(
     __file__,
-    pages=pages,
+    pages=pages,  # Relative to content/
     site={
         "version": "3.0",
         ...

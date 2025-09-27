@@ -1,5 +1,3 @@
-{# def folded: bool = False #}
-
 {% macro render_icon(item) -%}
   {%- if item.icon -%}
     {% if item.icon.endswith('.svg') -%}
@@ -20,7 +18,8 @@
 {% macro render_pages(items) -%}
   {% for item in items -%}
   {%- if item.pages -%}
-  <details class="toc__section" {% if not folded %}open{% endif %}>
+  <details class="toc__section"
+  {%- if (item.id == page.id) or (item.id in page.parents) or (not item.closed) %} open{% endif %}>
     <summary>{{ render_item(item) }}</summary>
     <div>{{ render_pages(item.pages) }}</div>
   </details>

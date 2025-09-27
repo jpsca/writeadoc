@@ -44,6 +44,7 @@ docs = Docs(
         "name": "WriteADoc",
         "base_url": "https://writeadoc.scaletti.dev",
         "lang": "en",
+        "version": "1.0",
         "description": "Documentation your users will love",
         "source_code": "https://github.com/jpsca/writeadoc/",
     },

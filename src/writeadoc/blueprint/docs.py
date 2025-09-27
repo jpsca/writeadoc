@@ -10,13 +10,6 @@ from writeadoc import Docs
 
 pages = [
     "welcome.md",
-    {
-        "title": "Subsection",
-        "pages": [
-            "sub/lorem.md",
-            "sub/ipsum.md",
-        ],
-    },
 ]
 
 docs = Docs(
