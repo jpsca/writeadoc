@@ -67,9 +67,11 @@ Open up [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser, and yo
 
 The generated home page is different than the rest: it's a welcome/marketing kind of page. Clicking on the "Documentation" link takes you to the first page of your actual documentation.
 
-![Home page](/assets/images/page-home.png)
+![Home page](/assets/images/page-home-light.png){ .only-light }
+![Home page](/assets/images/page-home-dark.png){ .only-dark }
 
-![First page](/assets/images/page-index.png)
+![First page](/assets/images/page-index-light.png){ .only-light }
+![First page](/assets/images/page-index-dark.png){ .only-dark }
 
 
 ## Build

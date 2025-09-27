@@ -71,6 +71,10 @@ Add a link to the list of options in the version selector at `views/version_sele
 {%- endif %}
 ```
 
+![Version selector](/assets/images/version-selector-light.png){ .only-light }
+![Version selector](/assets/images/version-selector-dark.png){ .only-dark }
+
+
 /// note
 The version selector does not render in archived versions. Otherwise, it would link only to versions that existed when created, which might not even be available anymore.
 ///
@@ -126,7 +130,7 @@ Now create separate instance of WriteADoc for each extra version and collect the
 ```python {hl_lines="1 10 19 26-29"}
 docs_v1 = Docs(
     __file__,
-    pages=pages_v1,  # Relative to content/v1/
+    pages=pages_v1,  # Relative to content/1.0/
     skip_home=True,
     site={
         "version": "1.0",
@@ -136,7 +140,7 @@ docs_v1 = Docs(
 
 docs_v2 = Docs(
     __file__,
-    pages=pages_v2,  # Relative to content/v2/
+    pages=pages_v2,  # Relative to content/2.0/
     skip_home=True,
     site={
         "version": "2.0",
@@ -193,6 +197,8 @@ variants={
 }
 ```
 
+**However, they must be named like the folders in `content/`**.
+
 ///
 
 ### 4. Enable the version selector
@@ -220,3 +226,6 @@ Add a link to the list of options in the version selector at `views/version_sele
 ----
 
 That's it, you can now change between versions in your documentation.
+
+![Version selector](/assets/images/version-selector-light.png){ .only-light }
+![Version selector](/assets/images/version-selector-dark.png){ .only-dark }

@@ -553,7 +553,7 @@ html.cs-light .color-scheme button.light {
     transform: translateY(0);
   }
 }
-@media (max-width: 64rem) {
+@media (max-width: 48rem) {
   .page__toc:popover-open {
     left: 1rem;
     width: calc(100vw - 3rem);

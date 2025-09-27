@@ -6,8 +6,9 @@
 	</button>
 	<div class="popover" role="menu">
 		<div>
+			<a href="/3.0/" {% if site.version == "3.0" %}class="selected"{% endif %} tabindex="0">3.0</a>
+			<a href="/2.0/" {% if site.version == "2.0" %}class="selected"{% endif %} tabindex="0">2.0</a>
 			<a href="/1.0/" {% if site.version == "1.0" %}class="selected"{% endif %} tabindex="0">1.0</a>
-			<a href="/0.5/" {% if site.version == "0.5" %}class="selected"{% endif %} tabindex="0">0.5</a>
 		</div>
 	</div>
 </div>

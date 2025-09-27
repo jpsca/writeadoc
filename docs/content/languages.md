@@ -167,6 +167,8 @@ as URL prefixes:
 
 That's it, you can now change between languages in your documentation.
 
+![Language selector](/assets/images/language-selector-light.png){ .only-light }
+![Language selector](/assets/images/language-selector-dark.png){ .only-dark }
 
 
 ### Translating hardcoded strings
