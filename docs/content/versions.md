@@ -52,21 +52,21 @@ If you haven't removed it from your view, a banner will be added to every page a
 ### 3. Enable the version selector
 
 Go to the file `views/version_selector.jinja` and remove
-the `{#` at the beginning and the `#}` at the end, so the selector appear in your documentation.
+the `{#` at the beginning and the `#}` at the end, so the selector appears in your documentation.
 
 Add a link to the list of options in the version selector at `views/version_selector.jinja` and rebuild your current documentation.
 
 ```html+jinja {title="views/version_selector.jinja" hl_lines="7 8"}
 <div class="version variant-popover">
-	<button type="button" popovertarget="version-selector" tabindex="0">
-		{{ site.version }}
-	</button>
-	<div class="popover" role="menu">
-		<div>
-			<a href="/1.0/" {% if site.version == "1.0" %}class="selected"{% endif %} tabindex="0">1.0</a>
-			<a href="/0.5/" {% if site.version == "0.5" %}class="selected"{% endif %} tabindex="0">0.5</a>
-		</div>
-	</div>
+    <button type="button" popovertarget="version-selector" tabindex="0">
+        {{ site.version }}
+    </button>
+    <div class="popover" role="menu">
+        <div>
+            <a href="/1.0/" {% if site.version == "1.0" %}class="selected"{% endif %} tabindex="0">1.0</a>
+            <a href="/0.5/" {% if site.version == "0.5" %}class="selected"{% endif %} tabindex="0">0.5</a>
+        </div>
+    </div>
 </div>
 {%- endif %}
 ```
@@ -90,13 +90,13 @@ Make sure you also commit the `archive/` folder to your source code.
 
 ## Managing separate "live" versions
 
-If you, for some reason, have to mantain live documentation for two or more versions at the same time, meaning documentation that can change, WriteADoc supports that too.
+If you, for some reason, have to maintain live documentation for two or more versions at the same time, meaning documentation that can change, WriteADoc supports that too.
 
 To do so, follow this procedure:
 
 ### 1. Set the default version
 
-First, set the default version, the latest one, like before:
+First, set the default version, the latest one, as before:
 
 ```python {hl_lines="5"}
 docs = Docs(
@@ -111,7 +111,7 @@ docs = Docs(
 
 ### 2. Create a subfolder for the content of each version
 
-Inside the `content` folder, create a subfolder for other versions. For example:
+Inside the `content` folder, create a subfolder for each version. For example:
 
 ```bash
 content/
@@ -124,7 +124,7 @@ content/
 
 ### 3. Create instances of WriteADoc for each version
 
-Now create separate instance of WriteADoc for each extra version and collect them in the `variants` dictionary of your main instance:
+Now create a separate instance of WriteADoc for each extra version and collect them in the `variants` dictionary of your main instance:
 
 
 ```python {hl_lines="1 10 19 26-29"}
@@ -204,28 +204,28 @@ variants={
 ### 4. Enable the version selector
 
 Go to the file `views/version_selector.jinja` and remove
-the `{#` at the beginning and the `#}` at the end, so the selector appear in your documentation.
+the `{#` at the beginning and the `#}` at the end, so the selector appears in your documentation.
 
 Add a link to the list of options in the version selector at `views/version_selector.jinja` and rebuild your current documentation.
 
 ```html+jinja {title="views/version_selector.jinja" hl_lines="7 8"}
 <div class="version variant-popover">
-	<button type="button" popovertarget="version-selector" tabindex="0">
-		{{ site.version }}
-	</button>
-	<div class="popover" role="menu">
-		<div>
-			<a href="/1.0/" {% if site.version == "1.0" %}class="selected"{% endif %} tabindex="0">1.0</a>
-			<a href="/0.5/" {% if site.version == "0.5" %}class="selected"{% endif %} tabindex="0">0.5</a>
-		</div>
-	</div>
+    <button type="button" popovertarget="version-selector" tabindex="0">
+        {{ site.version }}
+    </button>
+    <div class="popover" role="menu">
+        <div>
+            <a href="/1.0/" {% if site.version == "1.0" %}class="selected"{% endif %} tabindex="0">1.0</a>
+            <a href="/0.5/" {% if site.version == "0.5" %}class="selected"{% endif %} tabindex="0">0.5</a>
+        </div>
+    </div>
 </div>
 {%- endif %}
 ```
 
 ----
 
-That's it, you can now change between versions in your documentation.
+That's it, you can now switch between versions in your documentation.
 
 ![Version selector](/assets/images/version-selector-light.png){ .only-light }
 ![Version selector](/assets/images/version-selector-dark.png){ .only-dark }

@@ -2,4 +2,4 @@
 title: API
 ---
 
-@autodoc jx.Catalog
+::: writeadoc.Docs

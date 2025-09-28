@@ -33,9 +33,9 @@ This works with classes, functions, and individual class methods and properties.
 ::: jx.Catalog
 ///
 
-## Customizing what is documented
+## Customizing What Is Documented
 
-By default, all members of the class whose names don't start with an underscore ("_") will be included. You can include one or more members that start with an underscore using the `include` option:
+By default, all members of a class whose names don't start with an underscore ("_") will be included. You can include one or more members that start with an underscore using the `include` option:
 
 ```md
 ::: jx.Catalog include=__call__,__html__
@@ -51,11 +51,11 @@ You can also exclude some members with the `exclude` option:
 As you can see, the options must be separated from each other by spaces.
 ///
 
-## Changing the starting heading level
+## Changing the Starting Heading Level
 
 By default, the name of the function or class is rendered with an `<h2>`, and the names of attributes/methods with `<h3>`. You can change this by adding the starting heading level after the import path:
 
-/// example | Custom starting heading level
+/// example | Custom Starting Heading Level
 
 ```md
 ::: jx.meta.extract_metadata level=4
@@ -64,7 +64,7 @@ By default, the name of the function or class is rendered with an `<h2>`, and th
 ::: jx.meta.extract_metadata level=4
 ///
 
-## Customizing the output
+## Customizing the Output
 
 The extracted information is rendered using the `autodoc.jinja` view, recursively. There, you can see it receives a `ds` argument with these fields:
 
@@ -82,7 +82,6 @@ The extracted information is rendered using the `autodoc.jinja` view, recursivel
 - `many_returns`: List of multiple return values
 - `raises`: List of exceptions that the function may raise
 - `bases`: List of base classes (for classes)
-
 - `attrs`: List of ds objects for each attribute (for classes)
 - `properties`: List of ds objects for each property (for classes)
 - `methods`: List of ds objects for each method (for classes)
@@ -93,7 +92,7 @@ The autodoc module relies on the `docstring_parser` library to parse docstrings.
 
 For optimal results:
 
-1. Start with a short one-line description.
+1. Start with a short, one-line description.
 2. Follow with a blank line and then a more detailed description.
 3. Use standard sections like "Arguments:" (or "Args:"), "Returns:", "Raises:", and "Examples:".
 4. Document all parameters, return values, and exceptions.

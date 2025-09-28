@@ -1,4 +1,4 @@
-function ready() {
+export function ready() {
   var highlights = document.querySelectorAll(".highlight");
   highlights.forEach(highlight => {
     if (highlight.querySelector("button.copy")) {
@@ -19,6 +19,3 @@ function ready() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  ready();
-});

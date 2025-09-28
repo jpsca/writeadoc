@@ -24,24 +24,22 @@ This language will be used for two things: translating the few hardcoded strings
 
 For a very small list of languages — Danish (da), German (de), Spanish (es), French (fr), Italian (it), and Portuguese (pt) — this will be done automatically. But don't worry if yours is not in the list, because it's very simple to add support for a new one.
 
-
 ### Making the search aware of your language
 
 WriteADoc uses [Lunr.js](https://lunrjs.com/) for searching without an external service. If your language is not included with WriteADoc by default, you must
 download the `lunr.[YOUR LANGUAGE].min.js` support file [from here](https://github.com/MihaiValentin/lunr-languages/tree/master/min).
-For example, for Korean you would download the file `lunr.ko.min.js`.
+For example, for Korean, you would download the file `lunr.ko.min.js`.
 Save the file to `assets/js/`.
 
 You might want to delete the files already there for languages you are not going to use.
 
-
 ## Working with multiple languages
 
-WriteADoc supports having documentation translated to multiple languages. To do so, follow this procedure:
+WriteADoc supports having documentation translated into multiple languages. To do so, follow this procedure:
 
 ### 1. Set the default language
 
-First, set the default language, the language of the main documentation, like before:
+First, set the default language, the language of the main documentation, as before:
 
 ```python {hl_lines="5"}
 docs = Docs(
@@ -56,7 +54,7 @@ docs = Docs(
 
 ### 2. Create a subfolder for the content of each language
 
-Inside the `content` folder, create a subfolder for each translation. For example, to support Spanish and Italian, in addition of the default English:
+Inside the `content` folder, create a subfolder for each translation. For example, to support Spanish and Italian, in addition to the default English:
 
 ```bash
 content/
@@ -71,18 +69,18 @@ content/
 
 ### 3. Create instances of WriteADoc for each language
 
-Now create separate instance of WriteADoc for each extra language and collect them in the `variants` dictionary of your main instance:
+Now create a separate instance of WriteADoc for each extra language and collect them in the `variants` dictionary of your main instance:
 
 ```python {hl_lines="1 7 13 16-19"}
 docs_es = Docs(
     __file__,
-    pages=[ "welcome.md", ... ],  # Realtive to content/es/
+    pages=[ "welcome.md", ... ],  # Relative to content/es/
     site={ "lang": "es", ... },
 )
 
 docs_it = Docs(
     __file__,
-    pages=[ "welcome.md", ... ],  # Realtive to content/it/
+    pages=[ "welcome.md", ... ],  # Relative to content/it/
     site={ "lang": "it", ... },
 )
 
@@ -136,7 +134,7 @@ build/
 ```
 
 /// note | One home page
-You can skip generating a home page for each language, by using the option `skip_home=True`
+You can skip generating a home page for each language by using the option `skip_home=True`
 in each language instance.
 ///
 
@@ -145,35 +143,34 @@ in each language instance.
 Finally, you need to enable the language selector.
 
 Go to the file `views/language_selector.jinja` and remove
-the `{#` at the beginning and the `#}` at the end, so the selector appear in your documentation.
+the `{#` at the beginning and the `#}` at the end, so the selector appears in your documentation.
 
-In the same file, add your languages to the list using the keys in the `variants` dictionary. of the last step,
+In the same file, add your languages to the list using the keys in the `variants` dictionary from the last step,
 as URL prefixes:
 
 ```html+jinja {title="views/language_selector.jinja" hl_lines="5 7"}
 <div class="language variant-popover">
-	<button type="button" tabindex="0">...</button>
-	<div class="popover" role="menu">
-		<div>
-			<a href="/" {% if site.lang == "en" %}class="selected"{% endif %} tabindex="0">English</a>
-			<a href="/es/" {% if site.lang == "es" %}class="selected"{% endif %} tabindex="0">Español</a>
-			<a href="/it/" {% if site.lang == "it" %}class="selected"{% endif %} tabindex="0">Italiano</a>
-		</div>
-	</div>
+    <button type="button" tabindex="0">...</button>
+    <div class="popover" role="menu">
+        <div>
+            <a href="/" {% if site.lang == "en" %}class="selected"{% endif %} tabindex="0">English</a>
+            <a href="/es/" {% if site.lang == "es" %}class="selected"{% endif %} tabindex="0">Español</a>
+            <a href="/it/" {% if site.lang == "it" %}class="selected"{% endif %} tabindex="0">Italiano</a>
+        </div>
+    </div>
 </div>
 ```
 
 ----
 
-That's it, you can now change between languages in your documentation.
+That's it, you can now switch between languages in your documentation.
 
 ![Language selector](/assets/images/language-selector-light.png){ .only-light }
 ![Language selector](/assets/images/language-selector-dark.png){ .only-dark }
 
-
 ### Translating hardcoded strings
 
-If your documentation is in more than one language languages, and you add text hardcoded in your views (meaning, not coming from the markdown files),
+If your documentation is in more than one language, and you add text hardcoded in your views (meaning, not coming from the markdown files),
 you need to add translations for it in all of your languages.
 The translations for those are located in the `views/strings.json` file.
 

@@ -3,25 +3,24 @@ title: Attributes Lists
 icon: icons/attrs.svg
 ---
 
-The Attribute Lists syntax allows you to define attributes on various HTML elements in Markdown's output.
+The Attribute Lists syntax allows you to define attributes on various HTML elements in Markdown output.
 An example attribute list might look like this:
 
 ```md
 { #someid .someclass somekey='some value' }
 ```
 
-- A word that starts with a hash `#` will set the id of an element.
+- A word that starts with a hash `#` will set the ID of an element.
 - A word that starts with a dot `.` will be added to the list of classes assigned to an element.
 - A key/value pair `somekey="some value"` will assign that pair to the element.
 
-Be aware that while the dot syntax will add to a class, using key/value pairs will always override any previously defined attribute.
+Be aware that while the dot syntax will add to the class attribute, using key/value pairs will always override any previously defined attribute.
 
 Curly braces can be backslash-escaped to avoid being identified as an attribute list.
 
 ```md
 \{ not an attribute list }
 ```
-
 
 ## Block Level
 
@@ -49,7 +48,6 @@ The above results in the following code:
 ```html
 <h3 class="break">A hash style header</h3>
 ```
-
 
 ## Inline
 
@@ -95,7 +93,6 @@ The above example results in the following output:
 Note that in the first column, the attribute list is preceded by a space; therefore, it is assigned to the table cell (`<td>` element). However, in the second column, the attribute list is not preceded by a space; therefore, it is assigned to the inline element (`<em>`) that immediately precedes it.
 
 Attribute lists may also be defined on table header cells (`<th>` elements) in the same manner.
-
 
 ## Limitations
 

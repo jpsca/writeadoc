@@ -12,26 +12,24 @@
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>{{ page.title | striptags }} | {{ site.name | striptags }}</title>
+<title>{% if page.title %}{{ page.title | striptags }} | {% endif %}{{ site.name | striptags }}</title>
+
 <meta content="ie=edge" http-equiv="x-ua-compatible" />
 <meta name="handheldfriendly" content="true" />
 <meta name="viewport" content="initial-scale=1, width=device-width" />
-<link rel="canonical" href="{{ site.base_url }}{{ page.url }}" />
-<link rel="icon" href="/assets/images/favicon.svg" />
-<link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png" />
+
 <script src="/assets/js/color-scheme.js"></script>
 <link rel="stylesheet" href="/assets/css/style.css?v={{ _get_random_id() }}" />
-<link rel="stylesheet" href="/assets/css/layout.css?v={{ _get_random_id() }}" />
-<link rel="stylesheet" href="/assets/css/index.css?v={{ _get_random_id() }}" />
+
+<Metadata />
+
 <script type="module" src="/assets/js/turbo.min.js"></script>
-<script type="module" src="/assets/js/code.js"></script>
-<script type="module" src="/assets/js/search.js"></script>
+<script type="module" src="/assets/js/script.js?v={{ _get_random_id() }}"></script>
 {{ assets.render() -}}
 <script src="/assets/js/lunr.min.js"></script>
 {%- if site.lang != "en" %}
 <script src="/assets/js/lunr.{{ site.lang }}.min.js"></script>
 {%- endif %}
-<Metadata />
 </head>
 
 <body class="page-{{ page.id }}{% if sidebar %} has-sidebar{% endif %}">

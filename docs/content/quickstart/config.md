@@ -73,7 +73,7 @@ If you want to display them inside a "folder," put them inside a section.
 
 ## Adding sections
 
-You can group pages in sections, which can also contain subsections.
+You can group pages into sections, which can also contain subsections.
 
 <div markdown="1">
 
@@ -102,7 +102,7 @@ The `icon` is optional. If included, it should be a path, relative to the assets
 
 The `pages` list of the section can contain page paths or other sections.
 
-Clicking on the section title will fold or unfold its pages tree.
+Clicking on the section title will fold or unfold its page tree.
 
 ### Section/pages
 

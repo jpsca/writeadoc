@@ -1,4 +1,4 @@
-function ready() {
+export function ready() {
   document.querySelectorAll('.video').forEach(video => {
     var videoElement = video.querySelector('video');
     var videoEvent = videoElement.dataset.event;
@@ -25,8 +25,3 @@ function ready() {
     });
   });
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  ready();
-});
-

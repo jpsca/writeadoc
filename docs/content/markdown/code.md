@@ -13,8 +13,7 @@ Leave one blank line before and after the block for easier reading.
 ```javascript
 console.log("Hello world");
 ```
-
-````
+`````
 
 ```javascript
 console.log("Hello world");

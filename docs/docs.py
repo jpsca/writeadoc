@@ -35,6 +35,7 @@ pages = [
     "autodoc.md",
     "languages.md",
     "versions.md",
+    "api.md",
 ]
 
 docs = Docs(

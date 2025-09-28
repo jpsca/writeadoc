@@ -51,7 +51,7 @@ function getQuery(variable) {
   return null;
 }
 
-function ready() {
+export function ready() {
   var searchTerm = getQuery('q');
   if (searchTerm) {
     var searchBoxes = document.querySelectorAll('.search-box');
@@ -90,7 +90,3 @@ function ready() {
     });
   });
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  ready();
-});

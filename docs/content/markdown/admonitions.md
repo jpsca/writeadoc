@@ -10,7 +10,6 @@ side content without significantly interrupting the document flow:
 Hi, this is an admonition box.
 ///
 
-
 ## Syntax
 
 Admonitions are created using the following syntax:
@@ -23,8 +22,8 @@ Some content
 ///
 ```
 
-`type` will be used as the CSS class name and as default title. It must be a
-single word. So, for instance:
+`type` will be used as the CSS class name and as the default title. It must be a
+single word. For instance:
 
 ```md
 /// admonition
@@ -46,7 +45,7 @@ Some content.
 More content.
 ///
 
-Optionally, you can use custom titles. For instance:
+Optionally, you can use custom titles. For example:
 
 ```md
 /// admonition | Don't try this at home
@@ -70,7 +69,7 @@ If you don't want a title, leave it blank:
 /// admonition |
     type: error
 
-This is an admonition box without a title. It's not very fancy, isn't it?
+This is an admonition box without a title. It's not very fancy, is it?
 ///
 ```
 
@@ -79,12 +78,12 @@ results in:
 /// admonition |
     type: error
 
-This is an admonition box without a title. It's not very fancy, isn't it?
+This is an admonition box without a title. It's not very fancy, is it?
 ///
 
 ## Supported types
 
-As a shortcut, there are a number of admonition blocks that can be used direclty, like this:
+As a shortcut, there are a number of admonition blocks that can be used directly, like this:
 
 ```md
 /// note
@@ -92,7 +91,7 @@ This is a note
 ///
 ```
 
-WriteADoc include these default types: `note`, `tip`, `warning`, `error`, `new`, `example`, and `question`.
+WriteADoc includes these default types: `note`, `tip`, `warning`, `error`, `new`, `example`, and `question`.
 
 /// note
 Lorem ipsum dolor sit amet, consectetur
@@ -152,7 +151,6 @@ euismod nulla. Curabitur feugiat, tortor non consequat finibus, justo
 purus auctor massa, nec semper lorem quam in massa.
 ///
 
-
 ## Collapsible admonitions (details)
 
 If instead of `admonition` you use `details`, the admonition is rendered as a
@@ -194,11 +192,10 @@ Some content
 
 Collapsible admonitions have the same predefined types as regular admonitions
 (`note`, `tip`, `warning`, `error`, `new`, `example`, and `question`), but unlike admonitions,
-details does not register any shortcut syntax by default.
+details do not register any shortcut syntax by default.
 
 This feature uses the [`pymdownx.blocks.details`](https://facelessuser.github.io/pymdown-extensions/extensions/blocks/plugins/details/)
 extension, and can be configured in the markdown options.
-
 
 ## Inline admonitions
 

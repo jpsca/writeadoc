@@ -31,7 +31,7 @@ You can show different images for light and dark color schemes by using the `onl
 
 ///
 
-If you don't want to have two versions of the images, you can instead use the `invert` class, which inverts
+If you don't want to have two versions of the image, you can instead use the `invert` class, which inverts
 the colors of the image **only in dark mode**. It doesn't look great for some images, but it's good enough most of the time.
 
 /// example | Image, inverted colors in dark mode

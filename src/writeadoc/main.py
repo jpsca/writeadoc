@@ -63,8 +63,6 @@ class Docs:
         prefix: str = "",
         variants: dict[str, t.Self] | None = None,
         skip_home: bool = False,
-        md_extensions: list[t.Any] = utils.DEFAULT_MD_EXTENSIONS,
-        md_config: dict[str, dict[str, t.Any]] = utils.DEFAULT_MD_CONFIG,
     ):
         """
         Initialize the Docs object.
@@ -76,8 +74,6 @@ class Docs:
             prefix: The URL prefix for the documentation.
             variants: A dictionary of documentation variants.
             skip_home: Whether to skip generating the home page.
-            md_extensions: List of markdown extensions to use.
-            md_config: Configuration for markdown extensions.
 
         """
         root_dir = Path(root).resolve().parent
@@ -103,14 +99,14 @@ class Docs:
         self.variants = variants
 
         self.md_renderer = markdown.Markdown(
-            extensions=[*md_extensions],
-            extension_configs={**md_config},
+            extensions=[*utils.DEFAULT_MD_EXTENSIONS],
+            extension_configs={**utils.DEFAULT_MD_CONFIG},
             output_format="html",
             tab_length=2,
         )
         self.md_filter_renderer = markdown.Markdown(
-            extensions=[*md_extensions],
-            extension_configs={**md_config},
+            extensions=[*utils.DEFAULT_MD_EXTENSIONS],
+            extension_configs={**utils.DEFAULT_MD_CONFIG},
             output_format="html",
             tab_length=2,
         )
@@ -602,7 +598,7 @@ class Docs:
             meta, html = self._process_file(md_index)
             page = PageData(
                 id="index",
-                title=meta.get("title", self.site.name),
+                title=meta.get("title", ""),
                 url=url,
                 view="index.jinja",
                 content=html,
@@ -612,7 +608,7 @@ class Docs:
             # Just render the template page
             page = PageData(
                 id="index",
-                title=self.site.name,
+                title="",
                 url=url,
                 view="index.jinja",
             )
