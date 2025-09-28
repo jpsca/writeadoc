@@ -578,6 +578,9 @@ html.cs-light .color-scheme button.light {
   padding: 0.5rem 0;
   color: var(--color-black);
 }
+.page__toc h4 a {
+  text-decoration: none;
+}
 .page__toc ul {
   list-style: none;
   margin: 0;
@@ -592,7 +595,7 @@ html.cs-light .color-scheme button.light {
   margin: 0;
   padding: 0;
 }
-.page__toc a {
+.page__toc a:not(h4 a)  {
   display: block;
   font-size: inherit;
   line-height: 1.3;
@@ -605,7 +608,7 @@ html.cs-light .color-scheme button.light {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.page__toc a:is(:focus,:hover) {
+.page__toc a:not(h4 a):is(:focus,:hover) {
   color: var(--color-accent);
   padding-left: 0.7em;
 }
