@@ -48,10 +48,17 @@
 }
 .header .wrapper {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  height: var(--header-height);
+  justify-content: space-between;
   margin-left: 0;
-  gap: 1rem;
+}
+@media (min-width: 36rem) {
+  .header .wrapper {
+    flex-direction: row;
+    height: var(--header-height);
+    gap: 1rem;
+  }
 }
 @media (min-width: 64rem) {
   .has-sidebar .header .wrapper {
@@ -71,18 +78,15 @@
   cursor: pointer;
   height: 100%;
   padding: 0.5rem;
+  flex-shrink: 0;
+  flex-grow: 0;
 }
 
-.header button svg {
+.header  svg {
   font-weight: 700;
-  width: 1.1rem;
   stroke-width: 2px;
   fill: currentColor;
-}
-@media (min-width: 64rem) {
-  .header button svg {
-    width: 1.3rem;
-  }
+  width: 21px;
 }
 
 .header__brand {
@@ -92,7 +96,6 @@
   background: var(--color-base);
   height: var(--header-height);
   width: auto;
-  max-width: 30%;
   text-decoration: none;
   outline: none;
 }
@@ -119,10 +122,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
   height: 100%;
-  margin-left: auto;
-  margin-right: -1rem;
-  font-size: 0.9rem;
+  font-size: 1rem;
+}
+@media (min-width: 36rem) {
+  .header__links {
+    margin-right: auto;
+    justify-content: flex-start;
+  }
+}
+@media (min-width: 64rem) {
+  .header__links {
+    font-size: 1.1rem;
+  }
 }
 .header__links a {
   display: flex;
@@ -142,26 +155,43 @@
   color: var(--color-accent);
 }
 
-.header a.header__link-search,
-.header .color-scheme {
-  display: none;
+.header .version {
+  font-weight: 500;
+  font-size: 1.1em;
 }
-a.header__link-search svg {
+
+.header__search {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  letter-spacing: -0.04em;
+  color: inherit;
+  transition: color var(--transition);
+  padding: 1rem;
+  height: 100%;
+}
+.header__search:is(:focus,:hover) {
+  color: var(--color-accent);
+}
+.header__search svg {
   fill: none;
-  width: 1em;
   stroke-width: 3;
 }
 @media (min-width: 64rem) {
-  .header__links {
-    margin-right: 0;
-    font-size: 1rem;
-  }
-  .header a.header__link-search,
-  .header .color-scheme {
+  .header__search {
     display: flex;
   }
 }
 
+.header .color-scheme {
+  display: none;
+}
+@media (min-width: 64rem) {
+  .header .color-scheme {
+    display: flex;
+  }
+}
 .color-scheme button {
   cursor: pointer;
 }
@@ -699,14 +729,9 @@ html.cs-light .color-scheme button.light {
 .variant-popover {
   position: relative;
 }
-
-.variant-popover button svg {
-  width: 1.3em;
-  height: 1.3em;
-}
 .variant-popover:has(.popover) button {
   cursor: pointer;
-  padding-right: 1rem;
+  padding-right: 2.2rem;
 }
 .variant-popover:has(.popover) button::after {
   background-color: currentcolor;
@@ -725,12 +750,13 @@ html.cs-light .color-scheme button.light {
   width: 1em;
   height: 1em;
   transform: rotate(90deg);
+  font-size: 1rem;
 }
 
 .variant-popover .popover {
   position: absolute;
   left: -1rem;
-  top: 80%;
+  top: 90%;
   visibility: visible;
   background: var(--color-white);
   border-radius: 0.6em;
