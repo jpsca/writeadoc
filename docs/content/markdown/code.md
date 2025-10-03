@@ -9,11 +9,10 @@ Leave one blank line before and after the block for easier reading.
 /// example | Code block
 
 ````md
-
 ```javascript
 console.log("Hello world");
 ```
-`````
+````
 
 ```javascript
 console.log("Hello world");
@@ -53,13 +52,11 @@ To make your code block clearer, specify the language right after the first thre
 /// example | Syntax highlighting
 
 ````md
-
 ```python
 print("Hello, world!")
 for i in range(10):
     print(i)
 ```
-
 ````
 
 renders as:
@@ -84,14 +81,12 @@ The number _must_ be quoted, and it is the number of the first line (it must be 
 /// example | Line Numbers
 
 ````md
-
 ```python {linenums="1"}
 import foo.bar
 
 a = "lorem"
 b = "ipsum"
 ```
-
 ````
 
 renders as:
@@ -110,7 +105,6 @@ If you want to start with a different line number, simply specify a number other
 /// example | Line Numbers
 
 ````md
-
 ```python {linenums="42"}
 def foobar():
     a = "lorem"
@@ -118,7 +112,6 @@ def foobar():
 
 foobar()
 ```
-
 ````
 
 renders as:
@@ -138,14 +131,12 @@ Pygments also has a few additional options regarding line numbers. One is "line 
 /// example | N^th^ line
 
 ````md
-
 ``` {linenums="1 2"}
 """Some file."""
 import foo.bar
 import boo.baz
 import foo.bar.baz
 ```
-
 ````
 
 renders as:
@@ -167,14 +158,12 @@ You can specify certain lines for highlighting by using the `hl_lines` setting d
 /// example | Highlight Lines
 
 ````md
-
 ```python {hl_lines="1 3"}
 """Some file."""
 import foo.bar
 import boo.baz
 import foo.bar.baz
 ```
-
 ````
 
 renders as:
@@ -193,7 +182,6 @@ Line numbers are always referenced starting at 1, regardless of what the line nu
 /// example | Highlight Lines with Line Numbers
 
 ````md
-
 ```python {linenums="42" hl_lines="2"}
 def foobar():
     a = "lorem"
@@ -201,7 +189,6 @@ def foobar():
 
 foobar()
 ```
-
 ````
 
 renders as:
@@ -221,7 +208,6 @@ If you'd like to highlight a range of lines, you can use the notation x-y, where
 /// example | Highlight Lines with Line Numbers
 
 ````md
-
 ```python {hl_lines="1-2 5 7-8"}
 import foo
 import boo.baz
@@ -233,7 +219,6 @@ class Foo:
        self.bar = None
        self.baz = None
 ```
-
 ````
 
 renders as:
@@ -253,14 +238,13 @@ class Foo:
 ///
 
 
-## Code Block Title Headers
+## Title Headers
 
 A header with a title can be applied to a code block using the title option. Typically, you use it to show a filename, but it can be anything.
 
 /// example | Code block with a header
 
 ````md
-
 ```python {title="cool_file.py"}
 import foo
 import boo.baz
@@ -272,7 +256,6 @@ class Foo:
        self.bar = None
        self.baz = None
 ```
-
 ````
 
 renders as:
