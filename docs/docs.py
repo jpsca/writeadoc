@@ -29,6 +29,7 @@ pages = [
             "markdown/tables.md",
             "markdown/admonitions.md",
             "markdown/attributes.md",
+            "markdown/tabs.md",
             "markdown/html.md",
         ],
     },

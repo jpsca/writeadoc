@@ -20,7 +20,7 @@
   text-align: center;
 }
 
-@media (min-width: 64em) {
+@media (min-width: 64rem) {
   .page-index .headline {
     padding: 4rem;
   }

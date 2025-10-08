@@ -7,7 +7,7 @@ authors = [
 ]
 license = { "file" = "MIT-LICENSE" }
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "docstring-parser>=0.17.0",
     "hecto>=2.0.1",
@@ -83,9 +83,10 @@ addopts = "--doctest-modules --ignore=src/writeadoc/blueprint"
 legacy_tox_ini = """
 [tox]
 env_list =
-    3.12
-    3.13
+    pypy3.11
     3.14
+    3.13
+    3.12
 
 [testenv]
 runner = uv-venv-lock-runner

@@ -25,7 +25,7 @@ from .types import (
     TUserPages,
     TUserSection,
 )
-from .utils import logger, print_random_message
+from .utils import logger, get_random_messages
 
 
 RX_AUTODOC = re.compile(r"<p>\s*:::\s+([\w\.]+)((?:\s+\w+=\w+)*)\s*</p>")
@@ -135,6 +135,7 @@ class Docs:
         self.catalog.add_folder(self.views_dir)
 
     def cli(self):
+        print()
         parser = argparse.ArgumentParser(description="WriteADoc CLI")
         subparsers = parser.add_subparsers(dest="command")
 
@@ -203,13 +204,17 @@ class Docs:
             print("Documentation is available in the `build` directory.")
 
     def build(self, devmode: bool = True) -> None:
-        print_random_message()
+        messages = get_random_messages(3)
+        print(f"{messages[0]}...")
 
         for variant in self.variants.values():
             variant.build(devmode=devmode)
 
         self.init_catalog()
+
         nav, pages = self._process_pages(self.pages)
+        print(f"{messages[1]}...")
+
         self.site.nav = nav
         self.site.pages = pages
 
@@ -219,12 +224,11 @@ class Docs:
         self._render_index_page()
         for page in pages:
             self._render_page(page)
-        print_random_message()
+        print(f"{messages[2]}...")
 
         self._render_search_page()
         self._render_redirect_pages()
         self._add_prefix_to_urls()
-        print_random_message()
 
         if self.is_main:
             self._render_extra()

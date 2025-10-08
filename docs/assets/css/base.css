@@ -1123,7 +1123,6 @@ html.cs-dark .page__content img.invert {
   --admonition-icon: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m15.07 11.25-.9.92C13.45 12.89 13 13.5 13 15h-2v-.5c0-1.11.45-2.11 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41a2 2 0 0 0-2-2 2 2 0 0 0-2 2H8a4 4 0 0 1 4-4 4 4 0 0 1 4 4 3.2 3.2 0 0 1-.93 2.25M13 19h-2v-2h2M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10c0-5.53-4.5-10-10-10"/></svg>');
 }
 
-
 /******* Search  *******/
 
 .search {
@@ -1264,3 +1263,104 @@ html.cs-dark .page__content img.invert {
   }
 }
 
+/******* Tabs  *******/
+
+.tabbed-set {
+  display: flex;
+  position: relative;
+  border-radius: 0.1rem;
+  flex-flow: column wrap;
+  margin: 1em 0px;
+}
+.tabbed-set > input {
+  height: 0px;
+  opacity: 0;
+  position: absolute;
+  width: 0px;
+}
+
+.tabbed-labels {
+  display: flex;
+  max-width: 100%;
+  scrollbar-width: none;
+  overflow: auto;
+  border-bottom: 1px solid var(--color-base-darkest);
+}
+.tabbed-labels > label {
+  color: var(--color-grey-light);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  scroll-margin-inline-start: 1rem;
+  width: 100%;
+  border-radius: 0.1rem 0.1rem 0px 0px;
+  padding: 0.9rem 1.6em;
+  transition: background-color 0.25s, color 0.25s;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+@media (min-width: 48rem) {
+  .tabbed-labels > label {
+    width: auto;
+  }
+}
+.tabbed-labels > label:focus {
+  outline: 1px dotted var(--color-accent);
+}
+.tabbed-set > input:first-child:checked ~ .tabbed-labels > :first-child,
+.tabbed-set > input:nth-child(10):checked ~ .tabbed-labels > :nth-child(10),
+.tabbed-set > input:nth-child(11):checked ~ .tabbed-labels > :nth-child(11),
+.tabbed-set > input:nth-child(12):checked ~ .tabbed-labels > :nth-child(12),
+.tabbed-set > input:nth-child(13):checked ~ .tabbed-labels > :nth-child(13),
+.tabbed-set > input:nth-child(14):checked ~ .tabbed-labels > :nth-child(14),
+.tabbed-set > input:nth-child(15):checked ~ .tabbed-labels > :nth-child(15),
+.tabbed-set > input:nth-child(16):checked ~ .tabbed-labels > :nth-child(16),
+.tabbed-set > input:nth-child(17):checked ~ .tabbed-labels > :nth-child(17),
+.tabbed-set > input:nth-child(18):checked ~ .tabbed-labels > :nth-child(18),
+.tabbed-set > input:nth-child(19):checked ~ .tabbed-labels > :nth-child(19),
+.tabbed-set > input:nth-child(2):checked ~ .tabbed-labels > :nth-child(2),
+.tabbed-set > input:nth-child(20):checked ~ .tabbed-labels > :nth-child(20),
+.tabbed-set > input:nth-child(3):checked ~ .tabbed-labels > :nth-child(3),
+.tabbed-set > input:nth-child(4):checked ~ .tabbed-labels > :nth-child(4),
+.tabbed-set > input:nth-child(5):checked ~ .tabbed-labels > :nth-child(5),
+.tabbed-set > input:nth-child(6):checked ~ .tabbed-labels > :nth-child(6),
+.tabbed-set > input:nth-child(7):checked ~ .tabbed-labels > :nth-child(7),
+.tabbed-set > input:nth-child(8):checked ~ .tabbed-labels > :nth-child(8),
+.tabbed-set > input:nth-child(9):checked ~ .tabbed-labels > :nth-child(9) {
+  color: var(--color-black);
+  box-shadow: 0 -4px var(--color-accent) inset;
+}
+.tabbed-labels > label > [href]:first-child {
+  color: inherit;
+}
+
+.tabbed-content {
+  width: 100%;
+}
+.tabbed-block {
+  display: none;
+  padding-top: 0.75rem;
+}
+.tabbed-set > input:first-child:checked ~ .tabbed-content > :first-child,
+.tabbed-set > input:nth-child(10):checked ~ .tabbed-content > :nth-child(10),
+.tabbed-set > input:nth-child(11):checked ~ .tabbed-content > :nth-child(11),
+.tabbed-set > input:nth-child(12):checked ~ .tabbed-content > :nth-child(12),
+.tabbed-set > input:nth-child(13):checked ~ .tabbed-content > :nth-child(13),
+.tabbed-set > input:nth-child(14):checked ~ .tabbed-content > :nth-child(14),
+.tabbed-set > input:nth-child(15):checked ~ .tabbed-content > :nth-child(15),
+.tabbed-set > input:nth-child(16):checked ~ .tabbed-content > :nth-child(16),
+.tabbed-set > input:nth-child(17):checked ~ .tabbed-content > :nth-child(17),
+.tabbed-set > input:nth-child(18):checked ~ .tabbed-content > :nth-child(18),
+.tabbed-set > input:nth-child(19):checked ~ .tabbed-content > :nth-child(19),
+.tabbed-set > input:nth-child(2):checked ~ .tabbed-content > :nth-child(2),
+.tabbed-set > input:nth-child(20):checked ~ .tabbed-content > :nth-child(20),
+.tabbed-set > input:nth-child(3):checked ~ .tabbed-content > :nth-child(3),
+.tabbed-set > input:nth-child(4):checked ~ .tabbed-content > :nth-child(4),
+.tabbed-set > input:nth-child(5):checked ~ .tabbed-content > :nth-child(5),
+.tabbed-set > input:nth-child(6):checked ~ .tabbed-content > :nth-child(6),
+.tabbed-set > input:nth-child(7):checked ~ .tabbed-content > :nth-child(7),
+.tabbed-set > input:nth-child(8):checked ~ .tabbed-content > :nth-child(8),
+.tabbed-set > input:nth-child(9):checked ~ .tabbed-content > :nth-child(9) {
+  display: block;
+}

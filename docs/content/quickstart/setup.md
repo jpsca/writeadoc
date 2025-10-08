@@ -6,31 +6,43 @@ title: Installation
 
 ### Add it to your project
 
-Use your package manager, for example with `uv`:
+Use your package manager
+
+/// tab | Using "**uv**"
 
 ```bash
 uv add writeadoc --group docs
 ```
 
-or with `poetry`:
+///
+
+/// tab | Using "**Poetry**"
 
 ```bash
 poetry add writeadoc --group docs
 ```
 
+///
+
+
 ### Or install it by itself
 
-Using `uv`:
+/// tab | Using "**uv**"
 
 ```bash
 uv pip install writeadoc
 ```
 
-...or regular `pip`:
+///
+
+/// tab | Using "**pip**"
 
 ```bash
 pip install writeadoc
 ```
+
+///
+
 
 ## Creating a new project
 
@@ -47,12 +59,15 @@ Take a moment to review the initial project that has been created for you.
 
 ![Default project](/assets/images/project.png)
 
-There is a `docs.py` Python file and three folders: "assets", "content", and "views".
+There is a `docs.py` Python file and three folders:
 
-The "assets" folder contains images, fonts, CSS, and JS files used by your docs.
-The "views" folder contains the templates (the "theme") for the pages of your documentation.
-The "content" folder will contain your documentation markdown source files. Right now, it
+The "**assets**" folder contains images, fonts, CSS, and JS files used by your docs.
+
+The "**views**" folder contains the templates (the "theme") for the pages of your documentation.
+
+The "**content**" folder will contain your documentation markdown source files. Right now, it
 contains two demo pages: `index.md` and `welcome.md`.
+
 
 ## Running the development server
 
