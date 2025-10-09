@@ -25,7 +25,7 @@ from .types import (
     TUserPages,
     TUserSection,
 )
-from .utils import logger, get_random_messages
+from .utils import get_random_messages, logger
 
 
 RX_AUTODOC = re.compile(r"<p>\s*:::\s+([\w\.]+)((?:\s+\w+=\w+)*)\s*</p>")
@@ -68,7 +68,7 @@ class Docs:
         Initialize the Docs object.
 
         Arguments:
-            root: The root directory of the documentation project.
+            root: The root folder of the documentation project.
             pages: The user-defined pages structure.
             site: The site metadata.
             prefix: The URL prefix for the documentation.
@@ -199,9 +199,9 @@ class Docs:
         self.build(devmode=False)
         print("\nDocumentation built successfully.")
         if archive:
-            print(f"Archived documentation is available in the `archive/{self.site.version}` directory.")
+            print(f"Archived documentation is available in the `archive/{self.site.version}` folder.")
         else:
-            print("Documentation is available in the `build` directory.")
+            print("Documentation is available in the `build` folder.")
 
     def build(self, devmode: bool = True) -> None:
         messages = get_random_messages(3)
@@ -212,6 +212,7 @@ class Docs:
 
         self.init_catalog()
 
+        print("Processing pages...")
         nav, pages = self._process_pages(self.pages)
         print(f"{messages[1]}...")
 
@@ -221,6 +222,7 @@ class Docs:
         if self.prefix and not self.site.base_url.endswith(f"/{self.prefix}"):
             self.site.base_url = f"{self.site.base_url}/{self.prefix}"
 
+        print("Rendering pages...")
         self._render_index_page()
         for page in pages:
             self._render_page(page)
@@ -235,6 +237,7 @@ class Docs:
             if devmode:
                 self._symlink_assets()
             else:
+                print("Copying assets...")
                 self._copy_assets()
 
     def markdown_filter(self, source: str, code: str = "") -> str:
@@ -377,18 +380,18 @@ class Docs:
             items = []
 
             for user_page in user_pages:
-                # Section
-                if isinstance(user_page, dict):
-                    item = _process_section(
+                if isinstance(user_page, str):
+                # Page
+                    item = _process_page(
                         user_page,
                         section_title=section_title,
                         section_url=section_url,
                         parents=parents,
                     )
                     items.append(item)
-                # Page
-                elif isinstance(user_page, str):
-                    item = _process_page(
+                elif isinstance(user_page, dict):
+                # Section
+                    item = _process_section(
                         user_page,
                         section_title=section_title,
                         section_url=section_url,
@@ -407,6 +410,23 @@ class Docs:
             parents: tuple[str, ...] = (),
         ) -> NavItem:
             user_pages = user_page.get("pages", [])
+
+            if isinstance(user_pages, str):
+                # Auto-load pages from a folder
+                pages_path = Path(user_pages)
+                if pages_path.is_absolute():
+                    raise ValueError(f"Pages folder must be relative to contents dir: {user_pages}")
+                pages_path = self.content_dir / pages_path
+                if not pages_path.exists():
+                    raise ValueError(f"Pages folder does not exist: {pages_path}")
+                if pages_path.is_file():
+                    pages_path = pages_path.parent
+                user_pages = [
+                    str(p.relative_to(self.content_dir))
+                    for p in sorted(pages_path.glob("*.md"))
+                    if p.is_file() and not p.name.startswith(".")
+                ]
+
             if not isinstance(user_pages, list) or not user_pages:
                 raise ValueError(f"Section entry has invalid or empty 'pages': {user_page}")
 
@@ -671,7 +691,7 @@ class Docs:
         elif target_path.exists():
             shutil.rmtree(target_path)
 
-        target_path.symlink_to(self.assets_dir, target_is_directory=True)
+        target_path.symlink_to(self.assets_dir)
 
     def _copy_assets(self) -> None:
         if not self.assets_dir.exists():

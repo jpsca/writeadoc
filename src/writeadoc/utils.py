@@ -222,7 +222,7 @@ RANDOM_MESSAGES = [
     "Sifting through syntax",
     "Summoning the muses",
     "Swapping time and space",
-    "Testing ozone",
+    "Testing CO2 levels",
     "Tokenizing innovation",
 ]
 

@@ -104,7 +104,7 @@ The `pages` list of the section can contain page paths or other sections.
 
 Clicking on the section title will fold or unfold its page tree.
 
-### Section/pages
+### Section/page
 
 A section can also be a page. To do this, add a `path` attribute with the path of the Markdown
 file, relative to the `content` folder.
@@ -135,6 +135,21 @@ docs = Docs(__file__, pages=[
 </div>
 
 Clicking on the section title will show its page.
+
+### Automatically adding all pages from a folder
+
+If instead of a list of pages, the `pages` attribute is a folder path **inside the contents dir**, all the markdown files in that folder will be added as pages, in order.
+
+```python {hl_lines="4"}
+docs = Docs(__file__, pages=[
+  {
+    "title": "Components",
+    "pages": "components/"
+  },
+  # ...
+])
+```
+
 
 ### Sections that start closed
 

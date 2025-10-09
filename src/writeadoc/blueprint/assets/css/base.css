@@ -52,8 +52,8 @@ html {
   --space-large: 2em;
   --space-x-large: 3em;
   --space-xx-large: 4em;
-  --transition: 0.15s ease;
-  --transition-slow: 0.3s ease;
+  --transition-slow: 0.15s ease;
+  --transition-slow-slow: 0.3s ease;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -235,7 +235,7 @@ a {
   font-weight: 500;
   text-decoration: underline;
   text-underline-offset: 0.1em;
-  transition: color var(--transition), text-decoration-color var(--transition)
+  transition: color var(--transition-slow), text-decoration-color var(--transition-slow)
 }
 strong a {
   font-weight: inherit
@@ -269,25 +269,19 @@ video::cue {
 
 /******* UTILS *******/
 
-.only-light {
-  display: block;
-}
-.only-dark {
-  display: none;
+@media (prefers-color-scheme: light) {
+  html:not(.cs-dark) .only-dark {
+    display: none;
+  }
 }
 @media (prefers-color-scheme: dark) {
   html:not(.cs-light) .only-light {
     display: none;
   }
-  html:not(.cs-light) .only-dark {
-    display: block;
-  }
 }
-html.cs-dark .only-light {
+html.cs-dark .only-light,
+html.cs-light .only-dark {
   display: none;
-}
-html.cs-dark .only-dark {
-  display: block;
 }
 
 
@@ -309,7 +303,7 @@ html.cs-dark .only-dark {
   line-height: 1em;
   margin: 0.5em 0;
   box-shadow: 0 0 0 0 rgba(0,0,0, 0.1);
-  transition: background var(--transition), box-shadow var(--transition);
+  transition: background var(--transition-slow), box-shadow var(--transition-slow);
 }
 .button[href] {
   cursor: pointer;
@@ -626,7 +620,7 @@ html.cs-dark .highlight {
   right: 0.4em;
   text-transform: uppercase;
   bottom: 0.4em;
-  transition: background var(--transition), opacity var(--transition);
+  transition: background var(--transition-slow), opacity var(--transition-slow);
 }
 @media (min-width: 64em) {
   .highlight button.copy {
@@ -854,7 +848,7 @@ html.cs-dark .highlight {
   opacity: 0.05;
   font-size: 0.9em;
   margin-left: 0.4em;
-  transition: opacity var(--transition);
+  transition: opacity var(--transition-slow);
 }
 
 .page__content h1:hover .headerlink,
@@ -1343,6 +1337,14 @@ html.cs-dark .page__content img.invert {
   padding-top: 0.75rem;
 }
 .tabbed-set > input:first-child:checked ~ .tabbed-content > :first-child,
+.tabbed-set > input:nth-child(2):checked ~ .tabbed-content > :nth-child(2),
+.tabbed-set > input:nth-child(3):checked ~ .tabbed-content > :nth-child(3),
+.tabbed-set > input:nth-child(4):checked ~ .tabbed-content > :nth-child(4),
+.tabbed-set > input:nth-child(5):checked ~ .tabbed-content > :nth-child(5),
+.tabbed-set > input:nth-child(6):checked ~ .tabbed-content > :nth-child(6),
+.tabbed-set > input:nth-child(7):checked ~ .tabbed-content > :nth-child(7),
+.tabbed-set > input:nth-child(8):checked ~ .tabbed-content > :nth-child(8),
+.tabbed-set > input:nth-child(9):checked ~ .tabbed-content > :nth-child(9) {
 .tabbed-set > input:nth-child(10):checked ~ .tabbed-content > :nth-child(10),
 .tabbed-set > input:nth-child(11):checked ~ .tabbed-content > :nth-child(11),
 .tabbed-set > input:nth-child(12):checked ~ .tabbed-content > :nth-child(12),
@@ -1353,14 +1355,50 @@ html.cs-dark .page__content img.invert {
 .tabbed-set > input:nth-child(17):checked ~ .tabbed-content > :nth-child(17),
 .tabbed-set > input:nth-child(18):checked ~ .tabbed-content > :nth-child(18),
 .tabbed-set > input:nth-child(19):checked ~ .tabbed-content > :nth-child(19),
-.tabbed-set > input:nth-child(2):checked ~ .tabbed-content > :nth-child(2),
 .tabbed-set > input:nth-child(20):checked ~ .tabbed-content > :nth-child(20),
-.tabbed-set > input:nth-child(3):checked ~ .tabbed-content > :nth-child(3),
-.tabbed-set > input:nth-child(4):checked ~ .tabbed-content > :nth-child(4),
-.tabbed-set > input:nth-child(5):checked ~ .tabbed-content > :nth-child(5),
-.tabbed-set > input:nth-child(6):checked ~ .tabbed-content > :nth-child(6),
-.tabbed-set > input:nth-child(7):checked ~ .tabbed-content > :nth-child(7),
-.tabbed-set > input:nth-child(8):checked ~ .tabbed-content > :nth-child(8),
-.tabbed-set > input:nth-child(9):checked ~ .tabbed-content > :nth-child(9) {
   display: block;
+}
+
+/******* Columns  *******/
+
+.columns {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 1em;
+}
+@media (min-width: 48rem) {
+  .columns {
+    flex-direction: row;
+    justify-content: stretch;
+  }
+}
+.columns > * {
+  width: 100%;
+}
+
+/******* Stack  *******/
+
+.stacked {
+  display: flex;
+  flex-direction: column;
+}
+@media (min-width: 48rem) {
+  .stacked {
+    flex-direction: row;
+  }
+  .stacked > * {
+    transform: scale(0.95);
+    transition: all var(--transition-slow);
+    width: 100%;
+    height: fit-content;
+  }
+  .stacked :nth-child(2) { margin: 10% 0 0 -40%; }
+  .stacked :nth-child(3) { margin: 20% 0 0 -40%; }
+  .stacked :nth-child(4) { margin: 30% 0 0 -40%; }
+  .stacked :nth-child(5) { margin: 40% 0 0 -40%; }
+  .stacked > *:hover {
+    z-index: 20;
+    transform: scale(1);
+  }
 }
