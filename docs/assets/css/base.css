@@ -1303,6 +1303,14 @@ html.cs-dark .page__content img.invert {
   outline: 1px dotted var(--color-accent);
 }
 .tabbed-set > input:first-child:checked ~ .tabbed-labels > :first-child,
+.tabbed-set > input:nth-child(2):checked ~ .tabbed-labels > :nth-child(2),
+.tabbed-set > input:nth-child(3):checked ~ .tabbed-labels > :nth-child(3),
+.tabbed-set > input:nth-child(4):checked ~ .tabbed-labels > :nth-child(4),
+.tabbed-set > input:nth-child(5):checked ~ .tabbed-labels > :nth-child(5),
+.tabbed-set > input:nth-child(6):checked ~ .tabbed-labels > :nth-child(6),
+.tabbed-set > input:nth-child(7):checked ~ .tabbed-labels > :nth-child(7),
+.tabbed-set > input:nth-child(8):checked ~ .tabbed-labels > :nth-child(8),
+.tabbed-set > input:nth-child(9):checked ~ .tabbed-labels > :nth-child(9),
 .tabbed-set > input:nth-child(10):checked ~ .tabbed-labels > :nth-child(10),
 .tabbed-set > input:nth-child(11):checked ~ .tabbed-labels > :nth-child(11),
 .tabbed-set > input:nth-child(12):checked ~ .tabbed-labels > :nth-child(12),
@@ -1313,15 +1321,7 @@ html.cs-dark .page__content img.invert {
 .tabbed-set > input:nth-child(17):checked ~ .tabbed-labels > :nth-child(17),
 .tabbed-set > input:nth-child(18):checked ~ .tabbed-labels > :nth-child(18),
 .tabbed-set > input:nth-child(19):checked ~ .tabbed-labels > :nth-child(19),
-.tabbed-set > input:nth-child(2):checked ~ .tabbed-labels > :nth-child(2),
-.tabbed-set > input:nth-child(20):checked ~ .tabbed-labels > :nth-child(20),
-.tabbed-set > input:nth-child(3):checked ~ .tabbed-labels > :nth-child(3),
-.tabbed-set > input:nth-child(4):checked ~ .tabbed-labels > :nth-child(4),
-.tabbed-set > input:nth-child(5):checked ~ .tabbed-labels > :nth-child(5),
-.tabbed-set > input:nth-child(6):checked ~ .tabbed-labels > :nth-child(6),
-.tabbed-set > input:nth-child(7):checked ~ .tabbed-labels > :nth-child(7),
-.tabbed-set > input:nth-child(8):checked ~ .tabbed-labels > :nth-child(8),
-.tabbed-set > input:nth-child(9):checked ~ .tabbed-labels > :nth-child(9) {
+.tabbed-set > input:nth-child(20):checked ~ .tabbed-labels > :nth-child(20) {
   color: var(--color-black);
   box-shadow: 0 -4px var(--color-accent) inset;
 }
@@ -1344,7 +1344,7 @@ html.cs-dark .page__content img.invert {
 .tabbed-set > input:nth-child(6):checked ~ .tabbed-content > :nth-child(6),
 .tabbed-set > input:nth-child(7):checked ~ .tabbed-content > :nth-child(7),
 .tabbed-set > input:nth-child(8):checked ~ .tabbed-content > :nth-child(8),
-.tabbed-set > input:nth-child(9):checked ~ .tabbed-content > :nth-child(9) {
+.tabbed-set > input:nth-child(9):checked ~ .tabbed-content > :nth-child(9),
 .tabbed-set > input:nth-child(10):checked ~ .tabbed-content > :nth-child(10),
 .tabbed-set > input:nth-child(11):checked ~ .tabbed-content > :nth-child(11),
 .tabbed-set > input:nth-child(12):checked ~ .tabbed-content > :nth-child(12),
@@ -1355,7 +1355,7 @@ html.cs-dark .page__content img.invert {
 .tabbed-set > input:nth-child(17):checked ~ .tabbed-content > :nth-child(17),
 .tabbed-set > input:nth-child(18):checked ~ .tabbed-content > :nth-child(18),
 .tabbed-set > input:nth-child(19):checked ~ .tabbed-content > :nth-child(19),
-.tabbed-set > input:nth-child(20):checked ~ .tabbed-content > :nth-child(20),
+.tabbed-set > input:nth-child(20):checked ~ .tabbed-content > :nth-child(20) {
   display: block;
 }
 
