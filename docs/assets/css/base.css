@@ -18,9 +18,9 @@ html {
   --rgb-base-darkest: 229, 231, 233;
   --rgb-black: 0, 0, 0;
   --rgb-white: 255, 255, 255;
-  --rgb-grey: 40, 50, 60;
-  --rgb-grey-light: 105, 115, 125;
-  --rgb-grey-lighter: 170, 180, 190;
+  --rgb-gray: 40, 50, 60;
+  --rgb-gray-light: 105, 115, 125;
+  --rgb-gray-lighter: 170, 180, 190;
 
   --rgb-accent: 73,149,247;
 
@@ -30,9 +30,9 @@ html {
   --color-base-darkest: rgb(var(--rgb-base-darkest));
   --color-black: rgb(var(--rgb-black));
   --color-white: rgb(var(--rgb-white));
-  --color-grey: rgb(var(--rgb-grey));
-  --color-grey-light: rgb(var(--rgb-grey-light));
-  --color-grey-lighter: rgb(var(--rgb-grey-lighter));
+  --color-gray: rgb(var(--rgb-gray));
+  --color-gray-light: rgb(var(--rgb-gray-light));
+  --color-gray-lighter: rgb(var(--rgb-gray-lighter));
 
   --color-accent: rgb(var(--rgb-accent));
 
@@ -62,8 +62,8 @@ html {
     --rgb-base-dark: 28, 28, 28;
     --rgb-base-darker: 49, 49, 49;
     --rgb-base-darkest: var(--rgb-base-darker);
-    --rgb-grey: 236, 239, 244;
-    --rgb-grey-light: 241, 244, 249;
+    --rgb-gray: 236, 239, 244;
+    --rgb-gray-light: 241, 244, 249;
     --color-base-dark: var(--color-base);
     --rgb-white: var(--rgb-base-dark);
     --rgb-black: 255, 255, 255;
@@ -75,8 +75,8 @@ html.cs-dark {
   --rgb-base-dark: 28, 28, 28;
   --rgb-base-darker: 49, 49, 49;
   --rgb-base-darkest: var(--rgb-base-darker);
-  --rgb-grey: 236, 239, 244;
-  --rgb-grey-light: 241, 244, 249;
+  --rgb-gray: 236, 239, 244;
+  --rgb-gray-light: 241, 244, 249;
   --color-base-dark: var(--color-base);
   --rgb-white: var(--rgb-base-dark);
   --rgb-black: 255, 255, 255;
@@ -129,7 +129,7 @@ html {
 
 body {
   background: var(--color-white);
-  color: var(--color-grey);
+  color: var(--color-gray);
   -webkit-tap-highlight-color: rgba(var(--rgb-black), 0);
   accent-color: var(--color-accent);
 
@@ -263,7 +263,7 @@ video::cue {
 @media (hover: hover) {
   a:focus,
   a:hover {
-    color: var(--color-grey)
+    color: var(--color-gray)
   }
 }
 
@@ -294,7 +294,7 @@ html.cs-light .only-dark {
   border-radius: 1.5em;
   padding: 0.9em 1em 0.9em 1.2em;
   background: transparent;
-  color: var(--color-grey);
+  color: var(--color-gray);
   display: inline-flex;
   gap: 0.4em;
   align-items: center;
@@ -310,11 +310,11 @@ html.cs-light .only-dark {
 }
 .button:active {
   box-shadow: none;
-  color: var(--color-grey);
+  color: var(--color-gray);
 }
 .button:is(:hover, :focus) {
   box-shadow: 0 0 3px 3px rgba(0,0,0, 0.1), 0 0 6px 6px rgba(255,255,255, 0.2);
-  color: var(--color-grey);
+  color: var(--color-gray);
 }
 .button:active {
   box-shadow: 0 0 0 1px rgba(var(--rgb-black), 0.1);
@@ -333,7 +333,7 @@ button.button svg {
 }
 .button--secondary {
   background: var(--color-base-darker);
-  color: var(--color-grey);
+  color: var(--color-gray);
 }
 
 /******* CODE *******/
@@ -351,7 +351,7 @@ code {
 }
 
 .highlight {
-  color: var(--rgb-highlight-color, var(--color-grey));
+  color: var(--rgb-highlight-color, var(--color-gray));
   background: var(--rgb-highlight-background, var(--color-base-dark));
 
   .filename {
@@ -365,9 +365,9 @@ code {
     width: fit-content;
   }
   [data-linenos]::before {
-    color: rgba(var(--rgb-grey-light), 0.8);
+    color: rgba(var(--rgb-gray-light), 0.8);
     font-size: 0.9em;
-    box-shadow: -.05rem 0 rgba(var(--rgb-grey-lighter), 0.2) inset;
+    box-shadow: -.05rem 0 rgba(var(--rgb-gray-lighter), 0.2) inset;
     content: attr(data-linenos);
     margin-left: -1.17647em;
     margin-right: 1.17647em;
@@ -605,7 +605,7 @@ html.cs-dark .highlight {
 
 .highlight button.copy {
   background: var(--color-base);
-  color: var(--color-grey-lighter);
+  color: var(--color-gray-lighter);
   border-radius: 0.2em;
   cursor: pointer;
   display: none;
@@ -757,14 +757,14 @@ html.cs-dark .highlight {
 .page__content blockquote {
   display: block;
   background-color: var(--color-base);
-  border-inline-start: 4px solid var(--color-grey-lighter);
+  border-inline-start: 4px solid var(--color-gray-lighter);
   line-height: 1.5;
   padding: 1.2em;
 }
 
 .page__content blockquote p {
   font-style: italic;
-  color: var(--color-grey);
+  color: var(--color-gray);
 }
 
 .page__content .highlight {
@@ -823,7 +823,7 @@ html.cs-dark .highlight {
 }
 
 .page__content h3 {
-  color: var(--color-grey);
+  color: var(--color-gray);
   padding-top: 0.125em;
 }
 
@@ -914,7 +914,7 @@ html.cs-dark .page__content img.invert {
   font-size: 0.8em;
   margin: var(--space-small) auto var(--space-medium);
   max-width: 24rem;
-  color: rgb(var(--rgb-grey));
+  color: rgb(var(--rgb-gray));
 }
 
 
@@ -929,7 +929,7 @@ html.cs-dark .page__content img.invert {
   position: relative;
 }
 .page__content table :where(thead,tfoot) {
-  color: var(--color-grey-light);
+  color: var(--color-gray-light);
   font-weight: 600;
   white-space: nowrap;
   background-color: rgba(var(--rgb-base-darkest), 0.4);
@@ -967,7 +967,7 @@ html.cs-dark .page__content img.invert {
   border-radius: 0 0.3rem 0.3rem 0;
   border: 0;
   border-left: 5px solid rgb(var(--admonition-rgb));
-  box-shadow: 0 0 0 1px rgba(var(--rgb-grey), 0.1);
+  box-shadow: 0 0 0 1px rgba(var(--rgb-gray), 0.1);
   display: flow-root;
   font-size: 0.9em;
   margin: var(--flow-space, 1.4em) 0;
@@ -1123,7 +1123,7 @@ html.cs-dark .page__content img.invert {
   align-items: center;
   background: var(--color-base);
   border-radius: 0.4rem;
-  box-shadow: 0 0 0 1px rgba(var(--rgb-grey), 0.2);
+  box-shadow: 0 0 0 1px rgba(var(--rgb-gray), 0.2);
   display: flex;
   letter-spacing: -0.01em;
   transition: background var(--transition), box-shadow var(--transition)
@@ -1132,7 +1132,7 @@ html.cs-dark .page__content img.invert {
 .search input {
   appearance: none;
   border: none;
-  color: var(--color-grey);
+  color: var(--color-gray);
   flex: 1;
   line-height: 1.4;
   padding: 0.6em 0.8em 0.5em 0.8em;
@@ -1140,7 +1140,7 @@ html.cs-dark .page__content img.invert {
 }
 
 .search input::placeholder {
-  color: rgba(var(--rgb-grey), 0.6)
+  color: rgba(var(--rgb-gray), 0.6)
 }
 
 .search input::-webkit-search-cancel-button {
@@ -1149,7 +1149,7 @@ html.cs-dark .page__content img.invert {
 
 .search button {
   align-items: center;
-  color: rgba(var(--rgb-grey), 0.5);
+  color: rgba(var(--rgb-gray), 0.5);
   cursor: pointer;
   display: flex;
   height: 2.4em;
@@ -1170,16 +1170,16 @@ html.cs-dark .page__content img.invert {
 
 @media (hover: hover) {
   .search button:is(:focus,:hover) {
-    color: rgba(var(--rgb-grey), 0.8);
+    color: rgba(var(--rgb-gray), 0.8);
   }
 
   .search:is(:focus,:hover) {
-    box-shadow: 0 0 0 1px rgba(var(--rgb-grey), 0.4);
+    box-shadow: 0 0 0 1px rgba(var(--rgb-gray), 0.4);
   }
 
   .search:focus button,
   .search:hover button {
-    color: rgba(var(--rgb-grey), 0.8);
+    color: rgba(var(--rgb-gray), 0.8);
   }
 
   .search:has(input:focus) {
@@ -1188,7 +1188,7 @@ html.cs-dark .page__content img.invert {
   }
 
   .search:has(input:focus) button {
-    color: var(--color-grey);
+    color: var(--color-gray);
   }
 }
 
@@ -1220,7 +1220,7 @@ html.cs-dark .page__content img.invert {
   text-decoration-color: rgba(var(--rgb-accent), 0);
 }
 #search-results .search-result small {
-  color: var(--color-grey);
+  color: var(--color-gray);
   font-size: 80%;
   font-weight: 500;
   margin-bottom: 0.6em;
@@ -1239,7 +1239,7 @@ html.cs-dark .page__content img.invert {
   font-family: var(--font-family-mono);
   font-size: 70%;
   white-space: pre;
-  background: rgba(var(--rgb-grey), 0.1);
+  background: rgba(var(--rgb-gray), 0.1);
   padding: 1em 1.4em;
   border-radius: 0.2em;
   max-height: 30em;
@@ -1248,12 +1248,12 @@ html.cs-dark .page__content img.invert {
 
 @media (hover: hover) {
   #search-results h3 a:is(:focus,:hover) {
-    color: var(--color-grey);
-    text-decoration-color: var(--color-grey);
+    color: var(--color-gray);
+    text-decoration-color: var(--color-gray);
   }
 
   #search-results small a:is(:focus,:hover) {
-    color: var(--color-grey);
+    color: var(--color-gray);
   }
 }
 
@@ -1281,7 +1281,7 @@ html.cs-dark .page__content img.invert {
   border-bottom: 1px solid var(--color-base-darkest);
 }
 .tabbed-labels > label {
-  color: var(--color-grey-light);
+  color: var(--color-gray-light);
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 600;

@@ -75,10 +75,10 @@
     gap: 0;
     align-items: flex-start;
     justify-content: space-between;
-    box-shadow: 0 0 0 1px rgba(var(--rgb-grey), 0.1);
+    box-shadow: 0 0 0 1px rgba(var(--rgb-gray), 0.1);
     border-radius: 1em;
     padding: 1rem;
-    background: rgba(var(--rgb-grey), 0.02);
+    background: rgba(var(--rgb-gray), 0.02);
     height: 100%;
     width: 100%;
     transition: all var(--transition);
@@ -86,7 +86,7 @@
     text-align: left;
   }
   .grid > article:hover > div {
-    box-shadow: 0 0 0 1px rgba(var(--rgb-grey), 0.3);
+    box-shadow: 0 0 0 1px rgba(var(--rgb-gray), 0.3);
   }
   .grid > article > div > div {
     padding: 0 1em 0;
@@ -150,7 +150,7 @@
   gap: 1rem;
   font-size: 1rem;
   letter-spacing: -0.01em;
-  color: var(--color-grey-light);
+  color: var(--color-gray-light);
   max-width: 100%;
 }
 @media (min-width: 64rem) {
