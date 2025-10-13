@@ -152,7 +152,7 @@ class Docs:
             "--llm",
             action="store_true",
             default=False,
-            help="Generate a `LLM.md` file with all the markdown content",
+            help="Generate a `LLM.txt` file with all the markdown content",
         )
 
         args = parser.parse_args()
@@ -229,14 +229,13 @@ class Docs:
             self.site.base_url = f"{self.site.base_url}/{self.prefix}"
 
         print("Rendering pages...")
-        self._render_index_page()
         for page in pages:
             self._render_page(page)
         print(f"{messages[2]}...")
 
         if llm:
-            print("Building LLM.md...")
-            self._build_llm_file()
+            print("Building LLM.txt...")
+            self._render_llm_file()
 
         self._render_search_page()
         self._render_redirect_pages()
@@ -381,6 +380,10 @@ class Docs:
         """
         pages: list[PageData] = []
 
+        index_page = self._process_index_page()
+        if index_page:
+            pages.append(index_page)
+
         def _process(
             user_pages: TUserPages,
             section_title: str = "",
@@ -484,24 +487,24 @@ class Docs:
             section_url: str = "",
             parents: tuple[str, ...] = (),
         ) -> NavItem:
-            filepath = self.content_dir / filename
-            meta, html = self._process_file(filepath)
-
             url = f"/docs/{Path(filename).with_suffix('').as_posix().strip('/')}/"
             if self.prefix:
                 url = f"/{self.prefix}{url}"
 
+            filepath = self.content_dir / filename
+            meta, source = self._process_file(filepath)
+            html = self._render_markdown(source)
+
             page = PageData(
+                url=url,
                 section_title=section_title,
                 section_url=section_url,
-                title=meta.get("title", filepath.name),
-                icon=meta.get("icon", ""),
-                url=url,
                 meta=meta,
-                content=html,
+                source=source,
+                content=Markup(html),
+                filepath=filepath,
                 toc=getattr(self.md_renderer, "toc_tokens", []),
                 parents=parents,
-                filepath=filepath,
             )
             pages.append(page)
 
@@ -518,6 +521,41 @@ class Docs:
             page.search_data = search.extract_search_data(page)
         return nav, pages
 
+    def _process_index_page(self) -> PageData | None:
+        if self.skip_home:
+            return None
+
+        outpath = self.build_dir / self.prefix / "index.html"
+        outpath.parent.mkdir(parents=True, exist_ok=True)
+        url = f"/{self.prefix}/" if self.prefix else "/"
+
+        md_index = self.content_dir / self.prefix / "index.md"
+        if md_index.exists():
+            meta, source = self._process_file(md_index)
+            html = self._render_markdown(source)
+            meta.setdefault("id", "index")
+            meta.setdefault("title", self.site.name)
+            meta.setdefault("view", "index.jinja")
+
+            return PageData(
+                url=url,
+                meta=meta,
+                source=source,
+                content=Markup(html),
+                filepath=md_index,
+                toc=getattr(self.md_renderer, "toc_tokens", []),
+            )
+
+        # Just render the template page
+        return PageData(
+            url=url,
+            meta={
+                "id": "index",
+                "title": self.site.name,
+                "view": "index.jinja",
+            },
+        )
+
     def _process_file(self, filepath: Path) -> tuple[dict[str, t.Any], str]:
         if not filepath.exists():
             raise FileNotFoundError(f"File {filepath} does not exist.")
@@ -525,8 +563,7 @@ class Docs:
         logger.debug("Processing page: %s", filepath.relative_to(self.content_dir))
         source = filepath.read_text(encoding="utf-8")
         meta, source = utils.extract_metadata(source)
-        html = self._render_markdown(source)
-        return meta, Markup(html)
+        return meta, source
 
     def _render_markdown(self, source: str) -> str:
         source = source.strip()
@@ -604,9 +641,12 @@ class Docs:
         url = f"/{self.prefix}/search/" if self.prefix else "/search/"
 
         page = PageData(
-            title="Search",
             url=url,
-            view="search.jinja"
+            meta={
+                "id": "search",
+                "title": "Search",
+                "view": "search.jinja",
+            },
         )
         search_data = {}
         for p in self.site.pages:
@@ -620,47 +660,13 @@ class Docs:
         outpath.write_text(html, encoding="utf-8")
         self.log(outpath)
 
-    def _render_index_page(self) -> None:
-        if self.skip_home:
-            return
-
-        outpath = self.build_dir / self.prefix / "index.html"
-        outpath.parent.mkdir(parents=True, exist_ok=True)
-        url = f"/{self.prefix}/" if self.prefix else "/"
-
-        md_index = self.content_dir / self.prefix / "index.md"
-        if md_index.exists():
-            meta, html = self._process_file(md_index)
-            page = PageData(
-                id="index",
-                title=meta.get("title", ""),
-                url=url,
-                view="index.jinja",
-                content=html,
-                toc=getattr(self.md_renderer, "toc_tokens", []),
-            )
-        else:
-            # Just render the template page
-            page = PageData(
-                id="index",
-                title="",
-                url=url,
-                view="index.jinja",
-            )
-
-        html = self.catalog.render(
-            page.view,
-            globals={"page": page}
-        )
-        outpath.write_text(html, encoding="utf-8")
-        self.log(outpath)
-
     def _render_redirect_pages(self) -> None:
-        first_page = self.site.pages[0] if self.site.pages else None
-        if not first_page:
+        if len(self.site.pages) < 2:
+            # The "first" page is the next one after the index page, if any
             return
+
         # Use the first page as the redirect target
-        url = first_page.url
+        url = self.site.pages[1].url
         html = (
             '<!DOCTYPE html><html><head><meta charset="utf-8">'
             f'<meta http-equiv="refresh" content="0; url={url}">'
@@ -735,17 +741,9 @@ class Docs:
             new_content = rx_urls.sub(replace_url, content)
             html_file.write_text(new_content)
 
-    def _build_llm_file(self) -> None:
-        llm_path = self.build_dir / "LLM.md"
-        with llm_path.open("w", encoding="utf-8") as llm_file:
-            md_index = self.content_dir / self.prefix / "index.md"
-            if md_index.exists():
-                url = f"/{self.prefix}/" if self.prefix else "/"
-                llm_file.write(f"<!-- PAGE {url} -->\n")
-                llm_file.write(md_index.read_text())
-                llm_file.write("\n")
-            for page in self.site.pages:
-                if page.filepath:
-                    llm_file.write(f"<!-- PAGE {page.url} -->\n")
-                    llm_file.write(page.filepath.read_text())
-                    llm_file.write("\n")
+    def _render_llm_file(self) -> None:
+        outpath = self.build_dir / self.prefix / "LLM.txt"
+        outpath.parent.mkdir(parents=True, exist_ok=True)
+        body = self.catalog.render("llm.jinja")
+        outpath.write_text(body, encoding="utf-8")
+        self.log(outpath)

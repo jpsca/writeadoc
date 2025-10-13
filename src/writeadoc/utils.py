@@ -227,8 +227,76 @@ RANDOM_MESSAGES = [
 ]
 
 
-
 def get_random_messages(num: int = 3) -> list[str]:
     return random.sample(RANDOM_MESSAGES, min(num, len(RANDOM_MESSAGES)))
+
+
+def dict_to_yaml(data: dict, indent: int = 0, is_list_item: bool = False) -> str:
+    """Convert a Python dictionary to a YAML string without using external libraries.
+
+    Args:
+        data: The dictionary to convert
+        indent: Current indentation level (for recursive calls)
+        is_list_item: Whether the current item is part of a list
+
+    Returns:
+        A formatted YAML string representation
+    """
+    lines = []
+    spaces = " " * indent
+
+    if not data and isinstance(data, dict):
+        return "{}" if indent == 0 else "{}"
+
+    for key, value in data.items():
+        if isinstance(value, dict):
+            if not value:  # Empty dict
+                lines.append(f"{spaces}{key}: {{}}")
+            else:
+                lines.append(f"{spaces}{key}:")
+                lines.append(dict_to_yaml(value, indent + 2))
+        elif isinstance(value, list):
+            if not value:  # Empty list
+                lines.append(f"{spaces}{key}: []")
+            else:
+                lines.append(f"{spaces}{key}:")
+                for item in value:
+                    if isinstance(item, dict):
+                        lines.append(f"{spaces}  -")
+                        lines.append(dict_to_yaml(item, indent + 4, True))
+                    else:
+                        lines.append(f"{spaces}  - {_format_yaml_value(item)}")
+        else:
+            prefix = "" if is_list_item else f"{key}: "
+            lines.append(f"{spaces}{prefix}{_format_yaml_value(value)}")
+
+    return "\n".join(lines)
+
+
+def _format_yaml_value(value) -> str:
+    """Format a Python value as a YAML value."""
+    if value is None:
+        return "null"
+    elif isinstance(value, bool):
+        return "true" if value else "false"
+    elif isinstance(value, (int, float)):
+        return str(value)
+    elif isinstance(value, str):
+        if any(char in value for char in ":#{}[],'\"\\"):
+            # Quote strings with special characters
+            # Escape any existing double quotes
+            escaped = value.replace('"', '\\"')
+            return f'"{escaped}"'
+        return value
+    return str(value)
+
+
+def render_metadata(meta: TMetadata, **kwargs) -> str:
+    """Render the metadata as a YAML string without external libraries."""
+    meta = {**meta, **kwargs}
+    if not meta:
+        return ""
+    yaml_content = dict_to_yaml(meta)
+    return f"---\n{yaml_content}\n---"
 
 

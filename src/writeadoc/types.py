@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from uuid import uuid4
 
+from .utils import render_metadata
+
 
 __all__ = (
     "TUserSection",
@@ -96,38 +98,31 @@ class PageRef:
 
 
 class PageData:
-    id: str
-    title: str
     url: str
-    icon: str
-    view: str
     section_title: str
     section_url: str
     meta: dict[str, t.Any]
+    source: str
     content: str
+    filepath: Path | None = None
     prev: PageRef | None = None
     next: PageRef | None = None
     search_data: TSearchData | None = None
     toc: list[dict[str, t.Any]]
-    # IDs of parent items
-    parents: tuple[str, ...]
-    filepath: Path | None = None
+    parents: tuple[str, ...]  # IDs of parent items
 
     def __init__(
         self,
         *,
+        url: str = "",
         section_title: str = "",
         section_url: str = "",
-        id: str = "",
-        title: str,
-        url: str = "",
-        icon: str = "",
         meta: dict[str, t.Any] | None = None,
-        view: str = "",
+        source: str = "",
         content: str = "",
+        filepath: Path | None = None,
         toc: list[dict[str, t.Any]] | None = None,
         parents: tuple[str, ...] = (),
-        filepath: Path | None = None,
     ):
         meta = meta or {}
         slug = (
@@ -137,21 +132,38 @@ class PageData:
             .replace(" ", "-")
             .strip("-")
         )
-        self.id = id or slug or uuid4().hex
+        meta.setdefault("id", slug or uuid4().hex)
+        self.url = url
         self.section_title = section_title
         self.section_url = section_url
-        self.title = title
-        self.url = url
-        self.icon = icon
-        self.view = view or meta.get("view", "page.jinja")
         self.meta = meta
+        self.source = source
         self.content = content
+        self.filepath = filepath
         self.toc = toc or []
         self.parents = parents
-        self.filepath = filepath
+
+    @property
+    def id(self) -> str:
+        return self.meta["id"]
+
+    @property
+    def title(self) -> str:
+        return self.meta.get("title", self.filepath.name if self.filepath else "")
+
+    @property
+    def icon(self) -> str:
+        return self.meta.get("icon", "")
+
+    @property
+    def view(self) -> str:
+        return self.meta.get("view", "page.jinja")
 
     def __repr__(self) -> str:
         return f"<Page {self.url}>"
+
+    def render_metadata(self, **kwargs) -> str:
+        return render_metadata(self.meta, **kwargs)
 
 
 class SiteData:

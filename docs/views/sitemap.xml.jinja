@@ -2,10 +2,6 @@
 
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-	<url>
-		<loc>{{ site.base_url }}/</loc>
-		<lastmod>{{ now }}</lastmod>
-	</url>
 	{%- for page in site.pages %}
 	<url>
 		<loc>{{ site.base_url }}{{ page.url }}</loc>
