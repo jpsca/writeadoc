@@ -84,8 +84,6 @@
 
 .header  svg {
   font-weight: 700;
-  stroke-width: 2px;
-  fill: currentColor;
   width: 21px;
 }
 
@@ -109,6 +107,9 @@
     width: var(--sidebar-width);
     padding-left: 2rem;
   }
+}
+.header__brand img {
+  max-height: 2rem;
 }
 .header__brand span {
   font-size: 2.4rem;
@@ -148,6 +149,7 @@
   transition: color var(--transition);
   padding: 1rem;
   height: 100%;
+  gap: 0.25em;
 }
 .header__links a:is(:focus,:hover),
 .header button:is(:focus,:hover),

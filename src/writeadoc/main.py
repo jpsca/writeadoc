@@ -148,11 +148,17 @@ class Docs:
             default=False,
             help="Build the current version as an archived documentation"
         )
+        build_parser.add_argument(
+            "--llm",
+            action="store_true",
+            default=False,
+            help="Generate a `LLM.md` file with all the markdown content",
+        )
 
         args = parser.parse_args()
 
         if args.command == "build":
-            self.cli_build(archive=args.archive)
+            self.cli_build(archive=args.archive, llm=args.llm)
         elif args.command in (None, "run"):
             self.cli_run()
         else:
@@ -182,7 +188,7 @@ class Docs:
         signal.signal(signal.SIGINT, shutdown)
         signal.signal(signal.SIGTERM, shutdown)
 
-    def cli_build(self, archive: bool) -> None:
+    def cli_build(self, *, archive: bool, llm: bool = False) -> None:
         """Build the documentation for deployment.
         """
         if archive:
@@ -196,19 +202,19 @@ class Docs:
             variant.build_dir = self.build_dir
             variant.prefix = f"{self.prefix}/{prefix}" if self.prefix else prefix
 
-        self.build(devmode=False)
+        self.build(devmode=False, llm=llm)
         print("\nDocumentation built successfully.")
         if archive:
             print(f"Archived documentation is available in the `archive/{self.site.version}` folder.")
         else:
             print("Documentation is available in the `build` folder.")
 
-    def build(self, devmode: bool = True) -> None:
+    def build(self, *, devmode: bool = True, llm: bool = False) -> None:
         messages = get_random_messages(3)
         print(f"{messages[0]}...")
 
         for variant in self.variants.values():
-            variant.build(devmode=devmode)
+            variant.build(devmode=devmode, llm=llm)
 
         self.init_catalog()
 
@@ -227,6 +233,10 @@ class Docs:
         for page in pages:
             self._render_page(page)
         print(f"{messages[2]}...")
+
+        if llm:
+            print("Building LLM.md...")
+            self._build_llm_file()
 
         self._render_search_page()
         self._render_redirect_pages()
@@ -491,6 +501,7 @@ class Docs:
                 content=html,
                 toc=getattr(self.md_renderer, "toc_tokens", []),
                 parents=parents,
+                filepath=filepath,
             )
             pages.append(page)
 
@@ -723,3 +734,18 @@ class Docs:
 
             new_content = rx_urls.sub(replace_url, content)
             html_file.write_text(new_content)
+
+    def _build_llm_file(self) -> None:
+        llm_path = self.build_dir / "LLM.md"
+        with llm_path.open("w", encoding="utf-8") as llm_file:
+            md_index = self.content_dir / self.prefix / "index.md"
+            if md_index.exists():
+                url = f"/{self.prefix}/" if self.prefix else "/"
+                llm_file.write(f"<!-- PAGE {url} -->\n")
+                llm_file.write(md_index.read_text())
+                llm_file.write("\n")
+            for page in self.site.pages:
+                if page.filepath:
+                    llm_file.write(f"<!-- PAGE {page.url} -->\n")
+                    llm_file.write(page.filepath.read_text())
+                    llm_file.write("\n")

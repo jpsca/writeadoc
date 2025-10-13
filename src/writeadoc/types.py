@@ -1,6 +1,7 @@
 import typing as t
 from collections.abc import Sequence
 from dataclasses import dataclass
+from pathlib import Path
 from uuid import uuid4
 
 
@@ -110,6 +111,7 @@ class PageData:
     toc: list[dict[str, t.Any]]
     # IDs of parent items
     parents: tuple[str, ...]
+    filepath: Path | None = None
 
     def __init__(
         self,
@@ -125,6 +127,7 @@ class PageData:
         content: str = "",
         toc: list[dict[str, t.Any]] | None = None,
         parents: tuple[str, ...] = (),
+        filepath: Path | None = None,
     ):
         meta = meta or {}
         slug = (
@@ -145,6 +148,7 @@ class PageData:
         self.content = content
         self.toc = toc or []
         self.parents = parents
+        self.filepath = filepath
 
     def __repr__(self) -> str:
         return f"<Page {self.url}>"
