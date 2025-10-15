@@ -2,7 +2,6 @@ import logging
 import os
 import random
 import time
-import typing as t
 from collections.abc import Callable
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -18,6 +17,7 @@ from watchdog.events import (
 from watchdog.observers import Observer
 
 from .exceptions import InvalidFrontMatter
+from .types import TMetadata
 
 
 logger = logging.getLogger("writeadoc")
@@ -79,15 +79,13 @@ DEFAULT_MD_CONFIG = {
     },
 }
 
-
-TMetadata = dict[str, t.Any]
 META_START = "---"
 META_END = "\n---"
 
 
-def extract_metadata(source: str) -> tuple[TMetadata, str]:
+def extract_metadata(source: str) -> tuple[str, TMetadata]:
     if not source.startswith(META_START):
-        return {}, source
+        return source, {}
 
     source = source.strip().lstrip("- ")
     front_matter, source = source.split(META_END, 1)
@@ -100,7 +98,7 @@ def extract_metadata(source: str) -> tuple[TMetadata, str]:
     except Exception as err:
         raise InvalidFrontMatter(truncate(source), *err.args) from err
 
-    return meta, source.strip().lstrip("- ")
+    return source.strip().lstrip("- "), meta
 
 
 def truncate(source: str, limit: int = 400) -> str:

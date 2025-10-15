@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from writeadoc import Docs
 
 
@@ -51,6 +53,7 @@ docs = Docs(
         "source_code": "https://github.com/jpsca/writeadoc/",
     },
 )
+docs.catalog.add_folder(Path(__file__).parent / "comp")
 
 
 if __name__ == "__main__":

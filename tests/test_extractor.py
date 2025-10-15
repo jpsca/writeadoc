@@ -23,13 +23,15 @@ def test_extractor():
 <p>They are independent of each other and can link to their own CSS and JS, so you can freely copy and paste components between applications.</p>
 """
     page = PageData(
-        title="Test Page",
         content=html,
         url="/docs/foobar/test-page/",
         section_title="Test Section",
         section_url="/docs/test-section/",
+        meta = {
+            "id": "page",
+            "title": "Test Page",
+        }
     )
-    page.id = "page"
     result = extract_search_data(page)
     print(result)
     assert result == {

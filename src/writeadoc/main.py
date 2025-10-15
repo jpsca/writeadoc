@@ -17,11 +17,13 @@ from markupsafe import Markup
 
 from . import search, utils
 from .autodoc import Autodoc
+from .mdjx import render_jx
 from .types import (
     NavItem,
     PageData,
     PageRef,
     SiteData,
+    TMetadata,
     TUserPages,
     TUserSection,
 )
@@ -492,8 +494,8 @@ class Docs:
                 url = f"/{self.prefix}{url}"
 
             filepath = self.content_dir / filename
-            meta, source = self._process_file(filepath)
-            html = self._render_markdown(source)
+            source, meta = self._read_file(filepath)
+            html = self._render_markdown(source, meta)
 
             page = PageData(
                 url=url,
@@ -531,8 +533,8 @@ class Docs:
 
         md_index = self.content_dir / self.prefix / "index.md"
         if md_index.exists():
-            meta, source = self._process_file(md_index)
-            html = self._render_markdown(source)
+            source, meta = self._read_file(md_index)
+            html = self._render_markdown(source, meta)
             meta.setdefault("id", "index")
             meta.setdefault("title", self.site.name)
             meta.setdefault("view", "index.jinja")
@@ -556,21 +558,27 @@ class Docs:
             },
         )
 
-    def _process_file(self, filepath: Path) -> tuple[dict[str, t.Any], str]:
+    def _read_file(self, filepath: Path) -> tuple[str, TMetadata]:
         if not filepath.exists():
             raise FileNotFoundError(f"File {filepath} does not exist.")
 
         logger.debug("Processing page: %s", filepath.relative_to(self.content_dir))
         source = filepath.read_text(encoding="utf-8")
-        meta, source = utils.extract_metadata(source)
-        return meta, source
+        source, meta = utils.extract_metadata(source)
+        return source, meta
 
-    def _render_markdown(self, source: str) -> str:
+    def _render_markdown(self, source: str, meta: TMetadata) -> str:
         source = source.strip()
         self.md_renderer.reset()
         html = self.md_renderer.convert(source).strip()
         html = html.replace("<pre><span></span>", "<pre>")
         html = self._render_autodoc(html)
+
+        if imports := meta.get("imports"):
+            if not isinstance(imports, dict):
+                raise ValueError("Invalid 'imports' in metadata, must be a dict")
+            html = render_jx(self.catalog, html, imports)
+
         return html
 
     def _render_autodoc(self, html: str):

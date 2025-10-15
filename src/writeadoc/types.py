@@ -4,10 +4,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from uuid import uuid4
 
-from .utils import render_metadata
-
 
 __all__ = (
+    "TMetadata",
     "TUserSection",
     "TUserPages",
     "PageRef",
@@ -16,6 +15,9 @@ __all__ = (
     "PageData",
     "SiteData",
 )
+
+
+TMetadata = dict[str, t.Any]
 
 
 class TUserSection(t.TypedDict):
@@ -163,7 +165,9 @@ class PageData:
         return f"<Page {self.url}>"
 
     def render_metadata(self, **kwargs) -> str:
-        return render_metadata(self.meta, **kwargs)
+        from . import utils
+
+        return utils.render_metadata(self.meta, **kwargs)
 
 
 class SiteData:
