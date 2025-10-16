@@ -17,7 +17,6 @@ from markupsafe import Markup
 
 from . import search, utils
 from .autodoc import Autodoc
-from .mdjx import render_jx
 from .types import (
     NavItem,
     PageData,
@@ -78,7 +77,9 @@ class Docs:
             skip_home: Whether to skip generating the home page.
 
         """
-        root_dir = Path(root).resolve().parent
+        root_dir = Path(root).resolve()
+        if root_dir.is_file():
+            root_dir = root_dir.parent
         if not root_dir.exists():
             raise FileNotFoundError(f"Path {root} does not exist.")
         self.root_dir = root_dir
@@ -495,7 +496,10 @@ class Docs:
 
             filepath = self.content_dir / filename
             source, meta = self._read_file(filepath)
-            html = self._render_markdown(source, meta)
+            try:
+                html = self._render_markdown(source, meta)
+            except Exception as err:
+                raise RuntimeError(f"Error processing {filepath}") from err
 
             page = PageData(
                 url=url,
@@ -525,6 +529,10 @@ class Docs:
 
     def _process_index_page(self) -> PageData | None:
         if self.skip_home:
+            return None
+
+        if not (self.views_dir / "index.jinja").exists():
+            logger.warning("No index.jinja view found.")
             return None
 
         outpath = self.build_dir / self.prefix / "index.html"
@@ -577,7 +585,7 @@ class Docs:
         if imports := meta.get("imports"):
             if not isinstance(imports, dict):
                 raise ValueError("Invalid 'imports' in metadata, must be a dict")
-            html = render_jx(self.catalog, html, imports)
+            html = self._render_mdjx(html, imports)
 
         return html
 
@@ -596,11 +604,23 @@ class Docs:
             if "level" in kwargs:
                 kwargs["level"] = int(kwargs["level"])
 
-            frag = self.catalog.render("autodoc.jinja", **kwargs)
+            try:
+                frag = self.catalog.render("autodoc.jinja", **kwargs)
+            except jx.JxException as err:
+                raise RuntimeError(f"Error rendering autodoc for {name}") from err
             frag = str(frag).replace("<br>", "").strip()
             start, end = match.span(0)
             html = f"{html[:start]}{frag}{html[end:]}"
 
+        return html
+
+    def _render_mdjx(self, source: str, imports: dict[str, str]) -> str:
+        OPEN_REPL = "\u0002"
+        CLOSE_REPL = "\u0003"
+        source = source.replace("{", OPEN_REPL).replace("}", CLOSE_REPL)
+        jx_imports = "\n".join(f'{{# import "{path}" as {name} #}}' for name, path in imports.items())
+        html = self.catalog.render_string(f"{jx_imports}\n{source}")
+        html = str(html).replace(OPEN_REPL, "{").replace(CLOSE_REPL, "}")
         return html
 
     def _set_prev_next(self, pages: list[PageData]) -> None:
@@ -636,14 +656,21 @@ class Docs:
         outpath = self.build_dir / str(page.url).strip("/") / "index.html"
         outpath.parent.mkdir(parents=True, exist_ok=True)
 
-        html = self.catalog.render(
-            page.view,
-            globals={"page": page}
-        )
+        try:
+            html = self.catalog.render(
+                page.view,
+                globals={"page": page}
+            )
+        except jx.JxException as err:
+            raise RuntimeError(f"Error rendering {page.filepath}") from err
         outpath.write_text(html, encoding="utf-8")
         self.log(outpath)
 
     def _render_search_page(self) -> None:
+        if not (self.views_dir / "search.jinja").exists():
+            logger.warning("No search.jinja view found.")
+            return None
+
         outpath = self.build_dir / self.prefix / "search" / "index.html"
         outpath.parent.mkdir(parents=True, exist_ok=True)
         url = f"/{self.prefix}/search/" if self.prefix else "/search/"
@@ -660,11 +687,14 @@ class Docs:
         for p in self.site.pages:
             search_data.update(p.search_data or {})
 
-        html = self.catalog.render(
-            page.view,
-            search_data=search_data,
-            globals={"page": page}
-        )
+        try:
+            html = self.catalog.render(
+                page.view,
+                search_data=search_data,
+                globals={"page": page}
+            )
+        except jx.JxException as err:
+            raise RuntimeError("Error rendering search page") from err
         outpath.write_text(html, encoding="utf-8")
         self.log(outpath)
 
@@ -752,6 +782,9 @@ class Docs:
     def _render_llm_file(self) -> None:
         outpath = self.build_dir / self.prefix / "LLM.txt"
         outpath.parent.mkdir(parents=True, exist_ok=True)
-        body = self.catalog.render("llm.jinja")
+        try:
+            body = self.catalog.render("llm.jinja")
+        except jx.JxException as err:
+            raise RuntimeError("Error rendering LLM.txt") from err
         outpath.write_text(body, encoding="utf-8")
         self.log(outpath)

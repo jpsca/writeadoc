@@ -21,11 +21,14 @@ from .types import TMetadata
 
 
 logger = logging.getLogger("writeadoc")
+logger.setLevel(logging.WARNING)
+logger.addHandler(logging.StreamHandler())
 
 DEFAULT_MD_EXTENSIONS = [
     "attr_list",
     "md_in_html",
     "tables",
+    "writeadoc.ext.jx",
     "writeadoc.ext.pagetoc",
     "writeadoc.ext.tab",
     "pymdownx.betterem",
