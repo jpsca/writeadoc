@@ -804,7 +804,7 @@ html.cs-dark .highlight {
 }
 
 .page__content h1 {
-  font-size: 1.5em;
+  font-size: 2.5em;
   padding-top: 0.08em;
 }
 
@@ -820,11 +820,13 @@ html.cs-dark .highlight {
 .page__content h2 {
   color: var(--color-accent);
   padding-top: 0.1em;
+  font-size: 2em;
 }
 
 .page__content h3 {
   color: var(--color-gray);
   padding-top: 0.125em;
+  font-size: 1.5em;
 }
 
 .page__content h4,

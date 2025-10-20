@@ -1,6 +1,6 @@
 import * as code from './code.js';
-import * as search from './search.js';
 import * as page from './page.js';
+import * as search from './search.js';
 
 /* Added so the DOMContentLoaded events work without any changes. */
 document.addEventListener("turbo:load", function() {
@@ -9,6 +9,6 @@ document.addEventListener("turbo:load", function() {
 
 document.addEventListener('DOMContentLoaded', () => {
   code.ready();
-  search.ready();
   page.ready();
+  search.ready();
 });
