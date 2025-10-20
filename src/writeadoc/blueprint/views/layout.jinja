@@ -15,12 +15,14 @@
 <meta name="viewport" content="initial-scale=1, width=device-width" />
 
 <script src="/assets/js/color-scheme.js"></script>
-<link rel="stylesheet" href="/assets/css/style.css?v={{ _get_random_id() }}" />
+<link rel="stylesheet" href="/assets/css/base.css" />
+<link rel="stylesheet" href="/assets/css/index.css" />
+<link rel="stylesheet" href="/assets/css/layout.css" />
 
 <Metadata />
 
 <script type="module" src="/assets/js/turbo.min.js"></script>
-<script type="module" src="/assets/js/script.js?v={{ _get_random_id() }}"></script>
+<script type="module" src="/assets/js/script.js"></script>
 {{ assets.render() -}}
 <script src="/assets/js/lunr.min.js"></script>
 {%- if site.lang != "en" %}
