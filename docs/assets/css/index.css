@@ -100,6 +100,7 @@
     place-self: center;
     filter: saturate(0.8);
     transition: all var(--transition);
+    max-width: 100px;
   }
   .grid > article:hover > div img {
     filter: saturate(1);

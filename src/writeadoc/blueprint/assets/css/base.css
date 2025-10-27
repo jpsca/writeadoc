@@ -36,8 +36,8 @@ html {
 
   --color-accent: rgb(var(--rgb-accent));
 
-  --font-family: "Inter", sans-serif;
-  --font-family-mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, Monospace;
+  --font-family: Inter, sans-serif;
+  --font-family-mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, monospace;
   --font-size: min(calc(1.6em + 1vw), 2.3rem);
   --font-size-xx-small: 50%;
   --font-size-x-small: 60%;
@@ -171,7 +171,7 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
 }
 
 h1 {
-  font-size: var(--font-size-xxx-large);
+  font-size: var(--font-size-xx-large);
   letter-spacing: -0.03em;
   line-height: 1.2
 }
@@ -804,7 +804,7 @@ html.cs-dark .highlight {
 }
 
 .page__content h1 {
-  font-size: 2.5em;
+  /* font-size: 2.5em; */
   padding-top: 0.08em;
 }
 
@@ -820,13 +820,13 @@ html.cs-dark .highlight {
 .page__content h2 {
   color: var(--color-accent);
   padding-top: 0.1em;
-  font-size: 2em;
+  /* font-size: 2em; */
 }
 
 .page__content h3 {
   color: var(--color-gray);
   padding-top: 0.125em;
-  font-size: 1.5em;
+  /* font-size: 1.5em; */
 }
 
 .page__content h4,
@@ -894,11 +894,11 @@ html.cs-dark .highlight {
 }
 
 @media (prefers-color-scheme: dark) {
-  html:not(.cs-light) .page__content img.invert {
+  html:not(.cs-light) img.invert {
     filter: invert(100%);
   }
 }
-html.cs-dark .page__content img.invert {
+html.cs-dark img.invert {
   filter: invert(100%);
 }
 
