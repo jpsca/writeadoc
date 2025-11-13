@@ -13,8 +13,11 @@
   "image": "{{ image }}",
   "datePublished": "{{ page.meta.get('date', _now.strftime('%Y-%m-%d')) }}",
 	{%- if page.meta.get('keywords') %}
-	"keywords": "{{ page.meta.get('keywords') | join(', ') | striptags }}"
+	"keywords": "{{ page.meta.get('keywords') | join(', ') | striptags }}",
 	{%- endif %}
+  "author": [
+    {"@type": "Person", "name": "Juan-Pablo Scaletti", "url": "https://jpscaletti.com"}
+  ]
 }
 </script>
 
