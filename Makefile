@@ -29,8 +29,8 @@ docs-build:
 	rm -rf docs/build
 	cd docs && uv run python docs.py build --llm
 
-.PHONY: docs-publish
-docs-publish:
+.PHONY: docs-deploy
+docs-deploy:
 	rm -rf docs/build
 	cd docs && \
 	uv run python docs.py build --llm && \
