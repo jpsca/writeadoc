@@ -28,9 +28,6 @@ DEFAULT_MD_EXTENSIONS = [
     "attr_list",
     "md_in_html",
     "tables",
-    "writeadoc.ext.jx",
-    "writeadoc.ext.pagetoc",
-    "writeadoc.ext.tab",
     "pymdownx.betterem",
     "pymdownx.blocks.admonition",
     "pymdownx.blocks.details",
@@ -44,6 +41,9 @@ DEFAULT_MD_EXTENSIONS = [
     "pymdownx.superfences",
     "pymdownx.tasklist",
     "pymdownx.tilde",
+    "writeadoc.ext.jx",
+    "writeadoc.ext.pagetoc",
+    "writeadoc.ext.tab",
 ]
 
 DEFAULT_MD_CONFIG = {
@@ -116,8 +116,7 @@ def start_server(build_folder: str) -> None:
     port = 8000
     handler = partial(SimpleHTTPRequestHandler, directory=build_folder)
     server = ThreadingHTTPServer(("0.0.0.0", port), handler)
-    url = f"http://localhost:{port}/"
-    print(f"Serving docs on {url}")
+    print(f"\nServing docs on http://localhost:{port}/")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
@@ -143,7 +142,7 @@ def start_observer(
         ],
     )
     observer.start()
-    print("\nWatching for changes. Press Ctrl+C to exit.")
+    print("Watching for changes. Press Ctrl+C to exit.")
     try:
         while True:
             time.sleep(1)

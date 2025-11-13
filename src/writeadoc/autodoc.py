@@ -60,33 +60,57 @@ class Docstring:
 
 
 class Autodoc:
+
     def __call__(
         self,
         name: str,
         *,
+        show_name: bool = True,
+        show_members: bool = True,
         include: tuple[str, ...] = (),
         exclude: tuple[str, ...] = (),
     ) -> Docstring:
         module_name, obj_name = name.rsplit(".", 1)
+        attr = None
+        if ":" in obj_name:
+            obj_name, attr = obj_name.split(":", 1)
         module = import_module(module_name)
         assert module
         obj = getattr(module, obj_name, None)
         if not obj:
             raise ValueError(f"Object {obj_name} not found in module {module_name}")
+        if attr:
+            obj = getattr(obj, attr, None)
+            if not obj:
+                raise ValueError(f"Attribute {attr} not found in object {obj_name}")
 
-        return self.autodoc_obj(obj, include=include, exclude=exclude)
+        return self.autodoc_obj(
+            obj,
+            show_name=show_name,
+            show_members=show_members,
+            include=include,
+            exclude=exclude
+        )
 
     def autodoc_obj(
         self,
         obj: t.Any,
         *,
+        show_name: bool = True,
+        show_members: bool = True,
         include: tuple[str, ...] = (),
         exclude: tuple[str, ...] = (),
     ) -> Docstring:
         if inspect.isclass(obj):
-            ds = self.autodoc_class(obj, include=include, exclude=exclude)
+            ds = self.autodoc_class(
+                obj,
+                show_name=show_name,
+                show_members=show_members,
+                include=include,
+                exclude=exclude,
+            )
         elif inspect.isfunction(obj) or inspect.ismethod(obj):
-            ds = self.autodoc_function(obj)
+            ds = self.autodoc_function(obj, show_name=show_name)
         else:
             ds = Docstring()
         return ds
@@ -96,6 +120,8 @@ class Autodoc:
         obj: t.Any,
         *,
         symbol: str = "class",
+        show_name: bool = True,
+        show_members: bool = True,
         include: tuple[str, ...] = (),
         exclude: tuple[str, ...] = (),
     ) -> Docstring:
@@ -118,17 +144,19 @@ class Autodoc:
             elif param.args[0] == "attribute":
                 attrs.append(doc)
 
-        for name, value in inspect.getmembers(obj):
-            if name.startswith("_") and name not in include:
-                continue
-            if name in exclude:
-                continue
-            if inspect.isfunction(value):
-                methods.append(self.autodoc_function(value, symbol="method"))
-                continue
-            if isinstance(value, property):
-                properties.append(self.autodoc_property(name, value))
-                continue
+        exclude_all = "*" in exclude
+        if show_members:
+            for name, value in inspect.getmembers(obj):
+                if name.startswith("_") and name not in include:
+                    continue
+                if (exclude_all or name in exclude) and name not in include:
+                    continue
+                if inspect.isfunction(value):
+                    methods.append(self.autodoc_function(value))
+                    continue
+                if isinstance(value, property):
+                    properties.append(self.autodoc_property(name, value))
+                    continue
 
         if ds.deprecation:
             ds.deprecation.description = (ds.deprecation.description or "").strip()
@@ -143,8 +171,8 @@ class Autodoc:
             meta.description = (meta.description or "").strip()
 
         return Docstring(
-            symbol=symbol,
-            name=obj_name,
+            symbol=symbol if show_name else "",
+            name=obj_name if show_name else "",
             signature=self.get_signature(obj_name, init),
             params=params,
             short_description=short_description,
@@ -161,7 +189,13 @@ class Autodoc:
             methods=methods,
         )
 
-    def autodoc_function(self, obj: t.Any, *, symbol: str = "function") -> Docstring:
+    def autodoc_function(
+        self,
+        obj: t.Any,
+        *,
+        symbol: str = "",
+        show_name: bool = True,
+    ) -> Docstring:
         obj_name = obj.__name__
         ds = parse(obj.__doc__ or "")
 
@@ -181,9 +215,16 @@ class Autodoc:
             meta.snippet = (meta.snippet or "").strip()
             meta.description = (meta.description or "").strip()
 
+        if not symbol:
+            if inspect.ismethod(obj):
+                symbol = "method"
+            elif inspect.iscoroutinefunction(obj):
+                symbol = "async function"
+            else:
+                symbol = "function"
         return Docstring(
-            name=obj_name,
-            symbol=symbol,
+            symbol=symbol if show_name else "",
+            name=obj_name if show_name else "",
             signature=self.get_signature(obj_name, obj),
             params=params,
             short_description=short_description,

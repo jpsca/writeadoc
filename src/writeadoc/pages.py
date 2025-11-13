@@ -24,7 +24,7 @@ if t.TYPE_CHECKING:
     from .main import Docs
 
 
-RX_AUTODOC = re.compile(r"<p>\s*:::\s+([\w\.]+)((?:\s+\w+=\w+)*)\s*</p>")
+RX_AUTODOC = re.compile(r"<p>\s*:::\s+([\w\.\:]+)((?:\s+\w+=[\w\*_]+)*)\s*</p>")
 
 
 class PagesProcessor:
@@ -351,9 +351,17 @@ class PagesProcessor:
 
             kwargs: dict[str, t.Any] = dict(arg.split("=") for arg in match.group(2).split())
 
+            show_name = kwargs.pop("name", "1").lower() not in ("false", "0", "no")
+            show_members = kwargs.pop("members", "1").lower() not in ("false", "0", "no")
             include = (kwargs.pop("include", "").split(",")) if "include" in kwargs else ()
             exclude = (kwargs.pop("exclude", "").split(",")) if "exclude" in kwargs else ()
-            kwargs["ds"] = self.autodoc(name, include=include, exclude=exclude)
+            kwargs["ds"] = self.autodoc(
+                name,
+                show_name=show_name,
+                show_members=show_members,
+                include=include,
+                exclude=exclude,
+            )
             if "level" in kwargs:
                 kwargs["level"] = int(kwargs["level"])
 
