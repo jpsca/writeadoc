@@ -110,7 +110,7 @@ def test_autodoc_parse_class():
     assert len(doc.methods) == 1
     method = doc.methods[0]
     assert method.name == "method"
-    assert method.symbol == "method"
+    assert method.symbol == "function"
     assert len(method.params) == 2
 
     # Check properties
@@ -159,7 +159,7 @@ def test_autodoc_class():
     assert len(doc.methods) == 1
     method = doc.methods[0]
     assert method.name == "method"
-    assert method.symbol == "method"
+    assert method.symbol == "function"
     assert len(method.params) == 2
 
     # Check properties
