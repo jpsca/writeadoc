@@ -166,6 +166,9 @@
     align-items: center;
     justify-content: center;
   }
+  .footer .logos a {
+    color: var(--color-gray);
+  }
 
   @media (prefers-color-scheme: dark) {
     html:not(.cs-light) .footer img  {
