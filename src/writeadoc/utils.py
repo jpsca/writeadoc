@@ -41,7 +41,7 @@ DEFAULT_MD_EXTENSIONS = [
     "pymdownx.superfences",
     "pymdownx.tasklist",
     "pymdownx.tilde",
-    "writeadoc.ext.jx",
+    # "writeadoc.ext.jx",
     "writeadoc.ext.pagetoc",
     "writeadoc.ext.tab",
 ]
