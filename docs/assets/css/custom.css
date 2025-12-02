@@ -1,4 +1,8 @@
 .page-index {
+  .btn {
+    font-size: 0.8em;
+    padding: 1rem 2rem;
+  }
 
   .page__content {
     text-align: center;

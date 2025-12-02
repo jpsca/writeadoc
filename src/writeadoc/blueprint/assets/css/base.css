@@ -12,8 +12,7 @@ html.cs-dark {
 }
 
 html {
-  --rgb-base: 246, 241, 238;
-
+  --rgb-base: 247, 249, 251;
   --rgb-base-dark: 241, 243, 245;
   --rgb-base-darker: 235, 237, 239;
   --rgb-base-darkest: 229, 231, 233;
@@ -309,53 +308,81 @@ html.cs-light .only-dark {
 
 /******* BUTTONS *******/
 
-.button {
-  appearance: none;
-  font-size: 0.8em;
-  letter-spacing: -0.02em;
-  border-radius: 1.5em;
-  padding: 0.9em 1em 0.9em 1.2em;
-  background: transparent;
-  color: var(--color-gray);
-  display: inline-flex;
-  gap: 0.4em;
+.btn {
+  --btn-fg: #090909;
+  --btn-bg: #f5f5f5;
+  --btn-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.1);
+  --btn-outline: color-mix(in srgb, #a4a4a4 80%, transparent);
+  --btn-outline-focus: color-mix(in srgb, var(--color-accent) 25%, transparent);
+  --btn-bg-hover: color-mix(in srgb, var(--btn-bg), #000 4%);
+  --btn-bg-active: color-mix(in srgb, var(--btn-bg), #000 7%);
+  --btn-border-active: color-mix(in srgb, var(--btn-bg), #000 14%);
+  --btn-shadow-active: inset 1px 2px 4px rgba(30, 30, 30, 0.2), 1px 1px 2px rgba(0, 0, 0, 0.05);
+}
+.btn {
   align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  line-height: 1em;
-  margin: 0.5em 0;
-  box-shadow: 0 0 0 0 rgba(0,0,0, 0.1);
-  transition: background var(--transition-slow), box-shadow var(--transition-slow);
-}
-.button[href] {
+  appearance: button;
+  box-sizing: border-box;
   cursor: pointer;
+  display: inline-flex;
+  gap: 0.5em;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  font-family: inherit;
+  justify-content: center;
+  line-height: 1;
+  min-inline-size: min-content;
+  overflow: hidden;
+  pointer-events: auto;
+  position: relative;
+  text-align: center;
+  text-decoration: none !important;
+  touch-action: manipulation;
+  user-select: none;
+  transition-duration: 100ms;
+  transition-property: color, background-color, box-shadow, outline;
+  transition-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  vertical-align: middle;
+  white-space: nowrap;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  color: var(--btn-fg) !important;
+  background-color: var(--btn-bg);
+  border: none;
+  outline-width: 1px;
+  outline-style: solid;
+  outline-color: var(--btn-outline);
+  outline-offset: 0;
+  box-shadow: var(--btn-shadow);
+  padding: 0.5em 0.75em;
+  font-size: 0.9em;
 }
-.button:active {
-  box-shadow: none;
-  color: var(--color-gray);
+.btn:is(:hover,:focus-visible):not([disabled],[data-disabled]) {
+  background-color: var(--btn-bg-hover, var(--btn-bg));
+  outline-color: var(--btn-outline-hover, var(--btn-outline));
+  box-shadow: var(--btn-shadow-hover, var(--btn-shadow));
+  text-decoration: none;
 }
-.button:is(:hover, :focus) {
-  box-shadow: 0 0 3px 3px rgba(0,0,0, 0.1), 0 0 6px 6px rgba(255,255,255, 0.2);
-  color: var(--color-gray);
+.btn:focus-visible:not([disabled],[data-disabled]) {
+  isolation: isolate;
+  outline-color: var(--btn-outline-focus, var(--btn-outline));
+  outline-width: 4px;
 }
-.button:active {
-  box-shadow: 0 0 0 1px rgba(var(--rgb-black), 0.1);
+.btn:is(:active,[data-active]):not([disabled],[data-disabled]) {
+  background-color: var(--btn-bg-active, var(--btn-bg));
+  outline-color: var(--btn-border-active, var(--btn-border));
+  box-shadow: var(--btn-shadow-active, var(--btn-shadow));
+  translate: 0 1px;
+  text-decoration: none;
+  outline-width: 1px;
 }
-.button svg {
-  height: 1em;
-  stroke-width: 3px;
+.btn.btn--primary {
+  --btn-fg: #fff;
+  --btn-bg: var(--color-accent);
+  --btn-outline: color-mix(in srgb, var(--color-accent) 50%, transparent);
 }
-button.button svg {
-  fill: currentColor
-}
-
-.button--primary, .button--primary:is(:hover, :focus, :active) {
-  background: var(--color-accent);
-  color: var(--color-white);
-}
-.button--secondary {
-  background: var(--color-base-darker);
-  color: var(--color-gray);
+.btn.btn--icon {
+  padding: 0.3em;
 }
 
 /******* CODE *******/
@@ -769,7 +796,7 @@ html.cs-dark .highlight {
 
 .page__content hr:before {
   color: var(--color-base-darkest);
-  content: '----+----';
+  content: '-+-+-+-+-';
   font-weight: 500;
   letter-spacing: 0.1em;
   line-height: 1;
@@ -843,6 +870,15 @@ html.cs-dark .highlight {
 
 .page__content h2 {
   padding-top: 0.1em;
+}
+
+.page__content h1,
+.page__content h2 {
+  text-shadow: 1px 1px 0 rgb(255 255 255 / 50%);
+}
+
+.page__content h2 {
+  color: var(--color-accent);
 }
 
 .page__content h3 {

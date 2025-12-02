@@ -93,7 +93,6 @@
 @media (min-width: 36rem) {
   .header__brand {
     display: flex;
-    min-width: fit-content;
     align-items: center;
     padding: 0;
     background: var(--color-base);
@@ -118,7 +117,7 @@
   max-height: 2rem;
 }
 .header__brand span {
-  font-size: 2rem;
+  font-size: 2.4rem;
   font-weight: 900;
   letter-spacing: -0.01em;
   color: var(--color-black);
