@@ -4,11 +4,6 @@
     padding: 1rem 2rem;
     border-radius: 1.5rem;
   }
-  .btn--minimal {
-    outline: none;
-    background: none;
-    box-shadow: none;
-  }
 
   .page__content {
     text-align: center;
