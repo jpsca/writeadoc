@@ -43,16 +43,32 @@ def parse_attrs(attrs_str: str) -> dict[str, t.Any]:
     """
     attrs_str = attrs_str.strip("{}").strip()
     attrs, _remainder = _scanner.scan(attrs_str)
-    print(attrs, _remainder)
+    classes = set()
+    for k, v in attrs.items():
+        if k[0] == ".":
+            classes.add(k[1])
+            attrs.pop(k)
+            continue
+        if k[0] == "#":
+            attrs["id"] = v
+            attrs.pop(k)
+            continue
+
+    if classes:
+        str_classes = " ".join(classes)
+        if "class" in attrs:
+            attrs["class"] += " " + str_classes
+        else:
+            attrs["class"] = str_classes
     return dict(attrs)
 
 
-def parse_inline_attrs(inline: InlineParser, m: re.Match, state: InlineState):
-    attrs_str = m.groupdict().get("inline_attrs")
+def attach_attrs(inline: InlineParser, m: re.Match, state: InlineState):
+    attrs_str = m.groupdict().get("attrs_list")
     if attrs_str:
       attrs = parse_attrs(attrs_str)
 
-      # Attach to the previous inline token
+      # Attach to the previous token
       if state.tokens:
           prev = state.tokens[-1]
           prev["attrs"] = attrs
@@ -60,10 +76,10 @@ def parse_inline_attrs(inline: InlineParser, m: re.Match, state: InlineState):
     return m.end()
 
 
-def inline_attrs(md: Markdown) -> None:
+def attrs_list(md: Markdown) -> None:
     md.inline.register(
-        "inline_attrs",
+        "attrs_list",
         r"\{\s*([^\}]+)\s*\}",
-        parse_inline_attrs,
+        attach_attrs,
         before="link"
     )

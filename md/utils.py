@@ -1,3 +1,11 @@
+from mistune.util import escape_url, safe_entity
+
+
+URL_ATTRS = ("href", "src", "action", "formaction")
+TRUTHY_VALUES = ("True", "true",)
+FALSY_VALUES = ("False", "false",)
+
+
 def quote(text: str) -> str:
     if '"' in text:
         if "'" in text:
@@ -5,12 +13,16 @@ def quote(text: str) -> str:
             return f'"{text}"'
         else:
             return f"'{text}'"
-
     return f'"{text}"'
 
 
-TRUTHY_VALUES = {"True", "true",}
-FALSY_VALUES = {"False", "false",}
+def escape_value(name: str, value: str) -> str:
+    """Escape attribute value."""
+    if name in URL_ATTRS:
+        value = escape_url(value)
+    else:
+        value = safe_entity(value)
+    return value
 
 
 def render_attrs(attrs: dict[str, str]) -> str:
@@ -24,7 +36,7 @@ def render_attrs(attrs: dict[str, str]) -> str:
         if value in TRUTHY_VALUES:
             properties.add(name)
         else:
-            attributes[name] = value
+            attributes[name] = escape_value(name, value)
 
     attributes = dict(sorted(attributes.items()))
 
@@ -34,4 +46,8 @@ def render_attrs(attrs: dict[str, str]) -> str:
     ]
     html_attrs.extend(sorted(properties))
 
-    return " ".join(html_attrs)
+    if html_attrs:
+        return f" {' '.join(html_attrs)}"
+    else:
+        return ""
+

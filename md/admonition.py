@@ -66,16 +66,16 @@ def render_admonition(self: t.Any, text: str, **attrs: t.Any) -> str:
     html_attrs = render_attrs(attrs)
 
     if "open" in attrs:
-        return f"<details {html_attrs}>\n{text}</details>\n"
-
-    return f"<section {html_attrs}>\n{text}</section>\n"
+        return f"<details{html_attrs}>\n{text}</details>\n"
+    else:
+        return f"<section{html_attrs}>\n{text}</section>\n"
 
 
 def render_admonition_title(self: t.Any, text: str, **attrs: t.Any) -> str:
     if "open" in attrs:
-        return '<summary class="admonition-title">' + text + "</summary>\n"
-
-    return '<p class="admonition-title">' + text + "</p>\n"
+        return f'<summary class="admonition-title">{text}</summary>\n'
+    else:
+        return f'<p class="admonition-title">{text}</p>\n'
 
 
 def render_admonition_content(self: t.Any, text: str) -> str:
