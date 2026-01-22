@@ -3,6 +3,8 @@ import typing as t
 
 from mistune.directives._base import BaseDirective, DirectivePlugin
 
+from .utils import render_attrs
+
 
 if t.TYPE_CHECKING:
     from mistune.block_parser import BlockParser
@@ -23,14 +25,9 @@ class Admonition(DirectivePlugin):
         self, block: "BlockParser", m: re.Match[str], state: "BlockState"
     ) -> dict[str, t.Any]:
         name = self.parse_type(m)
-        attrs: dict[str, t.Any] = {"name": name}
-        options = dict(self.parse_options(m))
-        if "class" in options:
-            attrs["class"] = options["class"]
-        if "collapsible" in options:
-            attrs["collapsible"] = True
-        if "open" in options:
-            attrs["open"] = True
+        attrs = dict(self.parse_options(m))
+        attrs.setdefault("class", "")
+        attrs["class"] += f"admonition {name} {attrs['class']}".strip()
 
         title = self.parse_title(m)
         if not title:
@@ -65,20 +62,17 @@ class Admonition(DirectivePlugin):
             md.renderer.register("admonition_content", render_admonition_content)
 
 
-def render_admonition(self: t.Any, text: str, name: str, **attrs: t.Any) -> str:
-    _cls = attrs.get("class")
-    if _cls:
-        _cls = " " + _cls
+def render_admonition(self: t.Any, text: str, **attrs: t.Any) -> str:
+    html_attrs = render_attrs(attrs)
 
-    if "collapsible" in attrs:
-        _open = " open" if "open" in attrs and attrs["open"] else ""
-        return f'<details class="admonition {name}{_cls}"{_open}>\n{text}</details>\n'
+    if "open" in attrs:
+        return f"<details {html_attrs}>\n{text}</details>\n"
 
-    return f'<section class="admonition {name}{_cls}">\n{text}</section>\n'
+    return f"<section {html_attrs}>\n{text}</section>\n"
 
 
 def render_admonition_title(self: t.Any, text: str, **attrs: t.Any) -> str:
-    if "collapsible" in attrs:
+    if "open" in attrs:
         return '<summary class="admonition-title">' + text + "</summary>\n"
 
     return '<p class="admonition-title">' + text + "</p>\n"
