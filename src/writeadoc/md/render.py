@@ -1,4 +1,4 @@
-from pathlib import Path
+from collections.abc import MutableMapping
 
 import mistune
 from mistune.directives import FencedDirective, TableOfContents
@@ -37,13 +37,10 @@ md = mistune.Markdown(
         ]),
     ]
 )
-
 add_toc_hook(md)
 
-source = Path("md/demo.md").read_text(encoding="utf-8")
-html, state = md.parse(source)
-toc_items = state.env["toc_items"]
 
-print(toc_items)
-print("-----")
-print(html)
+def render_markdown(source: str) -> tuple[str, MutableMapping]:
+    """Render the given Markdown source to HTML using the mistune renderer."""
+    html, state = md.parse(source)
+    return str(html), state.env

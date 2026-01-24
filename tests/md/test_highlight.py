@@ -1,33 +1,36 @@
 import pytest
 
-from .highlight import block_code
+from writeadoc.md import render_markdown
 
 
 TEST_CASES = [
     (
-        "",
         """
+```
 console.log("Hello world");
+```
 """,
         """<pre><code>console.log(&quot;Hello world&quot;);</code></pre>
 """,
     ),
     (
-        "javascript",
         """
+```javascript
 console.log("Hello world");
+```
 """,
         """<div class="highlight lang-javascript"><pre><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Hello world&quot;</span><span class="p">);</span>
 </code></pre></div>
 """,
     ),
     (
-        'python {linenums="1"}',
         """
+```python {linenums="1"}
 import foo.bar
 
 a = "lorem"
 b = "ipsum"
+```
 """,
         """<div class="highlight lang-python"><pre><code><span data-linenos="1"></span><span class="kn">import</span><span class="w"> </span><span class="nn">foo.bar</span>
 <span data-linenos="2"></span>
@@ -37,12 +40,13 @@ b = "ipsum"
 """
     ),
     (
-        'python   linenums="1"   ',
         """
+```python   linenums="1"
 import foo.bar
 
 a = "lorem"
 b = "ipsum"
+```
 """,
         """<div class="highlight lang-python"><pre><code><span data-linenos="1"></span><span class="kn">import</span><span class="w"> </span><span class="nn">foo.bar</span>
 <span data-linenos="2"></span>
@@ -52,12 +56,13 @@ b = "ipsum"
 """
     ),
     (
-        'python {linenums="42"}',
         """
+```python {linenums="42"}
 import foo.bar
 
 a = "lorem"
 b = "ipsum"
+```
 """,
         """<div class="highlight lang-python"><pre><code><span data-linenos="42"></span><span class="kn">import</span><span class="w"> </span><span class="nn">foo.bar</span>
 <span data-linenos="43"></span>
@@ -67,12 +72,13 @@ b = "ipsum"
 """
     ),
     (
-        'python {linenums="1 2"}',
         """
+```python {linenums="1 2"}
 import foo.bar
 
 a = "lorem"
 b = "ipsum"
+```
 """,
         """<div class="highlight lang-python"><pre><code><span data-linenos=" "></span><span class="kn">import</span><span class="w"> </span><span class="nn">foo.bar</span>
 <span data-linenos="2"></span>
@@ -82,12 +88,13 @@ b = "ipsum"
 """
     ),
     (
-        'python {hl_lines="1 3"}',
         '''
+```python {hl_lines="1 3"}
 """Some file."""
-import foo.bar
+
 import boo.baz
 import foo.bar.baz
+```
 ''',
         """<div class="highlight lang-python"><pre><code><span class="hll"><span class="sd">&quot;&quot;&quot;Some file.&quot;&quot;&quot;</span>
 </span><span class="kn">import</span><span class="w"> </span><span class="nn">foo.bar</span>
@@ -97,13 +104,14 @@ import foo.bar.baz
 """
     ),
     (
-        'python {linenums="42" hl_lines="2"}',
         """
+```python {linenums="42" hl_lines="2"}
 def foobar():
     a = "lorem"
     b = "ipsum"
 
 foobar()
+```
 """,
         """<div class="highlight lang-python"><pre><code><span data-linenos="42"></span><span class="k">def</span><span class="w"> </span><span class="nf">foobar</span><span class="p">():</span>
 <span class="hll"><span data-linenos="43"></span>    <span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;lorem&quot;</span>
@@ -114,9 +122,10 @@ foobar()
 """
     ),
     (
-        'python {title="cool_file.py"}',
         """
+```python {title="cool_file.py"}
 import foo
+```
 """,
         """<div class="highlight lang-python"><span class="filename">cool_file.py</span><pre><code><span class="kn">import</span><span class="w"> </span><span class="nn">foo</span>
 </code></pre></div>
@@ -125,8 +134,8 @@ import foo
 ]
 
 
-@pytest.mark.parametrize("info, code, expected", TEST_CASES)
-def test_block_code(info, code, expected):
-    result = block_code(code, info)
+@pytest.mark.parametrize("source, expected", TEST_CASES)
+def test_block_code(source, expected):
+    result = render_markdown(source)[0]
     print(result)
     assert result == expected

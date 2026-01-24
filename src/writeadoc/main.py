@@ -8,10 +8,9 @@ import typing as t
 from multiprocessing import Process
 from pathlib import Path
 from tempfile import mkdtemp
-from textwrap import dedent
 
+# from textwrap import dedent
 import jx
-import markdown
 from markupsafe import Markup
 
 from . import utils
@@ -29,8 +28,6 @@ class Docs:
     skip_home: bool = False
 
     strings: dict[str, str]
-
-    md_filter_renderer: markdown.Markdown
     catalog: jx.Catalog
 
     root_dir: Path
@@ -90,17 +87,11 @@ class Docs:
 
         self.pages_processor = PagesProcessor(self)
 
-        self.md_filter_renderer = markdown.Markdown(
-            extensions=[*utils.DEFAULT_MD_EXTENSIONS],
-            extension_configs={**utils.DEFAULT_MD_CONFIG},
-            output_format="html",
-            tab_length=2,
-        )
-
         self.catalog = jx.Catalog(
-            filters={
-                "markdown": self.markdown_filter
-            },
+            # TODO
+            # filters={
+            #     "markdown": self.markdown_filter
+            # },
             site=self.site,
             docs=self,
             _=self.translate,
@@ -235,14 +226,14 @@ class Docs:
                 print("Fingerprinting assets URLs...")
                 self._fingerprint_assets()
 
-    def markdown_filter(self, source: str, code: str = "") -> str:
-        source = dedent(source.strip("\n")).strip()
-        if code:
-            source = f"\n```{code}\n{source}\n```\n"
-        self.md_filter_renderer.reset()
-        html = self.md_filter_renderer.convert(source).strip()
-        html = html.replace("<pre><span></span>", "<pre>")
-        return Markup(html)
+    # def markdown_filter(self, source: str, code: str = "") -> str:
+    #     source = dedent(source.strip("\n")).strip()
+    #     if code:
+    #         source = f"\n```{code}\n{source}\n```\n"
+    #     self.md_filter_renderer.reset()
+    #     html = self.md_filter_renderer.convert(source).strip()
+    #     html = html.replace("<pre><span></span>", "<pre>")
+    #     return Markup(html)
 
     def translate(self, key: str, **kwargs) -> str:
         """

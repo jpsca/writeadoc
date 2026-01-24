@@ -1,14 +1,15 @@
 import re
 import typing as t
+from collections.abc import MutableMapping
 from pathlib import Path
 from uuid import uuid4
 
 import jx
-import markdown
 from markupsafe import Markup
 
 from . import search, utils
 from .autodoc import Autodoc
+from .md import render_markdown
 from .types import (
     NavItem,
     PageData,
@@ -29,7 +30,6 @@ RX_AUTODOC = re.compile(r"<p>\s*:::\s+([\w\.\:]+)((?:\s+\w+=[\w\*_]+)*)\s*</p>")
 
 class PagesProcessor:
     docs: "Docs"
-    md_renderer: markdown.Markdown
     autodoc: Autodoc
 
     nav_items: list[NavItem]
@@ -39,12 +39,6 @@ class PagesProcessor:
         """Pages processor
         """
         self.docs = docs
-        self.md_renderer = markdown.Markdown(
-            extensions=[*utils.DEFAULT_MD_EXTENSIONS],
-            extension_configs={**utils.DEFAULT_MD_CONFIG},
-            output_format="html",
-            tab_length=2,
-        )
         self.autodoc = Autodoc()
         self.pages = []
 
@@ -172,7 +166,7 @@ class PagesProcessor:
         md_index = self.docs.content_dir / self.docs.prefix / "index.md"
         if md_index.exists():
             source, meta = self.read_file(md_index)
-            html = self.render_markdown(source, meta)
+            html, state = self.render_markdown(source, meta)
             meta.setdefault("id", "index")
             meta.setdefault("title", self.docs.site.name)
             meta.setdefault("view", "index.jinja")
@@ -183,7 +177,8 @@ class PagesProcessor:
                 source=source,
                 content=Markup(html),
                 filepath=md_index,
-                toc=getattr(self.md_renderer, "toc_tokens", []),
+                # toc=state["toc_items"]  # TODO
+                toc=[],
             )
 
         # Just render the template page
@@ -295,7 +290,7 @@ class PagesProcessor:
         filepath = self.docs.content_dir / filename
         source, meta = self.read_file(filepath)
         try:
-            html = self.render_markdown(source, meta)
+            html, state = self.render_markdown(source, meta)
         except Exception as err:
             raise RuntimeError(f"Error processing {filepath}") from err
 
@@ -307,7 +302,8 @@ class PagesProcessor:
             source=source,
             content=Markup(html),
             filepath=filepath,
-            toc=getattr(self.md_renderer, "toc_tokens", []),
+            # toc=state["toc_items"]  # TODO
+            toc=[],
             parents=parents,
         )
         self.pages.append(page)
@@ -328,19 +324,20 @@ class PagesProcessor:
         source, meta = utils.extract_metadata(source)
         return source, meta
 
-    def render_markdown(self, source: str, meta: TMetadata) -> str:
+    def render_markdown(self, source: str, meta: TMetadata) -> tuple[str, MutableMapping]:
         source = source.strip()
-        self.md_renderer.reset()
-        html = self.md_renderer.convert(source).strip()
-        html = html.replace("<pre><span></span>", "<pre>")
-        html = self.render_autodoc(html)
+
+        # TODO: render autodoc
+        # html = self.render_autodoc(html)
+
+        html, state = render_markdown(source)
 
         if imports := meta.get("imports"):
             if not isinstance(imports, dict):
                 raise ValueError("Invalid 'imports' in metadata, must be a dict")
             html = self._render_mdjx(html, imports)
 
-        return html
+        return html, state
 
     def render_autodoc(self, html: str):
         while True:
@@ -366,7 +363,7 @@ class PagesProcessor:
                 kwargs["level"] = int(kwargs["level"])
 
             try:
-                frag = self.docs.catalog.render("autodoc.jinja", **kwargs)
+                frag = self.docs.catalog.render("autodoc.md.jinja", **kwargs)
             except jx.JxException as err:
                 raise RuntimeError(f"Error rendering autodoc for {name}") from err
             frag = str(frag).replace("<br>", "").strip()
