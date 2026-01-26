@@ -43,13 +43,13 @@ docs = Docs(
 )
 ```
 
-///warning
+```{warning}
 Include every page **except** your `index.md` file.
-///
+```
 
 A page is specified as the path of a Markdown file, relative to the `content` folder.
 
-<div markdown="1">
+<!-- <div markdown="1"> -->
 
 ![Nav A](/assets/images/nav-page-light.png){ .only-light .right }
 ![Nav A](/assets/images/nav-page-dark.png){ .only-dark .right }
@@ -61,7 +61,7 @@ docs = Docs(__file__, pages=[
 ])
 ```
 
-</div>
+<!-- </div> -->
 
 The title shown will be extracted from the page metadata `title`.
 
@@ -75,7 +75,7 @@ If you want to display them inside a "folder," put them inside a section.
 
 You can group pages into sections, which can also contain subsections.
 
-<div markdown="1">
+<!-- <div markdown="1"> -->
 
 ![Nav C](/assets/images/nav-section-light.png){ .only-light .right }
 ![Nav C](/assets/images/nav-section-dark.png){ .only-dark .right }
@@ -96,7 +96,7 @@ docs = Docs(__file__, pages=[
 ])
 ```
 
-</div>
+<!-- </div> -->
 
 The `icon` is optional. If included, it should be a path, relative to the assets folder, of an image or SVG file.
 
@@ -112,7 +112,7 @@ file, relative to the `content` folder.
 You can still define a `title`, but it is optional, because it will be extracted from the page metadata.
 If there is an `icon` in the page metadata—a path, relative to the assets folder, of an image or SVG file—it will also be shown.
 
-<div markdown="1">
+<!-- <div markdown="1"> -->
 
 ![Nav C](/assets/images/nav-sectionpage-light.png){ .only-light .right }
 ![Nav C](/assets/images/nav-sectionpage-dark.png){ .only-dark .right }
@@ -132,7 +132,7 @@ docs = Docs(__file__, pages=[
 ])
 ```
 
-</div>
+<!-- </div> -->
 
 Clicking on the section title will show its page.
 

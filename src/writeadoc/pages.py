@@ -177,8 +177,7 @@ class PagesProcessor:
                 source=source,
                 content=Markup(html),
                 filepath=md_index,
-                # toc=state["toc_items"]  # TODO
-                toc=[],
+                toc=state.get("toc_items", []),
             )
 
         # Just render the template page
@@ -302,8 +301,7 @@ class PagesProcessor:
             source=source,
             content=Markup(html),
             filepath=filepath,
-            # toc=state["toc_items"]  # TODO
-            toc=[],
+            toc=state.get("toc_items", []),
             parents=parents,
         )
         self.pages.append(page)

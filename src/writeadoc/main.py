@@ -88,10 +88,6 @@ class Docs:
         self.pages_processor = PagesProcessor(self)
 
         self.catalog = jx.Catalog(
-            # TODO
-            # filters={
-            #     "markdown": self.markdown_filter
-            # },
             site=self.site,
             docs=self,
             _=self.translate,

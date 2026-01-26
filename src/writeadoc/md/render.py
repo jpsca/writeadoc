@@ -1,3 +1,6 @@
+import re
+import typing as t
+import unicodedata
 from collections.abc import MutableMapping
 
 import mistune
@@ -37,7 +40,23 @@ md = mistune.Markdown(
         ]),
     ]
 )
-add_toc_hook(md)
+
+
+def slugify(value: str, separator: str = "-", unicode: bool = True) -> str:
+    """Slugify a string, to make it URL friendly."""
+    if not unicode:
+        # Replace Extended Latin characters with ASCII, i.e. `žlutý` => `zluty`
+        value = unicodedata.normalize("NFKD", value)
+        value = value.encode("ascii", "ignore").decode("ascii")
+    value = re.sub(r"[^\w\s-]", "", value).strip().lower()
+    return re.sub(r"[{}\s]+".format(separator), separator, value)
+
+
+def heading_id(token: dict[str, t.Any], index: int) -> str:
+    return slugify(token["text"])
+
+
+add_toc_hook(md, heading_id=heading_id)
 
 
 def render_markdown(source: str) -> tuple[str, MutableMapping]:

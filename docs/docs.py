@@ -12,33 +12,33 @@ pages = [
             "quickstart/write.md",
         ]
     },
-    {
-        "path": "markdown.md",
-        "pages": [
-            "markdown/blocks.md",
-            "markdown/formatting.md",
-            "markdown/links.md",
-            "markdown/images.md",
-            {
-                "title": "Lists",
-                "pages": [
-                    "markdown/lists/unordered.md",
-                    "markdown/lists/ordered.md",
-                    "markdown/lists/tasks.md",
-                ]
-            },
-            "markdown/code.md",
-            "markdown/tables.md",
-            "markdown/admonitions.md",
-            "markdown/attributes.md",
-            "markdown/tabs.md",
-            "markdown/html.md",
-        ],
-    },
-    "autodoc.md",
-    "languages.md",
-    "versions.md",
-    "api.md",
+    # {
+    #     "path": "markdown.md",
+    #     "pages": [
+    #         "markdown/blocks.md",
+    #         "markdown/formatting.md",
+    #         "markdown/links.md",
+    #         "markdown/images.md",
+    #         {
+    #             "title": "Lists",
+    #             "pages": [
+    #                 "markdown/lists/unordered.md",
+    #                 "markdown/lists/ordered.md",
+    #                 "markdown/lists/tasks.md",
+    #             ]
+    #         },
+    #         "markdown/code.md",
+    #         "markdown/tables.md",
+    #         "markdown/admonitions.md",
+    #         "markdown/attributes.md",
+    #         "markdown/tabs.md",
+    #         "markdown/html.md",
+    #     ],
+    # },
+    # "autodoc.md",
+    # "languages.md",
+    # "versions.md",
+    # "api.md",
 ]
 
 docs = Docs(
