@@ -42,17 +42,18 @@ def parse_attrs(attrs_str: str) -> dict[str, t.Any]:
     """Parse attribute list and return a list of attribute tuples.
     """
     attrs_str = attrs_str.strip("{}").strip()
-    attrs, _remainder = _scanner.scan(attrs_str)
+    _attrs, _remainder = _scanner.scan(attrs_str)
+    print(_attrs)
+
+    attrs = {}
     classes = set()
-    for k, v in attrs.items():
-        if k[0] == ".":
-            classes.add(k[1])
-            attrs.pop(k)
-            continue
-        if k[0] == "#":
+    for k, v in _attrs:
+        if k == ".":
+            classes.add(v)
+        elif k == "#":
             attrs["id"] = v
-            attrs.pop(k)
-            continue
+        else:
+            attrs[k] = v
 
     if classes:
         str_classes = " ".join(classes)
@@ -60,6 +61,7 @@ def parse_attrs(attrs_str: str) -> dict[str, t.Any]:
             attrs["class"] += " " + str_classes
         else:
             attrs["class"] = str_classes
+
     return dict(attrs)
 
 

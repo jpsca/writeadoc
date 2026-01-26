@@ -4,6 +4,7 @@ from writeadoc.md import render_markdown
 
 
 TEST_CASES = [
+    # ======= Highlighting
     (
         """
 ```
@@ -97,7 +98,7 @@ import foo.bar.baz
 ```
 ''',
         """<div class="highlight lang-python"><pre><code><span class="hll"><span class="sd">&quot;&quot;&quot;Some file.&quot;&quot;&quot;</span>
-</span><span class="kn">import</span><span class="w"> </span><span class="nn">foo.bar</span>
+</span>
 <span class="hll"><span class="kn">import</span><span class="w"> </span><span class="nn">boo.baz</span>
 </span><span class="kn">import</span><span class="w"> </span><span class="nn">foo.bar.baz</span>
 </code></pre></div>
@@ -131,11 +132,19 @@ import foo
 </code></pre></div>
 """
     ),
+
+    # ======= Inline attrs
+    (
+        """
+![Nav A](/assets/images/nav-page-light.png){ .only-light .right }
+""",
+        """<p><img src="/assets/images/nav-page-light.png" alt="Nav A" class="only-light right" /></p>"""
+    ),
 ]
 
 
 @pytest.mark.parametrize("source, expected", TEST_CASES)
-def test_block_code(source, expected):
+def test_render(source, expected):
     result = render_markdown(source)[0]
     print(result)
     assert result == expected
