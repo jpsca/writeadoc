@@ -4,9 +4,7 @@ from writeadoc.md import render_markdown
 
 
 TEST_CASES = [
-    # ======= Highlighting =======
-
-    (
+    (  # raw code block
         """
 ```
 console.log("Hello world");
@@ -15,7 +13,8 @@ console.log("Hello world");
         """<pre><code>console.log(&quot;Hello world&quot;);</code></pre>
 """,
     ),
-    (
+
+    (  # language specified
         """
 ```javascript
 console.log("Hello world");
@@ -25,7 +24,8 @@ console.log("Hello world");
 </code></pre></div>
 """,
     ),
-    (
+
+    (  # optional braces
         """
 ```python {linenums="1"}
 import foo.bar
@@ -41,7 +41,8 @@ b = "ipsum"
 </code></pre></div>
 """
     ),
-    (
+
+    (  # extra spaces
         """
 ```python   linenums="1"
 import foo.bar
@@ -57,7 +58,8 @@ b = "ipsum"
 </code></pre></div>
 """
     ),
-    (
+
+    (  # linenums starting != 1
         """
 ```python {linenums="42"}
 import foo.bar
@@ -73,7 +75,8 @@ b = "ipsum"
 </code></pre></div>
 """
     ),
-    (
+
+    (  # multiple linenums
         """
 ```python {linenums="1 2"}
 import foo.bar
@@ -89,7 +92,8 @@ b = "ipsum"
 </code></pre></div>
 """
     ),
-    (
+
+    (  # multiple hl_lines
         '''
 ```python {hl_lines="1 3"}
 """Some file."""
@@ -105,7 +109,25 @@ import foo.bar.baz
 </code></pre></div>
 """
     ),
-    (
+
+    (  # range of hl_lines
+        '''
+```python {hl_lines="1-3"}
+"""Some file."""
+
+import boo.baz
+import foo.bar.baz
+```
+''',
+        """<div class="highlight lang-python"><pre><code><span class="hll"><span class="sd">&quot;&quot;&quot;Some file.&quot;&quot;&quot;</span>
+</span><span class="hll">
+</span><span class="hll"><span class="kn">import</span><span class="w"> </span><span class="nn">boo.baz</span>
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">foo.bar.baz</span>
+</code></pre></div>
+"""
+    ),
+
+    (  # hl_lines with linenums
         """
 ```python {linenums="42" hl_lines="2"}
 def foobar():
@@ -123,7 +145,8 @@ foobar()
 </code></pre></div>
 """
     ),
-    (
+
+    (  # filename
         """
 ```python {title="cool_file.py"}
 import foo
@@ -133,73 +156,11 @@ import foo
 </code></pre></div>
 """
     ),
-
-    # ======= Attrs =======
-
-    # Classes shortcut
-    (
-        """![Nav A](/assets/images/nav-page-light.png){ .only-light .right }""",
-        """<p><img alt="Nav A" class="only-light right" href="/assets/images/nav-page-light.png" /></p>
-"""
-    ),
-    # Classes shortcut + attribute
-    (
-        """![Nav A](/assets/images/nav-page-light.png){ .right class="only-light" }""",
-        # first the attr, then the shortcut(s)
-        """<p><img alt="Nav A" class="only-light right" href="/assets/images/nav-page-light.png" /></p>
-"""
-    ),
-    # ID shortcut
-    (
-        """[Meh](#meh){ #green }""",
-        """<p><a href="#meh" id="green">Meh</a></p>
-"""
-    ),
-    # ID shortcut + attr
-    (
-        """[Meh](#meh){ #green id="red" }""",
-        # last one defined wins
-        """<p><a href="#meh" id="red">Meh</a></p>
-"""
-    ),
-    # Emphasis
-    (
-        """a *b*{ .bla } c""",
-        # last one defined wins
-        """<p>a <em class="bla">b</em> c</p>
-"""
-    ),
-    # Strong
-    (
-        """a **b**{ .bla } c""",
-        # last one defined wins
-        """<p>a <strong class="bla">b</strong> c</p>
-"""
-    ),
-    # Codespan
-    (
-        """a `b`{ .bla } c""",
-        # last one defined wins
-        """<p>a <code class="bla">b</code> c</p>
-"""
-    ),
-    # thematic_break
-    (
-        """abc
-
-----
-{ .fancy }
-
-def
-""",
-        """<p>abc</p><hr class="fancy" /><p>def</p>
-"""
-    ),
 ]
 
 
 @pytest.mark.parametrize("source, expected", TEST_CASES)
-def test_render(source, expected):
+def test_render_highlight(source, expected):
     result = render_markdown(source)[0]
     print(result)
     assert result == expected

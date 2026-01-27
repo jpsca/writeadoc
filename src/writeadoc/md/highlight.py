@@ -91,7 +91,8 @@ def parse_attrs(attrs_str: str) -> dict[str, t.Any]:
     if not attrs_str:
         return attrs
 
-    attrs_dict = attrs = dict(re.findall(r'(?P<key>\w+)="(?P<value>[^"]*)"', attrs_str))
+    attrs_dict = dict(re.findall(r'(?P<key>\w+)="(?P<value>[^"]*)"', attrs_str))
+    attrs = attrs_dict.copy()
 
     if "title" in attrs_dict:
         attrs["filename"] = attrs_dict["title"]
@@ -105,9 +106,16 @@ def parse_attrs(attrs_str: str) -> dict[str, t.Any]:
             attrs["linenostep"] = int(step[0])
 
     if "hl_lines" in attrs_dict:
-        attrs["hl_lines"] = [
-            int(num) for num in attrs_dict["hl_lines"].split() if num.isdigit()
-        ]
+        attrs["hl_lines"] = []
+        for val in attrs_dict["hl_lines"].split():
+            if "-" in val:
+                start, end = val.split("-", 1)
+                if start.isdigit() and end.isdigit():
+                    attrs["hl_lines"].extend(
+                        range(int(start), int(end) + 1)
+                    )
+            elif val.isdigit():
+                attrs["hl_lines"].append(int(val))
 
     return attrs
 

@@ -94,3 +94,10 @@ def inline_attrs(md: Markdown) -> None:
         attach_inline_attrs,
         before="link"
     )
+
+def block_attrs(md: Markdown) -> None:
+    md.block.register(
+        "block_attrs",
+        rf"^\s*{RE_ATTRS}\s$",
+        attach_block_attrs,
+    )

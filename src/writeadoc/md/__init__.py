@@ -1,1 +1,1 @@
-from .render import render_markdown
+from .render import render_markdown  # noqa

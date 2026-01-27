@@ -4,37 +4,42 @@ import unicodedata
 from collections.abc import MutableMapping
 
 import mistune
-from mistune.directives import FencedDirective, Include, TableOfContents
+from mistune.directives import Include, TableOfContents
 from mistune.plugins.abbr import abbr
 from mistune.plugins.def_list import def_list
 from mistune.plugins.footnotes import footnotes
-from mistune.plugins.formatting import insert, mark, strikethrough, subscript, superscript
 from mistune.plugins.table import table
 from mistune.plugins.task_lists import task_lists
 from mistune.toc import add_toc_hook
 
 from .admonition import Admonition
-from .attrs import inline_attrs
+from .attrs import block_attrs, inline_attrs
+from .block_directive import BlockDirective
+from .div import Container
+from .formatting import insert, mark, strikethrough, subscript, superscript
 from .html_renderer import HTMLRenderer
 
 
 md = mistune.Markdown(
-    HTMLRenderer(),
+    HTMLRenderer(escape=False),
     plugins=[
         abbr,
         def_list,
         footnotes,
+        table,
+        task_lists,
+        #
+        block_attrs,
+        inline_attrs,
         insert,
         mark,
         strikethrough,
         subscript,
         superscript,
-        table,
-        task_lists,
-        inline_attrs,
         # md_in_html, ???
-        FencedDirective([
+        BlockDirective([
             Admonition(),
+            Container(),
             Include(),
             TableOfContents(),
             # Tab(),
@@ -60,7 +65,9 @@ def heading_id(token: dict[str, t.Any], index: int) -> str:
 add_toc_hook(md, heading_id=heading_id)
 
 
-def render_markdown(source: str) -> tuple[str, MutableMapping]:
+def render_markdown(source: str, **kwargs: t.Any) -> tuple[str, MutableMapping]:
     """Render the given Markdown source to HTML using the mistune renderer."""
-    html, state = md.parse(source)
+    state = mistune.BlockState()
+    state.env.update(kwargs)
+    html, state = md.parse(source, state=state)
     return str(html), state.env

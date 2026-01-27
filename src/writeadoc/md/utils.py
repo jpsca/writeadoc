@@ -3,7 +3,7 @@ from mistune.util import escape_url, safe_entity
 
 URL_ATTRS = ("href", "src", "action", "formaction")
 TRUTHY_VALUES = ("True", "true",)
-FALSY_VALUES = ("False", "false",)
+FALSY_VALUES = ("False", "false")
 
 
 def quote(text: str) -> str:
@@ -25,7 +25,7 @@ def escape_value(name: str, value: str) -> str:
     return value
 
 
-def render_attrs(attrs: dict[str, str]) -> str:
+def render_attrs(attrs: dict[str, str | int]) -> str:
     """Render a dictionary of attributes to a string suitable for HTML attributes."""
     properties = set()
     attributes = {}
@@ -36,7 +36,7 @@ def render_attrs(attrs: dict[str, str]) -> str:
         if value in TRUTHY_VALUES:
             properties.add(name)
         else:
-            attributes[name] = escape_value(name, value)
+            attributes[name] = escape_value(name, str(value))
 
     attributes = dict(sorted(attributes.items()))
 

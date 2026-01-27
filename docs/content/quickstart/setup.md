@@ -80,15 +80,15 @@ Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser, and you'l
 
 The generated home page is different from the rest: it's a welcome/marketing page. Clicking on the "Documentation" link takes you to the first page of your actual documentation.
 
-<div markdown="span" class="stacked only-light">
+::: div stacked only-light
 [![Home page](/assets/images/page-home-light.png)](/assets/images/page-home-light.png){ target="blank"}
 [![First page](/assets/images/page-index-light.png)](/assets/images/page-index-light.png){ target="blank"}
-</div>
+:::
 
-<div markdown="span" class="stacked only-dark">
+::: div stacked only-dark
 [![Home page](/assets/images/page-home-dark.png)](/assets/images/page-home-dark.png){ target="blank"}
 [![First page](/assets/images/page-index-dark.png)](/assets/images/page-index-dark.png){ target="blank"}
-</div>
+:::
 
 ## Build
 

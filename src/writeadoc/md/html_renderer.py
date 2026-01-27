@@ -20,7 +20,7 @@ class HTMLRenderer(HighlightMixin, mistune.HTMLRenderer):
         return f"<a{render_attrs(attrs)}>{text}</a>"
 
     def image(self, text: str, url: str, **attrs: t.Any) -> str:
-        attrs["href"] = url
+        attrs["src"] = url
         attrs["alt"] = escape(striptags(text))
         return f"<img{render_attrs(attrs)} />"
 
@@ -37,12 +37,42 @@ class HTMLRenderer(HighlightMixin, mistune.HTMLRenderer):
         return f"<hr{render_attrs(attrs)}/>\n"
 
     def block_quote(self, text: str, **attrs: t.Any) -> str:
+        # The attributes are not parsed for block quotes, but we allow them
+        # to be passed and rendered for future compatibility.
         return f"<blockquote{render_attrs(attrs)}>{text}</blockquote>\n"
 
     def list(self, text: str, ordered: bool, **attrs: t.Any) -> str:
+        # The attributes are not parsed for lists, but we allow them
+        # to be passed and rendered for future compatibility.
         if ordered:
             return f"<ol{render_attrs(attrs)}>\n{text}</ol>\n"
         return f"<ul{render_attrs(attrs)}>\n{text}</ul>\n"
 
     def list_item(self, text: str, **attrs: t.Any) -> str:
+        # The attributes are not parsed for list items, but we allow them
+        # to be passed and rendered for future compatibility.
         return f"<li{render_attrs(attrs)}>{text}</li>\n"
+
+    # For the methods below, allow attributes
+    # (possible with syntax errors) but ignore them
+
+    def text(self, text: str, **attrs: t.Any) -> str:
+        return super().text(text)
+
+    def linebreak(self, **attrs: t.Any) -> str:
+        return "<br />\n"
+
+    def softbreak(self, **attrs: t.Any) -> str:
+        return "\n"
+
+    def inline_html(self, html: str, **attrs: t.Any) -> str:
+        return super().inline_html(html)
+
+    def block_html(self, html: str, **attrs: t.Any) -> str:
+        return super().block_html(html)
+
+    def blank_line(self, **attrs: t.Any) -> str:
+        return ""
+
+    def block_text(self, text: str, **attrs: t.Any) -> str:
+        return text
