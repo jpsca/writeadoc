@@ -1,8 +1,11 @@
 import re
 import typing as t
 
-from mistune import InlineParser, InlineState
+from mistune import BlockParser, BlockState, InlineParser, InlineState
 from mistune.markdown import Markdown
+
+
+RE_ATTRS = r"\{\s*([^\}]+)\s*\}"
 
 
 def _handle_double_quote(s, tk):
@@ -43,20 +46,19 @@ def parse_attrs(attrs_str: str) -> dict[str, t.Any]:
     """
     attrs_str = attrs_str.strip("{}").strip()
     _attrs, _remainder = _scanner.scan(attrs_str)
-    print(_attrs)
 
     attrs = {}
-    classes = set()
+    classes = {}
     for k, v in _attrs:
         if k == ".":
-            classes.add(v)
+            classes[v] = 1
         elif k == "#":
             attrs["id"] = v
         else:
             attrs[k] = v
 
     if classes:
-        str_classes = " ".join(classes)
+        str_classes = " ".join(classes.keys())
         if "class" in attrs:
             attrs["class"] += " " + str_classes
         else:
@@ -65,23 +67,30 @@ def parse_attrs(attrs_str: str) -> dict[str, t.Any]:
     return dict(attrs)
 
 
-def attach_attrs(inline: InlineParser, m: re.Match, state: InlineState):
-    attrs_str = m.groupdict().get("attrs_list")
-    if attrs_str:
-      attrs = parse_attrs(attrs_str)
-
-      # Attach to the previous token
-      if state.tokens:
-          prev = state.tokens[-1]
-          prev["attrs"] = attrs
-
+def attach_inline_attrs(inline: InlineParser, m: re.Match, state: InlineState) -> int:
+    attrs_str = m.groupdict().get("inline_attrs")
+    if attrs_str and state.tokens:
+        prev = state.tokens[-1]
+        attrs = parse_attrs(attrs_str)
+        prev.setdefault("attrs", {})
+        prev["attrs"].update(attrs)
     return m.end()
 
 
-def attrs_list(md: Markdown) -> None:
+def attach_block_attrs(block: BlockParser, m: re.Match, state: BlockState) -> int:
+    attrs_str = m.groupdict().get("block_attrs")
+    if attrs_str and state.tokens:
+        prev = state.tokens[-1]
+        attrs = parse_attrs(attrs_str)
+        prev.setdefault("attrs", {})
+        prev["attrs"].update(attrs)
+    return m.end()
+
+
+def inline_attrs(md: Markdown) -> None:
     md.inline.register(
-        "attrs_list",
-        r"\{\s*([^\}]+)\s*\}",
-        attach_attrs,
+        "inline_attrs",
+        RE_ATTRS,
+        attach_inline_attrs,
         before="link"
     )

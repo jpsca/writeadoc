@@ -4,7 +4,7 @@ import unicodedata
 from collections.abc import MutableMapping
 
 import mistune
-from mistune.directives import FencedDirective, TableOfContents
+from mistune.directives import FencedDirective, Include, TableOfContents
 from mistune.plugins.abbr import abbr
 from mistune.plugins.def_list import def_list
 from mistune.plugins.footnotes import footnotes
@@ -14,7 +14,7 @@ from mistune.plugins.task_lists import task_lists
 from mistune.toc import add_toc_hook
 
 from .admonition import Admonition
-from .attrs import attrs_list
+from .attrs import inline_attrs
 from .html_renderer import HTMLRenderer
 
 
@@ -31,10 +31,11 @@ md = mistune.Markdown(
         superscript,
         table,
         task_lists,
-        attrs_list,
+        inline_attrs,
         # md_in_html, ???
         FencedDirective([
             Admonition(),
+            Include(),
             TableOfContents(),
             # Tab(),
         ]),

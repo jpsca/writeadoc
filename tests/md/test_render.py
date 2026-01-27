@@ -4,7 +4,8 @@ from writeadoc.md import render_markdown
 
 
 TEST_CASES = [
-    # ======= Highlighting
+    # ======= Highlighting =======
+
     (
         """
 ```
@@ -133,12 +134,66 @@ import foo
 """
     ),
 
-    # ======= Inline attrs
+    # ======= Attrs =======
+
+    # Classes shortcut
     (
-        """
-![Nav A](/assets/images/nav-page-light.png){ .only-light .right }
+        """![Nav A](/assets/images/nav-page-light.png){ .only-light .right }""",
+        """<p><img alt="Nav A" class="only-light right" href="/assets/images/nav-page-light.png" /></p>
+"""
+    ),
+    # Classes shortcut + attribute
+    (
+        """![Nav A](/assets/images/nav-page-light.png){ .right class="only-light" }""",
+        # first the attr, then the shortcut(s)
+        """<p><img alt="Nav A" class="only-light right" href="/assets/images/nav-page-light.png" /></p>
+"""
+    ),
+    # ID shortcut
+    (
+        """[Meh](#meh){ #green }""",
+        """<p><a href="#meh" id="green">Meh</a></p>
+"""
+    ),
+    # ID shortcut + attr
+    (
+        """[Meh](#meh){ #green id="red" }""",
+        # last one defined wins
+        """<p><a href="#meh" id="red">Meh</a></p>
+"""
+    ),
+    # Emphasis
+    (
+        """a *b*{ .bla } c""",
+        # last one defined wins
+        """<p>a <em class="bla">b</em> c</p>
+"""
+    ),
+    # Strong
+    (
+        """a **b**{ .bla } c""",
+        # last one defined wins
+        """<p>a <strong class="bla">b</strong> c</p>
+"""
+    ),
+    # Codespan
+    (
+        """a `b`{ .bla } c""",
+        # last one defined wins
+        """<p>a <code class="bla">b</code> c</p>
+"""
+    ),
+    # thematic_break
+    (
+        """abc
+
+----
+{ .fancy }
+
+def
 """,
-        """<p><img src="/assets/images/nav-page-light.png" alt="Nav A" class="only-light right" /></p>"""
+        """<p>abc</p><hr class="fancy" /><p>def</p>
+"""
     ),
 ]
 

@@ -15,10 +15,12 @@ class HTMLRenderer(HighlightMixin, mistune.HTMLRenderer):
     def strong(self, text: str, **attrs: t.Any) -> str:
         return f"<strong{render_attrs(attrs)}>{text}</strong>"
 
-    def link(self, text: str, **attrs: t.Any) -> str:
+    def link(self, text: str, url: str, **attrs: t.Any) -> str:
+        attrs["href"] = url
         return f"<a{render_attrs(attrs)}>{text}</a>"
 
-    def image(self, text: str, **attrs: t.Any) -> str:
+    def image(self, text: str, url: str, **attrs: t.Any) -> str:
+        attrs["href"] = url
         attrs["alt"] = escape(striptags(text))
         return f"<img{render_attrs(attrs)} />"
 
