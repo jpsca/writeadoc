@@ -6,8 +6,9 @@ icon: icons/list-ol.svg
 To create an ordered list, add line items with numbers followed by periods. You can also use `#` instead of numbers.
 WriteADoc extends the list handling formats to support parenthesis-style lists along with additional ordered formats.
 
-/// example | Numerical
+### Numerical
 
+::: div example
 ```md
 1. First item
 2. Second item
@@ -17,13 +18,11 @@ WriteADoc extends the list handling formats to support parenthesis-style lists a
 1. First item
 2. Second item
 #. Third item
+:::
 
-///
+### Alphabetical
 
-<!--  -->
-
-/// example | Alphabetical
-
+::: div example
 For uppercase, use two spaces after the dot (or a parenthesis instead).
 
 ```md
@@ -43,13 +42,11 @@ c. Third item
 A.  First item
 B.  Second item
 C.  Third item
+:::
 
-///
+### Roman numerals
 
-<!--  -->
-
-/// example | Roman numerals
-
+::: div example
 For uppercase, use two spaces after the dot (or a parenthesis instead).
 
 ```md
@@ -70,16 +67,14 @@ iii. Third item
 I.  First item
 II.  Second item
 III.  Third item
-
-///
+:::
 
 
 ## Nested lists
 
 Indent with two spaces to create a nested list.
 
-/// example |
-
+::: div example
 ```md
 1) Item 1
 2) Item 2
@@ -99,8 +94,7 @@ Indent with two spaces to create a nested list.
     b. Item b
       #. Item 1
       #. Item 2
-
-///
+:::
 
 
 ## Features
@@ -121,8 +115,7 @@ This occurs with:
 
 a. A switch between unordered and ordered.
 
-/// example |
-
+::: div example
 ```md
 -   Item 1
 -   Item 2
@@ -134,13 +127,11 @@ a. A switch between unordered and ordered.
 -   Item 2
 1.  Item 1
 2.  Item 2
-
-///
+:::
 
 b. A change from using a trailing dot to a single right parenthesis.
 
-/// example |
-
+::: div example
 ```md
 1.  Item 1
 1.  Item 2
@@ -152,13 +143,11 @@ b. A change from using a trailing dot to a single right parenthesis.
 1.  Item 2
 1)  Item 1
 2)  Item 2
-
-///
+:::
 
 c. A change between using uppercase and lowercase.
 
-/// example |
-
+::: div example
 ```md
 a.  Item a
 b.  Item a
@@ -170,13 +159,11 @@ a.  Item a
 b.  Item a
 A.  Item A
 B.  Item B
-
-///
+:::
 
 d. A change in ordered type: numerical, Roman numeral, alphabetical, or generic.
 
-/// example |
-
+::: div example
 ```md
 #.  Item 1
 #.  Item 2
@@ -192,15 +179,13 @@ a.  Item a
 b.  Item b
 1.  Item 1
 2.  Item 2
-
-///
+:::
 
 ### 2. Generic list items inherit the type from the current list and, if starting a new list, will assume the decimal type
 
 List items following a generic list will not cause a new list as long as the list item is consistent with the current list type.
 
-/// example |
-
+::: div example
 ```md
 i.  item i
 #.  item ii
@@ -212,13 +197,11 @@ i.  item i
 #.  item ii
 #.  item iii
 iv. item iv
-
-///
+:::
 
 ### 3. If using uppercase list markers, a list marker consisting of a single uppercase letter followed by a dot will require two spaces after the marker instead of the usual one, to avoid false positive matches with names that start with an initial
 
-/// example |
-
+::: div example
 ```md
 B. Russell was an English philosopher.
 
@@ -228,13 +211,11 @@ A.  This is a list.
 B. Russell was an English philosopher.
 
 A.  This is a list.
-
-///
+:::
 
 ### 4. If a single letter is used to start a list, it is assumed to be an alphabetical list unless the first letter is `i` or `I`
 
-/// example |
-
+::: div example
 ```md
 h. Item h
 i. Item i
@@ -256,5 +237,4 @@ j. Item j
 i. Item 1
 ii. Item 2
 iii. Item 3
-
-///
+:::

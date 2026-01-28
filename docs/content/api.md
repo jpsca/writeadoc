@@ -2,4 +2,5 @@
 title: API
 ---
 
-::: writeadoc.Docs
+::: api writeadoc.Docs
+:::

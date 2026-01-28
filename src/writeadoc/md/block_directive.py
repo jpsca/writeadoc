@@ -10,7 +10,7 @@ if t.TYPE_CHECKING:
 
 
 _directive_re = re.compile(
-    r"\s*(?P<type>[a-zA-Z0-9_-]+) *(?P<title>[^\n]*)(?:\n|$)"
+    r"\s*(?P<type>[a-zA-Z0-9_-]+)(\s*\|)? *(?P<title>[^\n]*)(?:\n|$)"
     r"(?P<options>(?:\:[a-zA-Z0-9_-]+\: *[^\n]*\n+)*)"
     r"\n*(?P<text>(?:[^\n]*\n+)*)"
 )

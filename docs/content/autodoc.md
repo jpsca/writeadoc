@@ -8,65 +8,72 @@ WriteADoc provides functionality for automatically generating documentation from
 ## Usage
 
 ```md
-::: my_library.my_module.my_class_or_function
+::: api my_library.my_module.my_class_or_function
+:::
 ```
 
 This works with classes, functions, and individual class methods and properties.
 
-/// example | Function
+### Classes
 
 ```md
-::: jx.meta.extract_metadata
+::: api jx.Catalog
+:::
 ```
 
-::: jx.meta.extract_metadata
-///
+::: api jx.Catalog
+:::
 
-<!--  -->
-
-/// example | Class
+### Functions
 
 ```md
-::: jx.Catalog
+::: api jx.meta.extract_metadata
+:::
 ```
 
-::: jx.Catalog
-///
+::: api jx.meta.extract_metadata
+:::
 
 ## Customizing What Is Documented
 
 By default, all members of a class whose names don't start with an underscore ("_") will be included. You can include one or more members that start with an underscore using the `include` option:
 
 ```md
-::: jx.Catalog include=__call__,__html__
+::: api jx.Catalog
+:include: __call__ __html__
+:::
 ```
 
 You can also exclude some members with the `exclude` option:
 
 ```md
-::: jx.Catalog exclude=get_data,to_dict include=__call__
+::: api jx.Catalog
+:exclude: get_data to_dict
+:include: __call__
+:::
 ```
 
-/// note
+::: note
 As you can see, the options must be separated from each other by spaces.
-///
+:::
 
 ## Changing the Starting Heading Level
 
 By default, the name of the function or class is rendered with an `<h2>`, and the names of attributes/methods with `<h3>`. You can change this by adding the starting heading level after the import path:
 
-/// example | Custom Starting Heading Level
-
 ```md
-::: jx.meta.extract_metadata level=4
+::: api jx.meta.extract_metadata
+:level: 4
+:::
 ```
 
-::: jx.meta.extract_metadata level=4
-///
+::: api jx.meta.extract_metadata
+:level: 4
+:::
 
 ## Customizing the Output
 
-The extracted information is rendered using the `autodoc.jinja` view, recursively. There, you can see it receives a `ds` argument with these fields:
+The extracted information is rendered using the `api.jinja` view, recursively. There, you can see it receives a `ds` argument with these fields:
 
 - `name`: The name of the documented element
 - `symbol`: Type of the element (e.g., "class", "function", "method")
@@ -88,7 +95,7 @@ The extracted information is rendered using the `autodoc.jinja` view, recursivel
 
 ## Notes on Docstring Parsing
 
-The autodoc module relies on the `docstring_parser` library to parse docstrings. It supports various docstring formats, but works best with Google-style docstrings.
+The api module relies on the `docstring_parser` library to parse docstrings. It supports various docstring formats, but works best with Google-style docstrings.
 
 For optimal results:
 

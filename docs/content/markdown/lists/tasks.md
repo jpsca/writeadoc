@@ -6,8 +6,7 @@ icon: icons/list-check.svg
 WriteADoc supports _Github Flavored Markdown_ (GFM) style task lists. They follow the same syntax as GFM.
 Simply start each list item with a square bracket pair containing either a space (an unchecked item) or a `x` (a checked item).
 
-/// example |
-
+::: div example
 ```md
 - [X] item 1
   * [X] item A
@@ -31,5 +30,4 @@ Simply start each list item with a square bracket pair containing either a space
   * [X] item C
 - [ ] item 2
 - [ ] item 3
-
-///
+:::

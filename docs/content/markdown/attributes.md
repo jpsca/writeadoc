@@ -37,24 +37,12 @@ The above results in the following code:
 <p id="an_id" class="a_class">This is a paragraph.</p>
 ```
 
-An exception is headers, as they are only ever allowed on one line.
-
-```md
-### A hash style header { .break }
-```
-
-The above results in the following code:
-
-```html
-<h3 class="break">A hash style header</h3>
-```
-
 ## Inline
 
-To define attributes on inline elements, the attribute list should be placed immediately after the inline element with no whitespace.
+To define attributes on inline elements, the attribute list should be placed immediately after the inline element.
 
 ```md
-[link](http://example.com){: class="foo bar" title="Some title!" }
+[link](http://example.com) { class="foo bar" title="Some title!" }
 ```
 
 The above results in the following output:
@@ -96,9 +84,10 @@ Attribute lists may also be defined on table header cells (`<th>` elements) in t
 
 ## Limitations
 
-There are a few types of elements with which attribute lists do not work, most notably those HTML elements that are not represented in Markdown text, but only implied.
+There are a few types of elements with which attribute lists do not work, most notably those HTML elements that are not represented in Markdown text, but only implied. The attributes list feature **does not work** on:
 
-For example, the `ul` and `ol` elements do not exist in Markdown. They are only implied by the presence of list items (`li`).
-There is no way to use an attribute list to define attributes on implied elements, including but not limited to: `ul`, `ol`, `dl`, `blockquote`, `table`, `thead`, `tbody`, and `tr`.
+- Lists and list items: `ul`, `ol`, `dl`, and `li`
+- Block quotes,
+- Tables and tables header, body, rows, and footers.
 
 As a workaround, because Markdown is a subset of HTML, anything that cannot be expressed in Markdown can always be expressed directly with raw HTML.

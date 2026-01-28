@@ -5,8 +5,7 @@ icon: icons/list-ul.svg
 
 To create an unordered list, add dashes (-), asterisks (*), or plus signs (+) in front of line items.
 
-/// example |
-
+::: div example
 ```md
 - First item
 - Second item
@@ -18,13 +17,11 @@ To create an unordered list, add dashes (-), asterisks (*), or plus signs (+) in
 - Second item
 - Third item
 - Fourth item
-
-///
+:::
 
 Indent one or more items to create a nested list.
 
-/// example |
-
+::: div example
 ```md
 - item 1
   * item A
@@ -48,15 +45,13 @@ Indent one or more items to create a nested list.
   * item C
 - item 2
 - item 3
-
-///
+:::
 
 ## Starting Unordered List Items With Numbers
 
 If you need to start an unordered list item with a number followed by a period, you can use a backslash (\) to escape the period.
 
-/// example |
-
+::: div example
 ```md
 - 1979\. A great year!
 - I think 1983 was second best.
@@ -64,15 +59,13 @@ If you need to start an unordered list item with a number followed by a period, 
 
 - 1979\. A great year!
 - I think 1983 was second best.
-
-///
+:::
 
 ## List items with paragraphs
 
 To add another element in a list while preserving the continuity of the list, indent the element **four spaces** or **one tab**, as shown in the following examples.
 
-/// example | Paragraphs
-
+::: div example
 ```md
 * This is the first list item.
 * Here's the second list item.
@@ -88,13 +81,9 @@ To add another element in a list while preserving the continuity of the list, in
     I need to add another paragraph below the second list item.
 
 * And here's the third list item.
+:::
 
-///
-
-<!-- -->
-
-/// example | Blockquotes
-
+::: div example
 ```md
 * This is the first list item.
 * Here's the second list item.
@@ -110,13 +99,9 @@ To add another element in a list while preserving the continuity of the list, in
     > A blockquote would look great below the second list item.
 
 * And here's the third list item.
+:::
 
-///
-
-<!-- -->
-
-/// example | Images
-
+::: div example
 ```md
 1. Open the file containing the Linux mascot.
 2. Marvel at its beauty.
@@ -132,6 +117,5 @@ To add another element in a list while preserving the continuity of the list, in
     ![Tux, the Linux mascot](/assets/images/tux.png)
 
 3. Close the file.
-
-///
+:::
 
