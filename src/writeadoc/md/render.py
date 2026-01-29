@@ -16,6 +16,7 @@ from .admonition import Admonition
 from .attrs import block_attrs, inline_attrs
 from .block_directive import BlockDirective
 from .div import Container
+from .figure import Figure
 from .formatting import insert, mark, strikethrough, subscript, superscript
 from .html_renderer import HTMLRenderer
 
@@ -38,10 +39,12 @@ md = mistune.Markdown(
         superscript,
         # md_in_html, ???
         BlockDirective([
-            Admonition(),
-            Container(),
             Include(),
             TableOfContents(),
+            #
+            Admonition(),
+            Container(),
+            Figure(),
             # Tab(),
         ]),
     ]

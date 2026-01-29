@@ -136,7 +136,7 @@ Some content
 If the screen is wide enough, you can have inline admonitions, by wrapping the content
 in a `::: div columns` block:
 
-::::: div example
+::::: div columns
 
 ::: tip | Lorem Ipsum
 Lorem ipsum dolor sit amet, consectetur

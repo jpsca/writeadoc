@@ -118,7 +118,7 @@ Pygments also has a few additional options regarding line numbers. One is "line 
 
 ::: div example
 ````md
-``` {linenums="1 2"}
+```python {linenums="1 2"}
 """Some file."""
 import foo.bar
 import boo.baz
@@ -128,7 +128,7 @@ import foo.bar.baz
 
 renders as:
 
-``` {linenums="1 2"}
+```python {linenums="1 2"}
 """Some file."""
 import foo.bar
 import boo.baz

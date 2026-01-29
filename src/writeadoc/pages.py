@@ -1,14 +1,12 @@
-import re
 import typing as t
 from collections.abc import MutableMapping
 from pathlib import Path
 from uuid import uuid4
 
-import jx
 from markupsafe import Markup
 
 from . import search, utils
-from .autodoc import Autodoc
+from .autodoc import render_autodoc
 from .md import render_markdown
 from .types import (
     NavItem,
@@ -25,21 +23,14 @@ if t.TYPE_CHECKING:
     from .main import Docs
 
 
-RX_AUTODOC = re.compile(r"<p>\s*:::\s+([\w\.\:]+)((?:\s+\w+=[\w\*_]+)*)\s*</p>")
-
-
 class PagesProcessor:
     docs: "Docs"
-    autodoc: Autodoc
-
     nav_items: list[NavItem]
     pages: list[PageData]
 
     def __init__(self, docs: "Docs"):
-        """Pages processor
-        """
+        """Pages processor"""
         self.docs = docs
-        self.autodoc = Autodoc()
         self.pages = []
 
     def run(self, user_pages: TUserPages) -> tuple[list[NavItem], list[PageData]]:
@@ -243,7 +234,7 @@ class PagesProcessor:
         url = ""
 
         id = user_page.get("id") or f"s-{uuid4().hex}"
-        parents = parents + (id, )
+        parents = parents + (id,)
 
         sec_path = user_page.get("path")
         if sec_path:
@@ -266,14 +257,7 @@ class PagesProcessor:
             section_url=url,
             parents=parents,
         )
-        return NavItem(
-            title=title,
-            id=id,
-            url=url,
-            icon=icon,
-            pages=pages,
-            closed=closed
-        )
+        return NavItem(title=title, id=id, url=url, icon=icon, pages=pages, closed=closed)
 
     def process_page(
         self,
@@ -288,6 +272,11 @@ class PagesProcessor:
 
         filepath = self.docs.content_dir / filename
         source, meta = self.read_file(filepath)
+
+        def render(**globals: t.Any) -> str:
+            return self.docs.catalog.render_string("autodoc.md.jinja", **globals)
+
+        source = render_autodoc(source.strip(), render)
         try:
             html, state = self.render_markdown(source, meta)
         except Exception as err:
@@ -324,57 +313,22 @@ class PagesProcessor:
 
     def render_markdown(self, source: str, meta: TMetadata) -> tuple[str, MutableMapping]:
         source = source.strip()
-
-        # TODO: render autodoc
-        # html = self.render_autodoc(html)
-
         html, state = render_markdown(source)
 
         if imports := meta.get("imports"):
             if not isinstance(imports, dict):
                 raise ValueError("Invalid 'imports' in metadata, must be a dict")
-            html = self._render_mdjx(html, imports)
+            html = self.render_mdjx(html, imports)
 
         return html, state
 
-    def render_autodoc(self, html: str):
-        while True:
-            match = RX_AUTODOC.search(html)
-            if not match:
-                break
-            name = match.group(1)
-
-            kwargs: dict[str, t.Any] = dict(arg.split("=") for arg in match.group(2).split())
-
-            show_name = kwargs.pop("name", "1").lower() not in ("false", "0", "no")
-            show_members = kwargs.pop("members", "1").lower() not in ("false", "0", "no")
-            include = (kwargs.pop("include", "").split(",")) if "include" in kwargs else ()
-            exclude = (kwargs.pop("exclude", "").split(",")) if "exclude" in kwargs else ()
-            kwargs["ds"] = self.autodoc(
-                name,
-                show_name=show_name,
-                show_members=show_members,
-                include=include,
-                exclude=exclude,
-            )
-            if "level" in kwargs:
-                kwargs["level"] = int(kwargs["level"])
-
-            try:
-                frag = self.docs.catalog.render("autodoc.md.jinja", **kwargs)
-            except jx.JxException as err:
-                raise RuntimeError(f"Error rendering autodoc for {name}") from err
-            frag = str(frag).replace("<br>", "").strip()
-            start, end = match.span(0)
-            html = f"{html[:start]}{frag}{html[end:]}"
-
-        return html
-
-    def _render_mdjx(self, source: str, imports: dict[str, str]) -> str:
+    def render_mdjx(self, source: str, imports: dict[str, str]) -> str:
         OPEN_REPL = "\u0002"
         CLOSE_REPL = "\u0003"
         source = source.replace("{", OPEN_REPL).replace("}", CLOSE_REPL)
-        jx_imports = "\n".join(f'{{# import "{path}" as {name} #}}' for name, path in imports.items())
+        jx_imports = "\n".join(
+            f'{{# import "{path}" as {name} #}}' for name, path in imports.items()
+        )
         html = self.docs.catalog.render_string(f"{jx_imports}\n{source}")
         html = str(html).replace(OPEN_REPL, "{").replace(CLOSE_REPL, "}")
         return html
@@ -392,7 +346,7 @@ class PagesProcessor:
                     id=prev_page.id,
                     title=prev_page.title,
                     url=prev_page.url,
-                    section=prev_page.section_title
+                    section=prev_page.section_title,
                 )
             else:
                 page.prev = None
@@ -403,7 +357,7 @@ class PagesProcessor:
                     id=next_page.id,
                     title=next_page.title,
                     url=next_page.url,
-                    section=next_page.section_title
+                    section=next_page.section_title,
                 )
             else:
                 page.next = None

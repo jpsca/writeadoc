@@ -17,13 +17,12 @@ class Container(DirectivePlugin):
         self, block: "BlockParser", m: re.Match[str], state: "BlockState"
     ) -> dict[str, t.Any]:
         attrs = dict(self.parse_options(m))
-        span = attrs.pop("markdown", "").strip() == "span"
         attrs.setdefault("class", "")
         title = self.parse_title(m)
         attrs["class"] += f"{title} {attrs['class']}".strip()
         content = self.parse_content(m)
         return {
-            "type": "span" if span else "div",
+            "type": "div",
             "children": self.parse_tokens(block, content, state),
             "attrs": attrs,
         }

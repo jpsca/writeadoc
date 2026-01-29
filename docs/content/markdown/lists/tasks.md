@@ -10,7 +10,7 @@ Simply start each list item with a square bracket pair containing either a space
 ```md
 - [X] item 1
   * [X] item A
-  * [ ] item B
+  * [ ] item B  
     more text
     + [x] item a
     + [ ] item b
@@ -22,7 +22,7 @@ Simply start each list item with a square bracket pair containing either a space
 
 - [X] item 1
   * [X] item A
-  * [ ] item B
+  * [ ] item B  
     more text
     + [x] item a
     + [ ] item b

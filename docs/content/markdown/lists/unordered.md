@@ -25,7 +25,7 @@ Indent one or more items to create a nested list.
 ```md
 - item 1
   * item A
-  * item B
+  * item B  
     more text
     + item a
     + item b
@@ -37,7 +37,7 @@ Indent one or more items to create a nested list.
 
 - item 1
   * item A
-  * item B
+  * item B  
     more text
     + item a
     + item b

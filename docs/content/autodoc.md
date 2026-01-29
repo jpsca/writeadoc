@@ -44,6 +44,10 @@ By default, all members of a class whose names don't start with an underscore ("
 :::
 ```
 
+::: api jx.Catalog
+:include: __call__ __html__
+:::
+
 You can also exclude some members with the `exclude` option:
 
 ```md

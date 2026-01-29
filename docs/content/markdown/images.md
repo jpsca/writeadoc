@@ -69,35 +69,34 @@ To center an image, just add the `center` class.
 ![Alt text](/assets/images/image.png){ .invert .center }
 :::
 
-## Image captions
+## Figures
 
-Unfortunately, the Markdown syntax doesn't provide native support for image captions, but you can use the [Markdown in HTML](/docs/md/markdown/html/#markdown-in-html) feature with literal `figure` and `figcaption` tags:
+The Markdown syntax doesn't provide native support for image captions, but you can use a `::: figure` block:
 
-::: div example
-```md
-<figure markdown="span">
+:::: div example
+
+```markdown
+::: figure | Image caption
 ![Alt text](/assets/images/image.png)
-<figcaption>Image caption</figcaption>
-</figure>
+:::
 ```
 
-<figure markdown="span">
-![Alt text](/assets/images/image.png){ .invert }
-<figcaption>Image caption</figcaption>
-</figure>
+::: figure | Image caption
+![Alt text](/assets/images/image.png)
 :::
+::::
 
 ## Image links
 
 To add a link to an image, enclose the Markdown for the image in brackets, and then add the link in parentheses.
 
-::: div example
+:::: div example
 ```md
 [![Alt text](/assets/images/image.png "My title")](https://example.com/)
 ```
 
 [![Alt text](/assets/images/image.png "My title"){ .invert }](https://example.com/)
-:::
+::::
 
 ## Forcing image size
 
