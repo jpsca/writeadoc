@@ -123,7 +123,7 @@ class Docs:
             "--llm",
             action="store_true",
             default=False,
-            help="Generate a `LLM.txt` file with all the markdown content",
+            help=f"Generate a `{self.site.name}.txt` file with all the markdown content",
         )
 
         args = parser.parse_args()
@@ -205,7 +205,7 @@ class Docs:
         print(f"{messages[2]}...")
 
         if llm:
-            print("Building LLM.txt...")
+            print(f"Building {self.site.name}.txt...")
             self._render_llm_file()
 
         self._render_search_page()
@@ -221,15 +221,6 @@ class Docs:
                 self._copy_assets()
                 print("Fingerprinting assets URLs...")
                 self._fingerprint_assets()
-
-    # def markdown_filter(self, source: str, code: str = "") -> str:
-    #     source = dedent(source.strip("\n")).strip()
-    #     if code:
-    #         source = f"\n```{code}\n{source}\n```\n"
-    #     self.md_filter_renderer.reset()
-    #     html = self.md_filter_renderer.convert(source).strip()
-    #     html = html.replace("<pre><span></span>", "<pre>")
-    #     return Markup(html)
 
     def translate(self, key: str, **kwargs) -> str:
         """
@@ -340,12 +331,12 @@ class Docs:
             self.log(outpath)
 
     def _render_llm_file(self) -> None:
-        outpath = self.build_dir / self.prefix / "LLM.txt"
+        outpath = self.build_dir / self.prefix / f"{self.site.name}.txt"
         outpath.parent.mkdir(parents=True, exist_ok=True)
         try:
             body = self.catalog.render("llm.jinja")
         except jx.JxException as err:
-            raise RuntimeError("Error rendering LLM.txt") from err
+            raise RuntimeError(f"Error rendering {self.site.name}.txt") from err
         outpath.write_text(body, encoding="utf-8")
         self.log(outpath)
 

@@ -134,9 +134,9 @@ Some content
 ## Inline admonitions
 
 If the screen is wide enough, you can have inline admonitions, by wrapping the content
-in a `::: div columns` block:
+in a `:::: div columns` block (use *four* or more ":"):
 
-::::: div columns
+:::::: div columns
 
 ::: tip | Lorem Ipsum
 Lorem ipsum dolor sit amet, consectetur
@@ -144,7 +144,7 @@ adipiscing elit. Nulla et euismod nulla.
 :::
 
 ```md
-:::: div columns
+::::: div columns
 
 ::: tip | Lorem Ipsum
 Lorem ipsum dolor sit amet, consectetur
@@ -152,7 +152,7 @@ adipiscing elit. Nulla et euismod nulla.
 :::
 
 Some other content
-::::
+:::::
 ```
 
-:::::
+::::::

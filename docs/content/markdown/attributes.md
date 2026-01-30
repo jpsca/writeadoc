@@ -39,16 +39,16 @@ The above results in the following code:
 
 ## Inline
 
-To define attributes on inline elements, the attribute list should be placed immediately after the inline element.
+To define attributes on inline elements, the attribute list should be placed immediately after the inline element, with no spaces in between.
 
 ```md
-[link](http://example.com) { class="foo bar" title="Some title!" }
+[link](http://example.com){ class="foo bar" title="Some title!" }
 ```
 
 The above results in the following output:
 
 ```html
-<p><a href="http://example.com" class="foo bar" title="Some title!">link</a></p>
+<p><a class="foo bar" href="http://example.com" title="Some title!">link</a></p>
 ```
 
 ## Limitations
