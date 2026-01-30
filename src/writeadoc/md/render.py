@@ -19,6 +19,7 @@ from .div import Container
 from .figure import Figure
 from .formatting import insert, mark, strikethrough, subscript, superscript
 from .html_renderer import HTMLRenderer
+from .tab import Tab
 
 
 md = mistune.Markdown(
@@ -45,7 +46,7 @@ md = mistune.Markdown(
             Admonition(),
             Container(),
             Figure(),
-            # Tab(),
+            Tab(),
         ]),
     ]
 )

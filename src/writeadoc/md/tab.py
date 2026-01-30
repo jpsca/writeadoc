@@ -1,163 +1,188 @@
-"""
-Tab Block extension for Markdown.
+import re
+import typing as t
 
-Original code Copyright 2008-2024 The Python Markdown Project
-https://github.com/facelessuser/pymdown-extensions/blob/main/pymdownx/blocks/tab.py
-Used under the MIT License
-"""
-
-import xml.etree.ElementTree as etree
-
-from markdown.treeprocessors import Treeprocessor
-from pymdownx.blocks import BlocksExtension
-from pymdownx.blocks.block import Block, type_boolean
+import mistune
+from mistune.directives._base import BaseDirective, DirectivePlugin
 
 
-HEADERS = {"h1", "h2", "h3", "h4", "h5", "h6"}
+if t.TYPE_CHECKING:
+    from mistune.block_parser import BlockParser
+    from mistune.core import BlockState
+    from mistune.markdown import Markdown
 
 
-class TabbedTreeprocessor(Treeprocessor):
-    """Tab tree processor."""
+class Tab(DirectivePlugin):
+    """Tab directive for creating tabbed content panels.
 
-    def run(self, doc):
-        # Get a list of id attributes
-        used_ids = set()
-        for el in doc.iter():
-            if "id" in el.attrib:
-                used_ids.add(el.attrib["id"])
+    Syntax:
+        ::: tab | Label with **markdown** support
+        Content here with **markdown** support
+        :::
 
-
-class Tab(Block):
-    """
-    Tabbed container.
-
-    Arguments:
-        - A tab title.
-
-    Options:
-        - `new` (boolean): since consecutive tabs are automatically grouped, `new` can force a tab
-        to start a new tab container.
-
-    Content:
-        Detail body.
+    Consecutive tab directives are automatically grouped into a tabbed set.
     """
 
-    NAME = "tab"
+    def parse(
+        self, block: "BlockParser", m: re.Match[str], state: "BlockState"
+    ) -> dict[str, t.Any]:
+        label = self.parse_title(m)
+        content = self.parse_content(m)
+        attrs = dict(self.parse_options(m))
 
-    ARGUMENT = True
-    OPTIONS = {"new": (False, type_boolean), "select": (False, type_boolean)}
-
-    def on_init(self):
-        """Handle initialization."""
-
-        # Track tab group count across the entire page.
-        if "tab_group_count" not in self.tracker:
-            self.tracker["tab_group_count"] = 0
-
-        self.tab_content = None
-
-    def last_child(self, parent):
-        """Return the last child of an `etree` element."""
-
-        if len(parent):
-            return parent[-1]
-        else:
-            return None
-
-    def on_add(self, block):
-        """Adjust where the content is added."""
-
-        if self.tab_content is None:
-            for d in block.findall("div"):
-                c = d.attrib["class"]
-                if c == "tabbed-content" or c.startswith("tabbed-content "):
-                    self.tab_content = list(d)[-1]
-                    break
-
-        return self.tab_content
-
-    def on_create(self, parent):
-        """Create the element."""
-
-        new_group = self.options["new"]
-        select = self.options["select"]
-        title = self.argument
-        sibling = self.last_child(parent)
-        tabbed_set = "tabbed-set"
-        index = 0
-        labels = None
-        content = None
-
-        if (
-            sibling is not None
-            and sibling.tag.lower() == "div"
-            and sibling.attrib.get("class", "") == tabbed_set
-            and not new_group
-        ):
-            first = False
-            tab_group = sibling
-
-            index = [index for index, _ in enumerate(tab_group.findall("input"), 1)][-1]
-            for d in tab_group.findall("div"):
-                if d.attrib["class"] == "tabbed-labels":
-                    labels = d
-                elif d.attrib["class"] == "tabbed-content":
-                    content = d
-                if labels is not None and content is not None:
-                    break
-        else:
-            first = True
-            self.tracker["tab_group_count"] += 1
-            tab_group = etree.SubElement(
-                parent,
-                "div",
-                {
-                    "class": tabbed_set,
-                    "data-tabs": "%d:0" % self.tracker["tab_group_count"],
-                },
-            )
-            labels = etree.SubElement(tab_group, "div", {"class": "tabbed-labels"})
-            content = etree.SubElement(tab_group, "div", {"class": "tabbed-content"})
-
-        data = tab_group.attrib["data-tabs"].split(":")
-        tab_set = int(data[0])
-        tab_count = int(data[1]) + 1
-
-        attributes = {
-            "name": "__tabbed_%d" % tab_set,
-            "type": "radio",
-            "id": "__tabbed_%d_%d" % (tab_set, tab_count),
+        return {
+            "type": "tab",
+            "label": label,  # Raw text - will be inline-parsed during grouping
+            "children": self.parse_tokens(block, content, state),
+            "attrs": attrs,
         }
-        attributes2 = {"for": "__tabbed_%d_%d" % (tab_set, tab_count)}
 
-        if first or select:
-            attributes["checked"] = "checked"
-            # Remove any previously assigned "checked states" to siblings
-            for i in tab_group.findall("input"):
-                if i.attrib.get("name", "") == f"__tabbed_{tab_set}":
-                    if "checked" in i.attrib:
-                        del i.attrib["checked"]
+    def __call__(self, directive: "BaseDirective", md: "Markdown") -> None:
+        directive.register("tab", self.parse)
 
-        input_el = etree.Element("input", attributes)
-        tab_group.insert(index, input_el)
-        lab = etree.SubElement(labels, "label", attributes2)  # type: ignore
-        lab.text = title
-        attrib = {"class": "tabbed-block"}
-        etree.SubElement(content, "div", attrib)  # type: ignore
+        if md.renderer and md.renderer.NAME == "html":
+            md.renderer.register("tab", render_tab)
+            md.renderer.register("tabbed_set", render_tabbed_set)
 
-        tab_group.attrib["data-tabs"] = "%d:%d" % (tab_set, tab_count)
+        # Register the grouping hook (runs before rendering)
+        def hook(markdown: "Markdown", state: "BlockState") -> None:
+            _group_tabs_hook(markdown, state)
 
-        return tab_group
+        md.before_render_hooks.append(hook)
 
 
-class TabExtension(BlocksExtension):
-    """Tab Block Extension."""
-
-    def extendMarkdownBlocks(self, md, block_mgr):
-        block_mgr.register(Tab, self.getConfigs())
+def render_tab(self: t.Any, text: str, **attrs: t.Any) -> str:
+    """Tab tokens are rendered by their parent tabbed_set, not individually."""
+    return ""
 
 
-def makeExtension(*args, **kwargs):
-    """Return extension."""
+def render_tabbed_set(
+    self: t.Any,
+    text: str,
+    tabs: list,
+    set_id: int,
+    **attrs: t.Any,
+) -> str:
+    """Render a complete tabbed set from pre-rendered tab data."""
+    inputs = []
+    labels = []
+    panels = []
 
-    return TabExtension(*args, **kwargs)
+    # Find which tab should be selected (default to first)
+    selected_index = 0
+    for i, tab in enumerate(tabs):
+        if tab.get("select"):
+            selected_index = i
+            break
+
+    for i, tab in enumerate(tabs):
+        tab_id = f"__tabbed_{set_id}_{i + 1}"
+        checked = " checked" if i == selected_index else ""
+
+        inputs.append(
+            f'<input id="{tab_id}" name="__tabbed_{set_id}" type="radio"{checked}>'
+        )
+        labels.append(f'<label for="{tab_id}">{tab["label_html"] or i + 1}</label>')
+        panels.append(f'<div class="tabbed-panel">\n{tab["content_html"]}</div>')
+
+    return (
+        '<div class="tabbed-set">\n'
+        + "\n".join(inputs)
+        + "\n"
+        + '<div class="tabbed-labels">\n'
+        + "\n".join(labels)
+        + "\n</div>\n"
+        + '<div class="tabbed-panels">\n'
+        + "\n".join(panels)
+        + "\n</div>\n"
+        + "</div>\n"
+    )
+
+
+def _group_tabs_hook(md: "Markdown", state: "BlockState") -> None:
+    """Before-render hook that groups consecutive tab tokens into tabbed_set containers."""
+    state.tokens = _group_consecutive_tabs(state.tokens, state, md)
+
+
+def _group_consecutive_tabs(
+    tokens: list[dict], state: "BlockState", md: "Markdown"
+) -> list[dict]:
+    """Transform token list to group consecutive tab tokens into tabbed_set containers."""
+    result = []
+    tab_buffer: list[dict] = []
+    # Buffer blank lines that appear between tabs - they get discarded if followed by another tab
+    blank_buffer: list[dict] = []
+
+    for token in tokens:
+        if token["type"] == "tab":
+            # Check if this tab should start a new group
+            if token["attrs"].get("new") and tab_buffer:
+                result.append(_create_tabbed_set(tab_buffer, state, md))
+                tab_buffer = []
+            # Discard blank lines between tabs
+            blank_buffer = []
+            tab_buffer.append(token)
+        elif token["type"] == "blank_line" and tab_buffer:
+            # Potentially between tabs - buffer it
+            blank_buffer.append(token)
+        else:
+            # Non-tab, non-blank token
+            if tab_buffer:
+                result.append(_create_tabbed_set(tab_buffer, state, md))
+                tab_buffer = []
+                # Add back any buffered blank lines (they weren't between tabs)
+                result.extend(blank_buffer)
+                blank_buffer = []
+            # Recursively process children (e.g., tabs inside admonitions)
+            if "children" in token:
+                token["children"] = _group_consecutive_tabs(token["children"], state, md)
+            result.append(token)
+
+    # Flush remaining tabs at end
+    if tab_buffer:
+        result.append(_create_tabbed_set(tab_buffer, state, md))
+    # Any trailing blank lines after tabs are discarded
+
+    return result
+
+
+def _create_tabbed_set(tabs: list[dict], state: "BlockState", md: "Markdown") -> dict:
+    """Create a tabbed_set token from a list of tab tokens."""
+    assert md.renderer is not None
+
+    counter = state.env.setdefault("_tab_set_counter", 0) + 1
+    state.env["_tab_set_counter"] = counter
+
+    rendered_tabs = []
+    for tab in tabs:
+        # Render label as inline markdown
+        if tab["label"]:
+            inline_state = mistune.InlineState({})
+            inline_state.src = tab["label"]
+            label_tokens = md.inline.parse(inline_state)
+            label_html = md.renderer.render_tokens(label_tokens, state)
+        else:
+            label_html = ""
+
+        # Process children with _iter_render to convert 'text' to 'children'
+        # This is necessary because before_render_hooks runs before _iter_render
+        processed_children = list(md._iter_render(tab["children"], state))
+
+        # Render content children as HTML
+        content_html = md.renderer.render_tokens(processed_children, state)
+
+        rendered_tabs.append(
+            {
+                "label_html": label_html,
+                "content_html": content_html,
+                "select": tab["attrs"].get("select"),
+            }
+        )
+
+    return {
+        "type": "tabbed_set",
+        "children": [],  # Empty - Mistune won't auto-render
+        "attrs": {
+            "set_id": counter,
+            "tabs": rendered_tabs,
+        },
+    }

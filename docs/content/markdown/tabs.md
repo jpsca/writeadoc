@@ -5,8 +5,7 @@ icon: icons/tab.svg
 
 Some parts of your documentation might become clear by organzing them in tabs, such as language-specific code snippets (e.g., tabs for Python, JavaScript, etc.) or an example that uses several files (e.g. a tabs for HTML, CSS, and JavaScript of a component)
 
-A tab is defined using the `:::` syntax and the name `tab`. Tabs should also specify the tab title in the
-header. Consecutive tabs will automatically be grouped.
+A tab is defined using the `:::` syntax and the name `tab`. Tabs should also specify the tab title in the header. Consecutive tabs will automatically be grouped.
 
 :::: div example
 ```md
@@ -73,16 +72,5 @@ Tab 1 content
 :select: True
 
 Tab 2 should be selected by default.
-:::
-```
-
-As with other blocks, you can always add new classes, and id or other attributes via the options.
-
-```md
-::: tab | Some title
-:class: class-name
-:id: id-name
-
-Some content
 :::
 ```

@@ -1352,33 +1352,33 @@ html.cs-dark img.invert {
   color: inherit;
 }
 
-.tabbed-content {
+.tabbed-panels {
   width: 100%;
 }
-.tabbed-block {
+.tabbed-panel {
   display: none;
   padding-top: 0.75rem;
 }
-.tabbed-set > input:first-child:checked ~ .tabbed-content > :first-child,
-.tabbed-set > input:nth-child(2):checked ~ .tabbed-content > :nth-child(2),
-.tabbed-set > input:nth-child(3):checked ~ .tabbed-content > :nth-child(3),
-.tabbed-set > input:nth-child(4):checked ~ .tabbed-content > :nth-child(4),
-.tabbed-set > input:nth-child(5):checked ~ .tabbed-content > :nth-child(5),
-.tabbed-set > input:nth-child(6):checked ~ .tabbed-content > :nth-child(6),
-.tabbed-set > input:nth-child(7):checked ~ .tabbed-content > :nth-child(7),
-.tabbed-set > input:nth-child(8):checked ~ .tabbed-content > :nth-child(8),
-.tabbed-set > input:nth-child(9):checked ~ .tabbed-content > :nth-child(9),
-.tabbed-set > input:nth-child(10):checked ~ .tabbed-content > :nth-child(10),
-.tabbed-set > input:nth-child(11):checked ~ .tabbed-content > :nth-child(11),
-.tabbed-set > input:nth-child(12):checked ~ .tabbed-content > :nth-child(12),
-.tabbed-set > input:nth-child(13):checked ~ .tabbed-content > :nth-child(13),
-.tabbed-set > input:nth-child(14):checked ~ .tabbed-content > :nth-child(14),
-.tabbed-set > input:nth-child(15):checked ~ .tabbed-content > :nth-child(15),
-.tabbed-set > input:nth-child(16):checked ~ .tabbed-content > :nth-child(16),
-.tabbed-set > input:nth-child(17):checked ~ .tabbed-content > :nth-child(17),
-.tabbed-set > input:nth-child(18):checked ~ .tabbed-content > :nth-child(18),
-.tabbed-set > input:nth-child(19):checked ~ .tabbed-content > :nth-child(19),
-.tabbed-set > input:nth-child(20):checked ~ .tabbed-content > :nth-child(20) {
+.tabbed-set > input:first-child:checked ~ .tabbed-panels > :first-child,
+.tabbed-set > input:nth-child(2):checked ~ .tabbed-panels > :nth-child(2),
+.tabbed-set > input:nth-child(3):checked ~ .tabbed-panels > :nth-child(3),
+.tabbed-set > input:nth-child(4):checked ~ .tabbed-panels > :nth-child(4),
+.tabbed-set > input:nth-child(5):checked ~ .tabbed-panels > :nth-child(5),
+.tabbed-set > input:nth-child(6):checked ~ .tabbed-panels > :nth-child(6),
+.tabbed-set > input:nth-child(7):checked ~ .tabbed-panels > :nth-child(7),
+.tabbed-set > input:nth-child(8):checked ~ .tabbed-panels > :nth-child(8),
+.tabbed-set > input:nth-child(9):checked ~ .tabbed-panels > :nth-child(9),
+.tabbed-set > input:nth-child(10):checked ~ .tabbed-panels > :nth-child(10),
+.tabbed-set > input:nth-child(11):checked ~ .tabbed-panels > :nth-child(11),
+.tabbed-set > input:nth-child(12):checked ~ .tabbed-panels > :nth-child(12),
+.tabbed-set > input:nth-child(13):checked ~ .tabbed-panels > :nth-child(13),
+.tabbed-set > input:nth-child(14):checked ~ .tabbed-panels > :nth-child(14),
+.tabbed-set > input:nth-child(15):checked ~ .tabbed-panels > :nth-child(15),
+.tabbed-set > input:nth-child(16):checked ~ .tabbed-panels > :nth-child(16),
+.tabbed-set > input:nth-child(17):checked ~ .tabbed-panels > :nth-child(17),
+.tabbed-set > input:nth-child(18):checked ~ .tabbed-panels > :nth-child(18),
+.tabbed-set > input:nth-child(19):checked ~ .tabbed-panels > :nth-child(19),
+.tabbed-set > input:nth-child(20):checked ~ .tabbed-panels > :nth-child(20) {
   display: block;
 }
 
