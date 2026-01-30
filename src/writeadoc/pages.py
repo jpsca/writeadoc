@@ -273,10 +273,10 @@ class PagesProcessor:
         filepath = self.docs.content_dir / filename
         source, meta = self.read_file(filepath)
 
-        def render(**globals: t.Any) -> str:
-            return self.docs.catalog.render_string("autodoc.md.jinja", **globals)
+        def _render(**globals: t.Any) -> str:
+            return self.docs.catalog.render("autodoc.md.jinja", **globals)
 
-        source = render_autodoc(source.strip(), render)
+        source = render_autodoc(source.strip(), render=_render)
         try:
             html, state = self.render_markdown(source, meta)
         except Exception as err:

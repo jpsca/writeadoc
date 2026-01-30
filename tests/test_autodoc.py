@@ -330,15 +330,29 @@ def test_docstring_special_attributes():
     assert any(r.type_name == "TypeError" for r in doc.raises)
 
 
-# def test_render_autodoc():
-#     """Test rendering of autodoc output."""
-#     def render(**kwargs):
-#         return repr(kwargs)
+def test_render_autodoc():
+    """Test rendering of autodoc output."""
+    def render(**kwargs):
+        return f"AUTODOC FOR {kwargs['ds'].name}\n"
 
-#     source = """
+    source = """
+```
+::: api tests.test_autodoc.sample_function
+:::
+```
 
-# """
+::: api tests.test_autodoc.sample_function
+:::
+"""
 
-#     result = render_autodoc(source, render=render)
-#     print(result)
-#     assert result == "abc"
+    result = render_autodoc(source, render=render)
+    print(result)
+    assert result.strip() == """
+```
+::: api tests.test_autodoc.sample_function
+:::
+```
+
+AUTODOC FOR sample_function
+""".strip()
+

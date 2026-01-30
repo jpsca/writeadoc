@@ -35,10 +35,10 @@ pages = [
             # "markdown/html.md",
         ],
     },
-    # "autodoc.md",
+    "autodoc.md",
     "languages.md",
     "versions.md",
-    # "api.md",
+    "api.md",
 ]
 
 docs = Docs(

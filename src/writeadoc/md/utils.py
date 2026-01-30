@@ -31,9 +31,10 @@ def render_attrs(attrs: dict[str, str | int]) -> str:
     attributes = {}
     for name, value in attrs.items():
         name = name.replace("_", "-")
-        if value in FALSY_VALUES:
+        str_value = str(value).lower()
+        if str_value.lower() == "false":
             continue
-        if value in TRUTHY_VALUES:
+        if str_value == "true":
             properties.add(name)
         else:
             attributes[name] = escape_value(name, str(value))

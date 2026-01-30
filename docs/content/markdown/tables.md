@@ -8,19 +8,19 @@ To add a table, use three or more hyphens (`---`) to create each column’s head
 ::: div example
 ```md
 
-| Method      | Description     |
-| ----------- | --------------- |
-| `GET`       | Fetch resource  |
-| `PUT`       | Update resource |
-| `DELETE`    | Delete resource |
+Method      | Description    
+----------- | ---------------
+`GET`       | Fetch resource 
+`PUT`       | Update resource
+`DELETE`    | Delete resource
 
 ```
 
-| Method      | Description     |
-| ----------- | --------------- |
-| `GET`       | Fetch resource  |
-| `PUT`       | Update resource |
-| `DELETE`    | Delete resource |
+Method      | Description    
+----------- | ---------------
+`GET`       | Fetch resource 
+`PUT`       | Update resource
+`DELETE`    | Delete resource
 :::
 
 You don't have to make each cell the same width, but it looks clearer if you do.

@@ -15,9 +15,10 @@ from docstring_parser.common import (
 
 
 RX_AUTODOC = re.compile(
-    r"^:::\s*api(\s*\|)? *(?P<name>[^\n]+)(?:\n|$)"
+    r"^:::\s*api(\s*\|)?\s+(?P<name>[^\n]+)(?:\n|$)"
     r"(?P<options>(?:\:[a-zA-Z0-9_-]+\: *[^\n]*\n+)*)"
-    r"^:::"
+    r"^:::",
+    re.MULTILINE,
 )
 RX_FENCED = re.compile(r"\n```+.*?\n[\s\S]*?\n```+\n", re.MULTILINE)
 
@@ -68,7 +69,7 @@ class Docstring:
     methods: list["Docstring"] = field(default_factory=list)
 
 
-def render_autodoc(source: str, render: t.Callable) -> str:
+def render_autodoc(source: str, *, render: t.Callable) -> str:
     blocks = find_autodocs_blocks(source)
     for block in reversed(blocks):
         level = int(block["options"].pop("level", 2))
@@ -82,7 +83,7 @@ def render_autodoc(source: str, render: t.Callable) -> str:
         end = block["end"]
         source = f"{source[:start]}{frag}{source[end:]}"
 
-    return source
+    return source.strip()
 
 
 def find_autodocs_blocks(source: str) -> list[dict[str, t.Any]]:
@@ -119,17 +120,25 @@ def parse_options(m: re.Match[str]) -> dict[str, str]:
         line = line.strip()[1:]
         if not line:
             continue
+
         i = line.find(":")
         k = line[:i]
         v = line[i + 1 :].strip()
+
+        if v.lower() == "true":
+            v = True
+        elif v.lower() == "false":
+            v = False
+        elif v.isdigit():
+            v = int(v)
         options.append((k, v))
+
     return dict(options)
 
 
 def autodoc(
     name: str,
     *,
-    show_name: bool = True,
     show_members: bool = True,
     include: tuple[str, ...] = (),
     exclude: tuple[str, ...] = (),
@@ -150,7 +159,6 @@ def autodoc(
 
     return autodoc_obj(
         obj,
-        show_name=show_name,
         show_members=show_members,
         include=include,
         exclude=exclude,
@@ -160,7 +168,6 @@ def autodoc(
 def autodoc_obj(
     obj: t.Any,
     *,
-    show_name: bool = True,
     show_members: bool = True,
     include: tuple[str, ...] = (),
     exclude: tuple[str, ...] = (),
@@ -168,13 +175,12 @@ def autodoc_obj(
     if inspect.isclass(obj):
         ds = autodoc_class(
             obj,
-            show_name=show_name,
             show_members=show_members,
             include=include,
             exclude=exclude,
         )
     elif inspect.isfunction(obj) or inspect.ismethod(obj):
-        ds = autodoc_function(obj, show_name=show_name)
+        ds = autodoc_function(obj)
     else:
         ds = Docstring()
     return ds
@@ -184,7 +190,6 @@ def autodoc_class(
     obj: t.Any,
     *,
     symbol: str = "class",
-    show_name: bool = True,
     show_members: bool = True,
     include: tuple[str, ...] = (),
     exclude: tuple[str, ...] = (),
@@ -235,8 +240,8 @@ def autodoc_class(
         meta.description = (meta.description or "").strip()
 
     return Docstring(
-        symbol=symbol if show_name else "",
-        name=obj_name if show_name else "",
+        symbol=symbol,
+        name=obj_name,
         signature=get_signature(obj_name, init),
         params=params,
         short_description=short_description,
@@ -258,7 +263,6 @@ def autodoc_function(
     obj: t.Any,
     *,
     symbol: str = "",
-    show_name: bool = True,
 ) -> Docstring:
     obj_name = obj.__name__
     ds = parse(obj.__doc__ or "")
@@ -287,8 +291,8 @@ def autodoc_function(
         else:
             symbol = "function"
     return Docstring(
-        symbol=symbol if show_name else "",
-        name=obj_name if show_name else "",
+        symbol=symbol,
+        name=obj_name,
         signature=get_signature(obj_name, obj),
         params=params,
         short_description=short_description,

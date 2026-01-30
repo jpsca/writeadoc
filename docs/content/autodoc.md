@@ -14,7 +14,7 @@ WriteADoc provides functionality for automatically generating documentation from
 
 This works with classes, functions, and individual class methods and properties.
 
-### Classes
+## Example: Class
 
 ```md
 ::: api jx.Catalog
@@ -24,7 +24,9 @@ This works with classes, functions, and individual class methods and properties.
 ::: api jx.Catalog
 :::
 
-### Functions
+----
+
+## Example: Function
 
 ```md
 ::: api jx.meta.extract_metadata
@@ -34,7 +36,12 @@ This works with classes, functions, and individual class methods and properties.
 ::: api jx.meta.extract_metadata
 :::
 
-## Customizing What Is Documented
+----
+
+
+## Options
+
+### Customizing What Is Documented
 
 By default, all members of a class whose names don't start with an underscore ("_") will be included. You can include one or more members that start with an underscore using the `include` option:
 
@@ -43,10 +50,6 @@ By default, all members of a class whose names don't start with an underscore ("
 :include: __call__ __html__
 :::
 ```
-
-::: api jx.Catalog
-:include: __call__ __html__
-:::
 
 You can also exclude some members with the `exclude` option:
 
@@ -61,7 +64,17 @@ You can also exclude some members with the `exclude` option:
 As you can see, the options must be separated from each other by spaces.
 :::
 
-## Changing the Starting Heading Level
+### Showing only the class signature
+
+To exclude **all** members (methods, propeties, etc.) of a class, use:
+
+```md
+::: api jx.Catalog
+:show_members: false
+:::
+```
+
+### Changing the Starting Heading Level
 
 By default, the name of the function or class is rendered with an `<h2>`, and the names of attributes/methods with `<h3>`. You can change this by adding the starting heading level after the import path:
 
@@ -74,6 +87,19 @@ By default, the name of the function or class is rendered with an `<h2>`, and th
 ::: api jx.meta.extract_metadata
 :level: 4
 :::
+
+
+## Notes on Docstring Parsing
+
+The api module relies on the `docstring_parser` library to parse docstrings. It supports various docstring formats, but works best with Google-style docstrings.
+
+For optimal results:
+
+1. Start with a short, one-line description.
+2. Follow with a blank line and then a more detailed description.
+3. Use standard sections like "Arguments:" (or "Args:"), "Returns:", "Raises:", and "Examples:".
+4. Document all parameters, return values, and exceptions.
+
 
 ## Customizing the Output
 
@@ -96,14 +122,3 @@ The extracted information is rendered using the `api.jinja` view, recursively. T
 - `attrs`: List of ds objects for each attribute (for classes)
 - `properties`: List of ds objects for each property (for classes)
 - `methods`: List of ds objects for each method (for classes)
-
-## Notes on Docstring Parsing
-
-The api module relies on the `docstring_parser` library to parse docstrings. It supports various docstring formats, but works best with Google-style docstrings.
-
-For optimal results:
-
-1. Start with a short, one-line description.
-2. Follow with a blank line and then a more detailed description.
-3. Use standard sections like "Arguments:" (or "Args:"), "Returns:", "Raises:", and "Examples:".
-4. Document all parameters, return values, and exceptions.
