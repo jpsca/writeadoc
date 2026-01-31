@@ -74,3 +74,13 @@ Tab 1 content
 Tab 2 should be selected by default.
 :::
 ```
+
+::: tab | Tab 1 title
+Tab 1 content
+:::
+
+::: tab | Tab 2 title
+:select: True
+
+Tab 2 should be selected by default.
+:::

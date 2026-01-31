@@ -155,7 +155,7 @@ class PagesProcessor:
         md_index = self.docs.content_dir / self.docs.prefix / "index.md"
         if md_index.exists():
             source, meta = self.read_file(md_index)
-            html, state = self.render_markdown(source, meta)
+            html, state = self.render_markdown(source, meta, filepath=md_index)
             meta.setdefault("id", "index")
             meta.setdefault("title", self.docs.site.name)
             meta.setdefault("view", "index.jinja")
@@ -276,7 +276,7 @@ class PagesProcessor:
 
         source = render_autodoc(source.strip(), render=_render)
         try:
-            html, state = self.render_markdown(source, meta)
+            html, state = self.render_markdown(source, meta, filepath=filepath)
         except Exception as err:
             raise RuntimeError(f"Error processing {filepath}") from err
 
@@ -309,9 +309,9 @@ class PagesProcessor:
         source, meta = utils.extract_metadata(source)
         return source, meta
 
-    def render_markdown(self, source: str, meta: TMetadata) -> tuple[str, MutableMapping]:
+    def render_markdown(self, source: str, meta: TMetadata, filepath: Path) -> tuple[str, MutableMapping]:
         source = source.strip()
-        html, state = render_markdown(source)
+        html, state = render_markdown(source, __file__=str(filepath))
 
         if imports := meta.get("imports"):
             if not isinstance(imports, dict):

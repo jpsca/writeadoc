@@ -62,8 +62,12 @@ def slugify(value: str, separator: str = "-", unicode: bool = True) -> str:
     return re.sub(r"[{}\s]+".format(separator), separator, value)
 
 
+RX_ATTRS_IN_HEADER = re.compile("(?<!/)\{([^\n\r}]*)\}")
+
+
 def heading_id(token: dict[str, t.Any], index: int) -> str:
-    return slugify(token["text"])
+    value = RX_ATTRS_IN_HEADER.sub("", token["text"]).strip()
+    return slugify(value)
 
 
 add_toc_hook(md, heading_id=heading_id)

@@ -66,7 +66,8 @@ When the markdown attribute is set to "block", the parser will force block behav
 
 The content of a block element is parsed into block-level content. In other words, the text is rendered as paragraphs, headers, lists, blockquotes, etc. Any inline syntax within those elements is processed as well.
 
-/// example | Forced "block" markdown parsing
+:::: div example
+**Example: Forced "block" markdown parsing**
 
 ```md
 <section markdown="block">
@@ -93,16 +94,14 @@ renders as:
 </section>
 ```
 
-///
+::::
 
-<!--  -->
-
-/// warning
+::: warning
 Forcing elements to be parsed as `block` elements when they are not by default could result in invalid HTML.
 
 For example, one could force a `<p>` element to be nested within another `<p>` element. In most cases, it is
 recommended to use the default behavior of `markdown="1"`.
-///
+:::
 
 
 ### `markdown="span"`
@@ -111,7 +110,8 @@ When the markdown attribute is set to "span", the parser will force span behavio
 
 The content of a span element is not parsed into block-level content. In other words, the content will not be rendered as paragraphs, headers, etc. Only inline syntax will be rendered, such as links, strong, emphasis, etc.
 
-/// example | Forced "span" markdown parsing
+:::: div example
+**Example: Forced "span" markdown parsing**
 
 ```md
 <div markdown="span">
@@ -127,14 +127,15 @@ renders as:
 </div>
 ```
 
-///
+::::
 
 
 ## Nesting
 
 When nesting multiple levels of raw HTML elements, a markdown attribute must be defined for each block-level element. For any block-level element that does not have a markdown attribute, everything inside that element is ignored, including child elements with markdown attributes.
 
-/// example | Markdown in nested HTML
+:::: div example
+**Example: Markdown in nested HTML
 
 ```md
 <article id="my-article" markdown="1">
@@ -175,3 +176,4 @@ renders as:
 </section>
 </article>
 ```
+::::

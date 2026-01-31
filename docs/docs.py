@@ -13,7 +13,7 @@ pages = [
         ]
     },
     {
-        "path": "markdown.md",
+        "title": "Markdown",
         "pages": [
             "markdown/blocks.md",
             "markdown/formatting.md",
@@ -29,10 +29,17 @@ pages = [
             },
             "markdown/code.md",
             "markdown/tables.md",
-            "markdown/admonitions.md",
             "markdown/attributes.md",
-            "markdown/tabs.md",
             # "markdown/html.md",
+        ],
+    },
+    {
+        "path": "directives/index.md",
+        "pages": [
+            "directives/admonitions.md",
+            "directives/figures.md",
+            "directives/tabs.md",
+            "directives/divs.md",
         ],
     },
     "autodoc.md",
