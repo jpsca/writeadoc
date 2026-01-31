@@ -1,4 +1,4 @@
-# <img src="./docs/logo.png" align="middle" />
+# <img src="https://raw.githubusercontent.com/jpsca/writeadoc/refs/heads/main/docs/logo.png" align="middle" />
 
 Focus on your content and let WriteADoc take care of the rest
 
