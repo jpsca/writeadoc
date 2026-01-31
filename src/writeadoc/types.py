@@ -1,5 +1,4 @@
 import typing as t
-from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from uuid import uuid4
@@ -7,8 +6,6 @@ from uuid import uuid4
 
 __all__ = (
     "TMetadata",
-    "TUserSection",
-    "TUserPages",
     "PageRef",
     "TSearchPageData",
     "NavItem",
@@ -18,16 +15,6 @@ __all__ = (
 
 
 TMetadata = dict[str, t.Any]
-
-
-class TUserSection(t.TypedDict):
-    title: str
-    path: str
-    icon: str | None
-    pages: "TUserPages"
-
-
-TUserPages = Sequence[str | TUserSection]
 
 
 class TSearchPageData(t.TypedDict):

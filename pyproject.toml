@@ -27,6 +27,7 @@ GitHub = "https://github.com/jpsca/writeadoc"
 [dependency-groups]
 dev = [
     "ipdb>=0.13.13",
+    "pytest-cov>=7.0.0",
     "ruff>=0.12.4",
     "tox-uv",
     "ty>=0.0.1a15",
@@ -69,6 +70,7 @@ exclude_lines = [
 ]
 omit = [
     "src/writeadoc/blueprint/**",
+    "src/writeadoc/cli.py",
 ]
 
 [tool.coverage.html]

@@ -12,9 +12,9 @@ lint:
 	uv run ruff check .
 	uv run ty check
 
-# .PHONY: coverage
-# coverage:
-# 	uv run pytest --cov-config=pyproject.toml --cov-report html --cov writeadoc src/writeadoc tests
+.PHONY: coverage
+coverage:
+	uv run pytest --cov-config=pyproject.toml --cov-report html --cov writeadoc src/writeadoc tests
 
 .PHONY: docs
 docs:

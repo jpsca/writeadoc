@@ -74,10 +74,7 @@ def render_autodoc(source: str, *, render: t.Callable) -> str:
     for block in reversed(blocks):
         level = int(block["options"].pop("level", 2))
         ds = autodoc(block["name"], **block["options"])
-        try:
-            frag = render(ds=ds, level=level)
-        except Exception as err:
-            raise RuntimeError(f"Error rendering autodoc for {block['name']}") from err
+        frag = render(ds=ds, level=level)
         frag = str(frag).strip()
         start = block["start"]
         end = block["end"]

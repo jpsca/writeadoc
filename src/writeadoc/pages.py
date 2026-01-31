@@ -1,5 +1,5 @@
 import typing as t
-from collections.abc import MutableMapping
+from collections.abc import MutableMapping, Sequence
 from pathlib import Path
 from uuid import uuid4
 
@@ -13,8 +13,6 @@ from .types import (
     PageData,
     PageRef,
     TMetadata,
-    TUserPages,
-    TUserSection,
 )
 from .utils import logger
 
@@ -33,7 +31,7 @@ class PagesProcessor:
         self.docs = docs
         self.pages = []
 
-    def run(self, user_pages: TUserPages) -> tuple[list[NavItem], list[PageData]]:
+    def run(self, user_pages: Sequence[str | dict[str, t.Any]]) -> tuple[list[NavItem], list[PageData]]:
         """Recursively process the given pages list and returns navigation and flat page list.
 
         Input:
@@ -183,7 +181,7 @@ class PagesProcessor:
 
     def process_items(
         self,
-        user_pages: TUserPages,
+        user_pages: Sequence[str | dict[str, t.Any]],
         section_title: str = "",
         section_url: str = "",
         parents: tuple[str, ...] = (),
@@ -218,7 +216,7 @@ class PagesProcessor:
 
     def process_section(
         self,
-        user_page: TUserSection,
+        user_page: dict[str, t.Any],
         section_title: str = "",
         section_url: str = "",
         parents: tuple[str, ...] = (),

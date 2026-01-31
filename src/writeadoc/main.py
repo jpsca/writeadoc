@@ -15,15 +15,15 @@ from markupsafe import Markup
 
 from . import utils
 from .pages import PagesProcessor
-from .types import PageData, SiteData, TUserPages
+from .types import PageData, SiteData
 from .utils import get_random_messages, logger
 
 
 class Docs:
-    pages: TUserPages
+    pages: list[str | dict[str, t.Any]]
     site: SiteData
     prefix: str = ""
-    variants: dict[str, t.Self]
+    variants: "dict[str, Docs]"
     is_main: bool = True
     skip_home: bool = False
 
@@ -43,10 +43,10 @@ class Docs:
         root: str,
         /,
         *,
-        pages: TUserPages,
+        pages: list[str | dict[str, t.Any]],
         site: dict[str, t.Any] | None = None,
         prefix: str = "",
-        variants: dict[str, t.Self] | None = None,
+        variants: "dict[str, Docs] | None" = None,
         skip_home: bool = False,
     ):
         """
