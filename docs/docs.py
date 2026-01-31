@@ -32,7 +32,7 @@ pages = [
             "markdown/admonitions.md",
             "markdown/attributes.md",
             "markdown/tabs.md",
-            "markdown/html.md",
+            # "markdown/html.md",
         ],
     },
     "autodoc.md",

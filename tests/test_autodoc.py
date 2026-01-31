@@ -1,6 +1,16 @@
 from docstring_parser.common import DocstringParam
 
-from writeadoc.autodoc import Autodoc
+from writeadoc.autodoc import (
+    autodoc,
+    autodoc_attr,
+    autodoc_class,
+    autodoc_function,
+    autodoc_obj,
+    autodoc_property,
+    get_signature,
+    render_autodoc,
+    split_description,
+)
 
 
 class SimpleClass:
@@ -23,6 +33,10 @@ class SimpleClass:
         self.param1 = param1
         self.param2 = param2
         self._private = "private"
+
+    def noargs_method(self):
+        """A test method."""
+        pass
 
     def method(self, x, y=0):
         """A test method.
@@ -72,10 +86,6 @@ def sample_function(a, b=1, *, c=2):
     return a + b + c
 
 
-# Simple renderer that returns input as-is
-autodoc = Autodoc()
-
-
 def test_autodoc_parse_function():
     """Test autodoc_function function."""
     doc = autodoc("tests.test_autodoc.sample_function")
@@ -107,7 +117,7 @@ def test_autodoc_parse_class():
     assert doc.attrs[1].name == "attr2"
 
     # Check methods
-    assert len(doc.methods) == 1
+    assert len(doc.methods) == 2
     method = doc.methods[0]
     assert method.name == "method"
     assert method.symbol == "function"
@@ -127,7 +137,7 @@ def test_autodoc_parse_class():
 
 def test_autodoc_function():
     """Test autodoc_function function."""
-    doc = autodoc.autodoc_function(sample_function)
+    doc = autodoc_function(sample_function)
 
     assert doc.name == "sample_function"
     assert doc.symbol == "function"
@@ -143,7 +153,7 @@ def test_autodoc_function():
 
 def test_autodoc_class():
     """Test autodoc_class function."""
-    doc = autodoc.autodoc_class(SimpleClass)
+    doc = autodoc_class(SimpleClass)
 
     assert doc.name == "SimpleClass"
     assert doc.symbol == "class"
@@ -156,7 +166,7 @@ def test_autodoc_class():
     assert doc.attrs[1].name == "attr2"
 
     # Check methods
-    assert len(doc.methods) == 1
+    assert len(doc.methods) == 2
     method = doc.methods[0]
     assert method.name == "method"
     assert method.symbol == "function"
@@ -176,7 +186,7 @@ def test_autodoc_class():
 
 def test_autodoc_property():
     """Test autodoc_property function."""
-    doc = autodoc.autodoc_property("prop", SimpleClass.prop)
+    doc = autodoc_property("prop", SimpleClass.prop)
 
     assert doc.name == "prop"
     assert doc.symbol == "attr"
@@ -196,7 +206,7 @@ def test_autodoc_attr():
         default=None
     )
 
-    doc = autodoc.autodoc_attr(param)
+    doc = autodoc_attr(param)
 
     assert doc.name == "test_param: str"
     assert doc.symbol == "attr"
@@ -205,14 +215,13 @@ def test_autodoc_attr():
     assert doc.long_description == "Multiple paragraphs."
 
 
-def test_get_signature():
-    """Test get_signature function."""
-    # Test simple signature
-    sig = autodoc.get_signature("simple", lambda x: x)
+def test_get_signature_simple():
+    sig = get_signature("simple", lambda x: x, max_width=99)
     assert sig == "simple(x)"
 
-    # Test complex signature
-    sig = autodoc.get_signature("complex", sample_function)
+
+def test_get_signature_complex():
+    sig = get_signature("complex", sample_function, max_width=1)
     print(sig)
     assert sig == """
 complex(
@@ -222,8 +231,21 @@ complex(
     c=2
 )""".strip()
 
-    # Test signature with self parameter
-    sig = autodoc.get_signature("method", SimpleClass.method)
+
+def test_get_signature_with_self():
+    sig = get_signature("method", SimpleClass.method, max_width=99)
+    print(sig)
+    assert sig == "method(x, y=0)"
+
+
+def test_get_signature_with_self_noargs():
+    sig = get_signature("noargs_method", SimpleClass.noargs_method, max_width=99)
+    print(sig)
+    assert sig == "noargs_method()"
+
+
+def test_get_signature_with_self_multiline():
+    sig = get_signature("method", SimpleClass.method, max_width=1)
     print(sig)
     assert sig == """
 method(
@@ -232,15 +254,21 @@ method(
 )""".strip()
 
 
+def test_get_signature_max_width():
+    sig = get_signature("method", SimpleClass.method, max_width=99)
+    print(sig)
+    assert sig == "method(x, y=0)"
+
+
 def test_split_description():
     """Test split_description function."""
     # Single paragraph
-    short, long = autodoc.split_description("Single paragraph.")
+    short, long = split_description("Single paragraph.")
     assert short == "Single paragraph."
     assert long == ""
 
     # Multiple paragraphs
-    short, long = autodoc.split_description("First paragraph.\n\nSecond paragraph.\n\nThird paragraph.")
+    short, long = split_description("First paragraph.\n\nSecond paragraph.\n\nThird paragraph.")
     assert short == "First paragraph."
     assert long == "Second paragraph.\n\nThird paragraph."
 
@@ -259,24 +287,24 @@ def test_autodoc_full_path():
 def test_autodoc_obj():
     """Test autodoc_obj function with different types."""
     # Class
-    class_doc = autodoc.autodoc_obj(SimpleClass)
+    class_doc = autodoc_obj(SimpleClass)
     assert class_doc.name == "SimpleClass"
     assert class_doc.symbol == "class"
 
     # Function
-    func_doc = autodoc.autodoc_obj(sample_function)
+    func_doc = autodoc_obj(sample_function)
     assert func_doc.name == "sample_function"
     assert func_doc.symbol == "function"
 
     # Other object (should return empty Autodoc)
-    other_doc = autodoc.autodoc_obj(42)
+    other_doc = autodoc_obj(42)
     assert other_doc.name == ""
     assert other_doc.symbol == ""
 
 
 def test_docstring_special_attributes():
     """Test handling of special docstring attributes like example and return values."""
-    doc = autodoc.autodoc_function(sample_function)
+    doc = autodoc_function(sample_function)
 
     # Check for examples
     assert len(doc.examples) == 1
@@ -296,7 +324,35 @@ def test_docstring_special_attributes():
         """
         pass
 
-    doc = autodoc.autodoc_function(raises_func)
+    doc = autodoc_function(raises_func)
     assert len(doc.raises) == 2
     assert any(r.type_name == "ValueError" for r in doc.raises)
     assert any(r.type_name == "TypeError" for r in doc.raises)
+
+
+def test_render_autodoc():
+    """Test rendering of autodoc output."""
+    def render(**kwargs):
+        return f"AUTODOC FOR {kwargs['ds'].name}\n"
+
+    source = """
+```
+::: api tests.test_autodoc.sample_function
+:::
+```
+
+::: api tests.test_autodoc.sample_function
+:::
+"""
+
+    result = render_autodoc(source, render=render)
+    print(result)
+    assert result.strip() == """
+```
+::: api tests.test_autodoc.sample_function
+:::
+```
+
+AUTODOC FOR sample_function
+""".strip()
+

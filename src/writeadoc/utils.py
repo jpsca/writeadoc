@@ -24,64 +24,6 @@ logger = logging.getLogger("writeadoc")
 logger.setLevel(logging.WARNING)
 logger.addHandler(logging.StreamHandler())
 
-DEFAULT_MD_EXTENSIONS = [
-    "attr_list",
-    "md_in_html",
-    "tables",
-    "pymdownx.betterem",
-    "pymdownx.blocks.admonition",
-    "pymdownx.blocks.details",
-    "pymdownx.caret",
-    "pymdownx.fancylists",
-    "pymdownx.highlight",
-    "pymdownx.inlinehilite",
-    "pymdownx.mark",
-    "pymdownx.saneheaders",
-    "pymdownx.smartsymbols",
-    "pymdownx.superfences",
-    "pymdownx.tasklist",
-    "pymdownx.tilde",
-    # "writeadoc.ext.jx",
-    "writeadoc.ext.pagetoc",
-    "writeadoc.ext.tab",
-]
-
-DEFAULT_MD_CONFIG = {
-    "keys": {
-        "camel_case": True,
-    },
-    "writeadoc.pagetoc": {
-        "permalink": True,
-        "permalink_title": "",
-        "toc_depth": 3,
-    },
-    "pymdownx.blocks.admonition": {
-        "types": [
-            "note",
-            "tip",
-            "warning",
-            "danger",
-            "new",
-            "question",
-            "error",
-            "example",
-        ],
-    },
-    "pymdownx.fancylists": {
-        "additional_ordered_styles": ["roman", "alpha", "generic"],
-        "inject_class": True,
-    },
-    "pymdownx.highlight": {
-        "linenums_style": "pymdownx-inline",
-        "anchor_linenums": False,
-        "css_class": "highlight",
-        "pygments_lang_class": True,
-    },
-    "pymdownx.superfences": {
-        "disable_indented_code_blocks": True,
-    },
-}
-
 META_START = "---"
 META_END = "\n---"
 

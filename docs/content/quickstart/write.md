@@ -16,12 +16,10 @@ It uses common Markdown syntax with many popular extensions. You can read about 
 Each page must have a metadata section at the beginning. This is a list of `name: value` pairs
 that many tools call "Frontmatter".
 
-/// details | Actually...
-    type: tip
-
+```{tip} Actually...
 The metadata is parsed as a [restricted subset of the YAML format](https://hitchdev.com/strictyaml/)
 and can also contain lists and multi-line strings.
-///
+```
 
 To set it, add a section surrounded by `---` at the beginning of each of your pages, like this:
 

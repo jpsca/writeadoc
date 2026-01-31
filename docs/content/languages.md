@@ -133,10 +133,10 @@ build/
   └── sitemap.xml
 ```
 
-/// note | One home page
+::: note | One home page
 You can skip generating a home page for each language by using the option `skip_home=True`
 in each language instance.
-///
+:::
 
 ### 4. Enable the language selector
 

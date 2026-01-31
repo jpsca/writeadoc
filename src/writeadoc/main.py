@@ -8,29 +8,26 @@ import typing as t
 from multiprocessing import Process
 from pathlib import Path
 from tempfile import mkdtemp
-from textwrap import dedent
 
+# from textwrap import dedent
 import jx
-import markdown
 from markupsafe import Markup
 
 from . import utils
 from .pages import PagesProcessor
-from .types import PageData, SiteData, TUserPages
+from .types import PageData, SiteData
 from .utils import get_random_messages, logger
 
 
 class Docs:
-    pages: TUserPages
+    pages: list[str | dict[str, t.Any]]
     site: SiteData
     prefix: str = ""
-    variants: dict[str, t.Self]
+    variants: "dict[str, Docs]"
     is_main: bool = True
     skip_home: bool = False
 
     strings: dict[str, str]
-
-    md_filter_renderer: markdown.Markdown
     catalog: jx.Catalog
 
     root_dir: Path
@@ -46,10 +43,10 @@ class Docs:
         root: str,
         /,
         *,
-        pages: TUserPages,
+        pages: list[str | dict[str, t.Any]],
         site: dict[str, t.Any] | None = None,
         prefix: str = "",
-        variants: dict[str, t.Self] | None = None,
+        variants: "dict[str, Docs] | None" = None,
         skip_home: bool = False,
     ):
         """
@@ -90,17 +87,7 @@ class Docs:
 
         self.pages_processor = PagesProcessor(self)
 
-        self.md_filter_renderer = markdown.Markdown(
-            extensions=[*utils.DEFAULT_MD_EXTENSIONS],
-            extension_configs={**utils.DEFAULT_MD_CONFIG},
-            output_format="html",
-            tab_length=2,
-        )
-
         self.catalog = jx.Catalog(
-            filters={
-                "markdown": self.markdown_filter
-            },
             site=self.site,
             docs=self,
             _=self.translate,
@@ -136,7 +123,7 @@ class Docs:
             "--llm",
             action="store_true",
             default=False,
-            help="Generate a `LLM.txt` file with all the markdown content",
+            help=f"Generate a `{self.site.name}.txt` file with all the markdown content",
         )
 
         args = parser.parse_args()
@@ -218,7 +205,7 @@ class Docs:
         print(f"{messages[2]}...")
 
         if llm:
-            print("Building LLM.txt...")
+            print(f"Building {self.site.name}.txt...")
             self._render_llm_file()
 
         self._render_search_page()
@@ -234,15 +221,6 @@ class Docs:
                 self._copy_assets()
                 print("Fingerprinting assets URLs...")
                 self._fingerprint_assets()
-
-    def markdown_filter(self, source: str, code: str = "") -> str:
-        source = dedent(source.strip("\n")).strip()
-        if code:
-            source = f"\n```{code}\n{source}\n```\n"
-        self.md_filter_renderer.reset()
-        html = self.md_filter_renderer.convert(source).strip()
-        html = html.replace("<pre><span></span>", "<pre>")
-        return Markup(html)
 
     def translate(self, key: str, **kwargs) -> str:
         """
@@ -353,12 +331,12 @@ class Docs:
             self.log(outpath)
 
     def _render_llm_file(self) -> None:
-        outpath = self.build_dir / self.prefix / "LLM.txt"
+        outpath = self.build_dir / self.prefix / f"{self.site.name}.txt"
         outpath.parent.mkdir(parents=True, exist_ok=True)
         try:
             body = self.catalog.render("llm.jinja")
         except jx.JxException as err:
-            raise RuntimeError("Error rendering LLM.txt") from err
+            raise RuntimeError(f"Error rendering {self.site.name}.txt") from err
         outpath.write_text(body, encoding="utf-8")
         self.log(outpath)
 

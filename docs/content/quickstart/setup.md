@@ -8,40 +8,32 @@ title: Installation
 
 Use your package manager
 
-/// tab | Using "**uv**"
-
+::: tab | Using "**uv**"
 ```bash
 uv add writeadoc --group docs
 ```
+:::
 
-///
-
-/// tab | Using "**Poetry**"
-
+::: tab | Using "**Poetry**"
 ```bash
 poetry add writeadoc --group docs
 ```
-
-///
+:::
 
 
 ### Or install it by itself
 
-/// tab | Using "**uv**"
-
+::: tab | Using "**uv**"
 ```bash
 uv pip install writeadoc
 ```
+:::
 
-///
-
-/// tab | Using "**pip**"
-
+::: tab | Using "**pip**"
 ```bash
 pip install writeadoc
 ```
-
-///
+:::
 
 
 ## Creating a new project
@@ -80,19 +72,18 @@ Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser, and you'l
 
 The generated home page is different from the rest: it's a welcome/marketing page. Clicking on the "Documentation" link takes you to the first page of your actual documentation.
 
-<div markdown="span" class="stacked only-light">
+::: div stacked only-light
 [![Home page](/assets/images/page-home-light.png)](/assets/images/page-home-light.png){ target="blank"}
 [![First page](/assets/images/page-index-light.png)](/assets/images/page-index-light.png){ target="blank"}
-</div>
+:::
 
-<div markdown="span" class="stacked only-dark">
+::: div stacked only-dark
 [![Home page](/assets/images/page-home-dark.png)](/assets/images/page-home-dark.png){ target="blank"}
 [![First page](/assets/images/page-index-dark.png)](/assets/images/page-index-dark.png){ target="blank"}
-</div>
+:::
 
 ## Build
 
 When you are ready to publish your documentation, run the `python docs.py build` command, and your documentation will be generated into a `build` folder. This is a static site that can be copied and deployed anywhere.
 
 Note that your `assets` folder will be **copied** into the build folder, so don't commit the build folder into your source code repository, because you will waste space with two copies of the same files.
-

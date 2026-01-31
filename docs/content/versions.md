@@ -75,17 +75,17 @@ Add a link to the list of options in the version selector at `views/version_sele
 ![Version selector](/assets/images/version-selector-dark.png){ .only-dark }
 
 
-/// note
+::: note
 The version selector does not render in archived versions. Otherwise, it would link only to versions that existed when created, which might not even be available anymore.
-///
+:::
 
 ### 4. Deploy
 
 You can now copy the generated version folder along with the rest of your live documentation, so your main documentation will be at `http://example.com/`, and the documentation for the archived version will be available at `http://example.com/{VERSION}/`.
 
-/// warning
+::: warning
 Make sure you also commit the `archive/` folder to your source code.
-///
+:::
 
 
 ## Managing separate "live" versions
@@ -186,8 +186,7 @@ build/
 ```
 
 
-/// note
-
+::: note
 The prefixes don't need to be equal to the version numbers. They can be any string, for example:
 
 ```python
@@ -198,8 +197,7 @@ variants={
 ```
 
 **However, they must be named like the folders in `content/`**.
-
-///
+:::
 
 ### 4. Enable the version selector
 

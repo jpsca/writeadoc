@@ -37,68 +37,26 @@ The above results in the following code:
 <p id="an_id" class="a_class">This is a paragraph.</p>
 ```
 
-An exception is headers, as they are only ever allowed on one line.
-
-```md
-### A hash style header { .break }
-```
-
-The above results in the following code:
-
-```html
-<h3 class="break">A hash style header</h3>
-```
-
 ## Inline
 
-To define attributes on inline elements, the attribute list should be placed immediately after the inline element with no whitespace.
+To define attributes on inline elements, the attribute list should be placed immediately after the inline element, with no spaces in between.
 
 ```md
-[link](http://example.com){: class="foo bar" title="Some title!" }
+[link](http://example.com){ class="foo bar" title="Some title!" }
 ```
 
 The above results in the following output:
 
 ```html
-<p><a href="http://example.com" class="foo bar" title="Some title!">link</a></p>
+<p><a class="foo bar" href="http://example.com" title="Some title!">link</a></p>
 ```
-
-Attribute lists can be defined on table _cells_ (but not on tables themselves). To differentiate attributes for an inline element from attributes for the containing cell, the attribute list must be separated from the content by at least one space and placed at the end of the cell content. As table cells can only ever be on a single line, the attribute list must remain on the same line as the content of the cell.
-
-```md
-| set on td    | set on em   |
-|--------------|-------------|
-| *a* { .foo } | *b*{ .foo } |
-```
-
-The above example results in the following output:
-
-```html
-<table>
-  <thead>
-    <tr>
-      <th>set on td</th>
-      <th>set on em</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="foo"><em>a</em></td>
-      <td><em class="foo">b</em></td>
-    </tr>
-  </tbody>
-</table>
-```
-
-Note that in the first column, the attribute list is preceded by a space; therefore, it is assigned to the table cell (`<td>` element). However, in the second column, the attribute list is not preceded by a space; therefore, it is assigned to the inline element (`<em>`) that immediately precedes it.
-
-Attribute lists may also be defined on table header cells (`<th>` elements) in the same manner.
 
 ## Limitations
 
-There are a few types of elements with which attribute lists do not work, most notably those HTML elements that are not represented in Markdown text, but only implied.
+There are a few types of elements with which attribute lists do not work, most notably those HTML elements that are not represented in Markdown text, but only implied. The attributes list feature **does not work** on:
 
-For example, the `ul` and `ol` elements do not exist in Markdown. They are only implied by the presence of list items (`li`).
-There is no way to use an attribute list to define attributes on implied elements, including but not limited to: `ul`, `ol`, `dl`, `blockquote`, `table`, `thead`, `tbody`, and `tr`.
+- Lists and list items: `ul`, `ol`, `dl`, and `li`
+- Block quotes,
+- Tables and table elements.
 
 As a workaround, because Markdown is a subset of HTML, anything that cannot be expressed in Markdown can always be expressed directly with raw HTML.
