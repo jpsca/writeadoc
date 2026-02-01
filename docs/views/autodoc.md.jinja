@@ -48,13 +48,12 @@ Argument | Description
 
 {% for ex in ds.examples -%}
 ::: div
-{%- if ex.description %}{{ ex.description | safe }}
+{% if ex.description %}{{ ex.description | safe }}
 {% endif -%}
-{%- if ex.snippet %}
-````python
+{% if ex.snippet %}
 {{ ex.snippet | safe }}
-````
 {% endif %}
+
 :::
 {% endfor %}
 ::::

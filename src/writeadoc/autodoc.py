@@ -3,6 +3,7 @@ import re
 import typing as t
 from dataclasses import dataclass, field
 from importlib import import_module
+from textwrap import dedent
 
 from docstring_parser import parse
 from docstring_parser.common import (
@@ -137,6 +138,7 @@ def autodoc(
     name: str,
     *,
     show_members: bool = True,
+    show_name: bool = True,
     include: tuple[str, ...] = (),
     exclude: tuple[str, ...] = (),
 ) -> Docstring:
@@ -157,6 +159,7 @@ def autodoc(
     return autodoc_obj(
         obj,
         show_members=show_members,
+        show_name=show_name,
         include=include,
         exclude=exclude,
     )
@@ -166,6 +169,7 @@ def autodoc_obj(
     obj: t.Any,
     *,
     show_members: bool = True,
+    show_name: bool = True,
     include: tuple[str, ...] = (),
     exclude: tuple[str, ...] = (),
 ) -> Docstring:
@@ -173,11 +177,12 @@ def autodoc_obj(
         ds = autodoc_class(
             obj,
             show_members=show_members,
+            show_name=show_name,
             include=include,
             exclude=exclude,
         )
     elif inspect.isfunction(obj) or inspect.ismethod(obj):
-        ds = autodoc_function(obj)
+        ds = autodoc_function(obj, show_name=show_name)
     else:
         ds = Docstring()
     return ds
@@ -188,6 +193,7 @@ def autodoc_class(
     *,
     symbol: str = "class",
     show_members: bool = True,
+    show_name: bool = True,
     include: tuple[str, ...] = (),
     exclude: tuple[str, ...] = (),
 ) -> Docstring:
@@ -233,12 +239,12 @@ def autodoc_class(
     for meta in ds.many_returns:
         meta.description = (meta.description or "").strip()
     for meta in ds.examples:
-        meta.snippet = (meta.snippet or "").strip()
-        meta.description = (meta.description or "").strip()
+        meta.snippet = dedent(meta.snippet or "")
+        meta.description = dedent(meta.description or "")
 
     return Docstring(
-        symbol=symbol,
-        name=obj_name,
+        symbol=symbol if show_name else "",
+        name=obj_name if show_name else "",
         signature=get_signature(obj_name, init),
         params=params,
         short_description=short_description,
@@ -259,6 +265,7 @@ def autodoc_class(
 def autodoc_function(
     obj: t.Any,
     *,
+    show_name: bool = True,
     symbol: str = "",
 ) -> Docstring:
     obj_name = obj.__name__
@@ -288,8 +295,8 @@ def autodoc_function(
         else:
             symbol = "function"
     return Docstring(
-        symbol=symbol,
-        name=obj_name,
+        symbol=symbol if show_name else "",
+        name=obj_name if show_name else "",
         signature=get_signature(obj_name, obj),
         params=params,
         short_description=short_description,
@@ -303,14 +310,20 @@ def autodoc_function(
     )
 
 
-def autodoc_property(name: str, obj: t.Any, *, symbol: str = "attr") -> Docstring:
+def autodoc_property(
+    name: str,
+    obj: t.Any,
+    *,
+    show_name: bool = True,
+    symbol: str = "attr",
+) -> Docstring:
     ds = parse(obj.__doc__ or "")
     description = (ds.description or "").strip()
     short_description, long_description = split_description(description)
 
     return Docstring(
-        name=name,
-        symbol=symbol,
+        symbol=symbol if show_name else "",
+        name=name if show_name else "",
         label="property",
         short_description=short_description,
         long_description=long_description,
@@ -323,7 +336,12 @@ def autodoc_property(name: str, obj: t.Any, *, symbol: str = "attr") -> Docstrin
     )
 
 
-def autodoc_attr(attr: DocstringParam, *, symbol: str = "attr") -> AttrDocstring:
+def autodoc_attr(
+    attr: DocstringParam,
+    *,
+    show_name: bool = True,
+    symbol: str = "attr",
+) -> AttrDocstring:
     if attr.type_name:
         name = f"{attr.arg_name}: {attr.type_name}"
     else:
@@ -333,8 +351,8 @@ def autodoc_attr(attr: DocstringParam, *, symbol: str = "attr") -> AttrDocstring
     short_description, long_description = split_description(description)
 
     return AttrDocstring(
-        symbol=symbol,
-        name=name,
+        symbol=symbol if show_name else "",
+        name=name if show_name else "",
         label="attribute",
         short_description=short_description,
         long_description=long_description,

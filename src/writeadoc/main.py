@@ -254,7 +254,7 @@ class Docs:
                 page.view,
                 globals={"page": page}
             )
-        except jx.JxException as err:
+        except Exception as err:
             raise RuntimeError(f"Error rendering {page.filepath}") from err
         outpath.write_text(html, encoding="utf-8")
         self.log(outpath)
