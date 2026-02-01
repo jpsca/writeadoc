@@ -696,7 +696,8 @@ html.cs-dark .highlight {
 .autodoc > *,
 .autodoc-short-description > *,
 .autodoc-long-description > *,
-.autodoc-methods > * {
+.autodoc-methods > *,
+.autodoc-properties > * {
   margin-top: var(--flow-space, 1.4em);
 }
 

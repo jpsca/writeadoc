@@ -62,7 +62,7 @@ def slugify(value: str, separator: str = "-", unicode: bool = True) -> str:
     return re.sub(r"[{}\s]+".format(separator), separator, value)
 
 
-RX_ATTRS_IN_HEADER = re.compile("(?<!/)\{([^\n\r}]*)\}")
+RX_ATTRS_IN_HEADER = re.compile(r"(?<!/)\{([^\n\r}]*)\}")
 
 
 def heading_id(token: dict[str, t.Any], index: int) -> str:
