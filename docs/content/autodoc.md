@@ -21,7 +21,10 @@ This works with classes, functions, and individual class methods and properties.
 :::
 ```
 
-::: api jx.Catalog
+::: div example
+_Example of an autodoc for a class_
+![Autodoc class](/assets/images/autodoc-class-light.png){ .only-light }
+![Autodoc class](/assets/images/autodoc-class-dark.png){ .only-dark }
 :::
 
 ----
@@ -33,7 +36,10 @@ This works with classes, functions, and individual class methods and properties.
 :::
 ```
 
-::: api jx.meta.extract_metadata
+::: div example
+_Example of an autodoc for a function_
+![Autodoc function](/assets/images/autodoc-function-light.png){ .only-light }
+![Autodoc function](/assets/images/autodoc-function-dark.png){ .only-dark }
 :::
 
 ----
