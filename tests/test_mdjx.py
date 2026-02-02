@@ -16,7 +16,7 @@
 # <Test>This **is** a test</Test>
 
 # <Test class="hi">Hello world</Test>
-# """.strip())
+# """.rstrip())
 
 #     docs = Docs(tmp_root, pages=["test.md"])
 #     docs.catalog.add_folder(tmp_root / "comp")
@@ -27,7 +27,7 @@
 # <h2 >This **is** a test</h2>
 
 # <h2 class="hi">Hello world</h2>
-# """.strip()
+# """
 #     result = (tmp_root / "build" / "docs" / "test" / "index.html").read_text()
 #     print(result)
 #     assert result == expected
@@ -44,7 +44,7 @@
 #   "Test": "test.jinja"
 # ---
 # <Test markdown="span" class="hi">This **is** a test</Test>
-# """.strip())
+# """.rstrip())
 
 #     docs = Docs(tmp_root, pages=["test.md"])
 #     docs.catalog.add_folder(tmp_root / "comp")
@@ -53,7 +53,7 @@
 #     expected = """
 # <h1>Test Page</h1>
 # <h2 class="hi">This <strong>is</strong> a test</h2>
-# """.strip()
+# """
 #     result = (tmp_root / "build" / "docs" / "test" / "index.html").read_text()
 #     print(result)
 #     assert result == expected
@@ -70,7 +70,7 @@
 #   "Test": "test.jinja"
 # ---
 # <Test markdown="1" class="hi">This **is** a test</Test>
-# """.strip())
+# """.rstrip())
 
 #     docs = Docs(tmp_root, pages=["test.md"])
 #     docs.catalog.add_folder(tmp_root / "comp")
@@ -79,7 +79,7 @@
 #     expected = """
 # <h1>Test Page</h1>
 # <h2 class="hi"><p>This <strong>is</strong> a test</p></h2>
-# """.strip()
+# """
 #     result = (tmp_root / "build" / "docs" / "test" / "index.html").read_text()
 #     print(result)
 #     assert result == expected
@@ -96,7 +96,7 @@
 #   "Test": "test.jinja"
 # ---
 # <Test class="hi" />
-# """.strip())
+# """.rstrip())
 
 #     docs = Docs(tmp_root, pages=["test.md"])
 #     docs.catalog.add_folder(tmp_root / "comp")
@@ -105,7 +105,7 @@
 #     expected = """
 # <h1>Test Page</h1>
 # <h2 class="hi">Hello</h2>
-# """.strip()
+# """
 #     result = (tmp_root / "build" / "docs" / "test" / "index.html").read_text()
 #     print(result)
 #     assert result == expected
@@ -127,7 +127,7 @@
 # <Test />
 # <Test></Test>
 # ```
-# """.strip())
+# """.rstrip())
 
 #     docs = Docs(tmp_root, pages=["test.md"])
 #     docs.catalog.add_folder(tmp_root / "comp")
@@ -140,7 +140,7 @@
 # <div class="language-text highlight"><pre><code>&lt;Test /&gt;
 # &lt;Test&gt;&lt;/Test&gt;
 # </code></pre></div>
-# """.strip()
+# """
 #     result = (tmp_root / "build" / "docs" / "test" / "index.html").read_text()
 #     print(result)
 #     assert result == expected
@@ -163,7 +163,7 @@
 # {% if test %}Nor this {%- endif %}
 
 # {# or this #}
-# """.strip())
+# """.rstrip())
 
 #     docs = Docs(tmp_root, pages=["test.md"])
 #     docs.catalog.add_folder(tmp_root / "comp")
@@ -176,7 +176,7 @@
 # <p>{{ this is not a variable }}</p>
 # <p>{% if test %}Nor this {%- endif %}</p>
 # <p>{# or this #}</p>
-# """.strip()
+# """
 #     result = (tmp_root / "build" / "docs" / "test" / "index.html").read_text()
 #     print(result)
 #     assert result == expected

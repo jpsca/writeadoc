@@ -30,7 +30,7 @@ pages = [
             "markdown/code.md",
             "markdown/tables.md",
             "markdown/attributes.md",
-            # "markdown/html.md",
+            "markdown/html.md",
         ],
     },
     {
