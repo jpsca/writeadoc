@@ -15,6 +15,7 @@ from mistune.toc import add_toc_hook
 from .admonition import Admonition
 from .attrs import block_attrs, inline_attrs
 from .block_directive import BlockDirective
+from .custom_html import custom_block_html
 from .div import Container
 from .figure import Figure
 from .formatting import insert, mark, strikethrough, subscript, superscript
@@ -31,6 +32,7 @@ md = mistune.Markdown(
         table,
         task_lists,
         #
+        custom_block_html,
         block_attrs,
         inline_attrs,
         insert,
