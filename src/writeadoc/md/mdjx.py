@@ -39,23 +39,21 @@ def mdjx(md: Markdown) -> None:
     """
     # Pattern to match uppercase tags as block HTML
     # Supports both self-closing tags (<Tag />) and paired tags (<Tag>...</Tag>)
-    # - ^[ ]{0,3} - start of line with up to 3 spaces (standard block indent)
-    # Self-closing branch:
-    # - <[A-Z][a-zA-Z0-9]* - opening tag starting with uppercase
-    # - [^>]* - optional attributes (anything except >)
-    # - /> - self-closing end
-    # Paired tag branch:
-    # - <(?P<_customtag>[A-Z][a-zA-Z0-9]*) - opening tag starting with uppercase
-    # - (?:\s[^>]*)? - optional attributes
-    # - > - close of opening tag
-    # - [\s\S]*? - content (lazy match, including newlines)
-    # - </(?P=_customtag)> - matching closing tag (backreference)
-    # - [ \t]*$ - optional trailing whitespace, end of line
+    #
+    # Attribute pattern: (?:[^>"']|"[^"]*"|'[^']*')*
+    # This properly handles > characters inside quoted attribute values by matching:
+    # - [^>"'] - any char except >, ", or '
+    # - "[^"]*" - double-quoted strings
+    # - '[^']*' - single-quoted strings
+    #
+    # Note: Nested tags with the same name are not supported (e.g., <Test><Test></Test></Test>)
+    # The lazy match will stop at the first closing tag found.
+    ATTR = r"(?:[^>\"']|\"[^\"]*\"|'[^']*')*"
     pattern = (
         r"^[ ]{0,3}(?:"
-        r"<[A-Z][a-zA-Z0-9]*[^>]*/>"  # Self-closing tag
+        rf"<[A-Z][a-zA-Z0-9]*{ATTR}/>"  # Self-closing tag
         r"|"
-        r"<(?P<_customtag>[A-Z][a-zA-Z0-9]*)(?:\s[^>]*)?>[\s\S]*?</(?P=_customtag)>"  # Paired tags
+        rf"<(?P<_customtag>[A-Z][a-zA-Z0-9]*){ATTR}>[\s\S]*?</(?P=_customtag)>"  # Paired tags
         r")[ \t]*$"
     )
     md.block.register("mdjx", pattern, parse_mdjx, before="raw_html")

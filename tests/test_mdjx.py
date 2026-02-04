@@ -118,6 +118,36 @@ imports:
     assert result == expected
 
 
+def test_gt_in_attribute_value(tmp_root):
+    """Test that > characters inside quoted attribute values are handled correctly."""
+    (tmp_root / "comp").mkdir()
+    (tmp_root / "comp" / "test.jinja").write_text("<div {{ attrs.render() }}>{{ content }}</div>")
+
+    (tmp_root / "content" / "test.md").write_text("""
+---
+title: Test Page
+imports:
+  "Test": "test.jinja"
+---
+<Test data-expr="a > b">Content</Test>
+
+<Test data-expr='x > y' />
+""".strip())
+
+    docs = Docs(tmp_root, pages=["test.md"])
+    docs.catalog.add_folder(tmp_root / "comp")
+    docs.build()
+
+    expected = """
+<h1>Test Page</h1>
+<div data-expr="a > b">Content</div>
+<div data-expr="x > y"></div>
+""".strip()
+    result = (tmp_root / "build" / "docs" / "test" / "index.html").read_text()
+    print(result)
+    assert result == expected
+
+
 def test_ignore_jinja_expr(tmp_root):
     (tmp_root / "comp").mkdir()
     (tmp_root / "comp" / "test.jinja").write_text("<h2>{{ content }}</h2>")
