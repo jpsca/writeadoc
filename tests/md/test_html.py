@@ -50,7 +50,6 @@ ipsum
 """
     expected = """<p>lorem</p>
 <Test>Hello **World**</Test>
-
 <p>ipsum</p>
 """
     result = render_markdown(source, __file__=__file__)[0]
@@ -67,7 +66,6 @@ ipsum
 """
     expected = """<p>lorem</p>
 <Card class="hi">This **is** a test</Card>
-
 <p>ipsum</p>
 """
     result = render_markdown(source, __file__=__file__)[0]
@@ -86,7 +84,6 @@ ipsum
     expected = """<p>lorem</p>
 <Lorem>Hello World</Lorem>
 <Ipsum>Hello World</Ipsum>
-
 <p>ipsum</p>
 """
     result = render_markdown(source, __file__=__file__)[0]
@@ -107,7 +104,6 @@ ipsum
 <Card>
 <Header>Hello World</Header>
 </Card>
-
 <p>ipsum</p>
 """
     result = render_markdown(source, __file__=__file__)[0]
@@ -128,7 +124,24 @@ ipsum
 <Card>
   <Header>Hello World</Header>
 </Card>
+<p>ipsum</p>
+"""
+    result = render_markdown(source, __file__=__file__)[0]
+    print(result)
+    assert result == expected
 
+
+def test_self_closing_blocks():
+    source = """lorem
+
+<Test class="test" />
+<Test class="test"/>
+
+ipsum
+"""
+    expected = """<p>lorem</p>
+<Test class="test" />
+<Test class="test"/>
 <p>ipsum</p>
 """
     result = render_markdown(source, __file__=__file__)[0]
