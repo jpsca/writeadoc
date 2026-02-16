@@ -68,6 +68,8 @@ RX_ATTRS_IN_HEADER = re.compile(r"(?<!/)\{([^\n\r}]*)\}")
 
 
 def heading_id(token: dict[str, t.Any], index: int) -> str:
+    if "id" in token.get("attrs", {}):
+        return token["attrs"]["id"]
     value = RX_ATTRS_IN_HEADER.sub("", token["text"]).strip()
     return slugify(value)
 

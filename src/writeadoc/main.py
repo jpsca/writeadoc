@@ -408,6 +408,10 @@ class Docs:
                     if re.match(r"^(https?://|mailto:|tel:)", url):
                         continue
 
+                    # Skip LLM.txt references
+                    if url.startswith("/LLM.txt"):
+                        continue
+
                     # Resolve relative URLs against the page's own URL
                     if not url.startswith("/"):
                         base = page.url.rstrip("/")
@@ -440,6 +444,9 @@ class Docs:
                         continue
 
                     warn(filename, lineno, f"broken link: {raw_url}")
+
+        if has_warnings:
+            print()
 
     def _symlink_assets(self) -> None:
         if not self.assets_dir.exists():

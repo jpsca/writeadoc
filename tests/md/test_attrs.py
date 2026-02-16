@@ -74,6 +74,15 @@ lorem ipsum
 """
     ),
 
+    (  # heading with custom id
+        """
+## Hello
+{ #world }
+""",
+        """<h2 id="world">Hello</h2>
+"""
+    ),
+
     (  # thematic_break
         """
 ----
