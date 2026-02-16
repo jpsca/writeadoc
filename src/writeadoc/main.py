@@ -11,6 +11,7 @@ from tempfile import mkdtemp
 
 # from textwrap import dedent
 import jx
+from jx.tools import check_all
 from markupsafe import Markup
 
 from . import utils
@@ -94,6 +95,8 @@ class Docs:
             _now=datetime.datetime.now(tz=datetime.timezone.utc),
             _insert_asset=self.insert_asset,
         )
+        self.init_catalog()
+        self.check_catalog()
 
     def init_catalog(self):
         strings_file = self.views_dir / "strings.json"
@@ -102,11 +105,15 @@ class Docs:
             self.strings = strings_data.get(self.site.lang, {})
         else:
             self.strings = {}
+        self.catalog.add_folder(self.views_dir, preload=False)
 
-        self.catalog.add_folder(self.views_dir)
+    def check_catalog(self):
+        print("\nValidating views...")
+        errors, checked = check_all(self.catalog)
+        for error in errors:
+            print(f"{error.file}:{error.line} - {error.message}")
 
     def cli(self):
-        print()
         parser = argparse.ArgumentParser(description="WriteADoc CLI")
         subparsers = parser.add_subparsers(dest="command")
 
@@ -143,6 +150,7 @@ class Docs:
             variant.build_dir = self.build_dir
 
         self.build()  # Initial build
+        print()
         p = Process(
             target=utils.start_server,
             args=(str(self.build_dir),),
@@ -187,8 +195,6 @@ class Docs:
         for variant in self.variants.values():
             variant.build(devmode=devmode, llm=llm)
 
-        self.init_catalog()
-
         print("Processing pages...")
         nav, pages = self.pages_processor.run(self.pages)
         print(f"{messages[1]}...")
@@ -211,6 +217,7 @@ class Docs:
         self._render_search_page()
         self._render_redirect_pages()
         self._add_prefix_to_urls()
+        self._validate_links()
 
         if self.is_main:
             self._render_extra()
@@ -360,6 +367,79 @@ class Docs:
 
             new_content = rx_urls.sub(replace_url, content)
             html_file.write_text(new_content)
+
+    def _validate_links(self) -> None:
+        rx_link = re.compile(r"\[([^\]]*)\]\(([^)\s]+)(?:\s[^)]*)?\)")
+        rx_id = re.compile(r'\bid=["\']([^"\']+)["\']')
+        page_urls = {page.url for page in self.site.pages}
+        has_warnings = False
+
+        def warn(filename: str, lineno: int, msg: str) -> None:
+            nonlocal has_warnings
+            if not has_warnings:
+                print("\n⚡ WARNING:")
+                has_warnings = True
+            print(f"  {filename}:{lineno} - {msg}")
+
+        for page in self.site.pages:
+            if not page.source or not page.filepath:
+                continue
+
+            filename = str(page.filepath.relative_to(self.content_dir))
+            page_ids = set(rx_id.findall(page.content)) if page.content else set()
+
+            for lineno, line in enumerate(page.source.splitlines(), start=1):
+                for match in rx_link.finditer(line):
+                    raw_url = match.group(2)
+
+                    # Split URL and anchor fragment
+                    if "#" in raw_url:
+                        url, anchor = raw_url.split("#", 1)
+                    else:
+                        url, anchor = raw_url, ""
+
+                    # Anchor-only link: validate against page IDs
+                    if not url:
+                        if anchor and page_ids and anchor not in page_ids:
+                            warn(filename, lineno, f"broken anchor: #{anchor}")
+                        continue
+
+                    # Skip external links and mailto/tel
+                    if re.match(r"^(https?://|mailto:|tel:)", url):
+                        continue
+
+                    # Resolve relative URLs against the page's own URL
+                    if not url.startswith("/"):
+                        base = page.url.rstrip("/")
+                        url = f"{base}/{url}"
+
+                    # Normalize: ensure trailing slash for page-like URLs (no extension)
+                    if "." not in url.split("/")[-1] and not url.endswith("/"):
+                        url = f"{url}/"
+
+                    # Check page URLs
+                    if url in page_urls:
+                        continue
+
+                    # Check asset links against the assets source folder
+                    if url.startswith("/assets/"):
+                        asset_rel = url[len("/assets/"):]
+                        if (self.assets_dir / asset_rel).exists():
+                            continue
+                        warn(filename, lineno, f"broken link: {raw_url}")
+                        continue
+
+                    # Check files in build dir
+                    file_path = self.build_dir / url.strip("/")
+                    if file_path.exists():
+                        continue
+
+                    # Check files in root dir (for source-relative paths)
+                    root_path = self.root_dir / url.strip("/")
+                    if root_path.exists():
+                        continue
+
+                    warn(filename, lineno, f"broken link: {raw_url}")
 
     def _symlink_assets(self) -> None:
         if not self.assets_dir.exists():

@@ -58,7 +58,7 @@ def start_server(build_folder: str) -> None:
     port = 8000
     handler = partial(SimpleHTTPRequestHandler, directory=build_folder)
     server = ThreadingHTTPServer(("0.0.0.0", port), handler)
-    print(f"\nServing docs on http://localhost:{port}/")
+    print(f"Serving docs on http://localhost:{port}/")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

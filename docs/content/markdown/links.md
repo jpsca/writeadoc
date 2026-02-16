@@ -57,7 +57,7 @@ The **[EFF website](https://eff.org)**.
 
 This is the *[Markdown Guide](https://www.markdownguide.org)*.
 
-See the section on [`code`](#code).
+See the section on [`code`](#code){id="code"}.
 :::
 
 
@@ -67,8 +67,8 @@ You can add extra attributes to a link, like `target="blank"`, using the [attrib
 
 ::: div example
 ```md
-[Opens in a new tab](https://www.python.org/){ target="blank" }
+[Opens in a new tab](https://www.python.org/){target="_blank"}
 ```
 
-[Opens in a new tab](https://www.python.org/){ target="blank" }
+[Opens in a new tab](https://www.python.org/){target="_blank"}
 :::
