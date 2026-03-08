@@ -130,7 +130,7 @@ class Docs:
             "--llm",
             action="store_true",
             default=False,
-            help="Generate a `LLM.txt` file with all the markdown content",
+            help="Generate a `llms.txt` file with all the markdown content",
         )
 
         args = parser.parse_args()
@@ -211,7 +211,7 @@ class Docs:
         print(f"{messages[2]}...")
 
         if llm:
-            print("Building LLM.txt...")
+            print("Building llms.txt...")
             self._render_llm_file()
 
         self._render_search_page()
@@ -338,12 +338,12 @@ class Docs:
             self.log(outpath)
 
     def _render_llm_file(self) -> None:
-        outpath = self.build_dir / self.prefix / "LLM.txt"
+        outpath = self.build_dir / self.prefix / "llms.txt"
         outpath.parent.mkdir(parents=True, exist_ok=True)
         try:
             body = self.catalog.render("llm.jinja")
         except jx.JxException as err:
-            raise RuntimeError("Error rendering LLM.txt") from err
+            raise RuntimeError("Error rendering llms.txt") from err
         outpath.write_text(body, encoding="utf-8")
         self.log(outpath)
 
@@ -408,8 +408,8 @@ class Docs:
                     if re.match(r"^(https?://|mailto:|tel:)", url):
                         continue
 
-                    # Skip LLM.txt references
-                    if url.startswith("/LLM.txt"):
+                    # Skip llms.txt references
+                    if url.startswith("/llms.txt"):
                         continue
 
                     # Resolve relative URLs against the page's own URL
