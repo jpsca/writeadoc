@@ -6,14 +6,13 @@ icon: icons/table.svg
 To add a table, use three or more hyphens (`---`) to create each column’s header, and use pipes (`|`) to separate each column. You can also add a pipe at either end of the row, but it is not necessary.
 
 ::: div example
-```md
 
+```md
 Method      | Description    
 ----------- | ---------------
 `GET`       | Fetch resource 
 `PUT`       | Update resource
 `DELETE`    | Delete resource
-
 ```
 
 Method      | Description    
@@ -21,6 +20,27 @@ Method      | Description
 `GET`       | Fetch resource 
 `PUT`       | Update resource
 `DELETE`    | Delete resource
+:::
+
+or
+
+::: div example
+
+```md
+| Option       | Default               |
+|--------------|-----------------------|
+| `database`   | (required)            |
+| `expires_in` | `172800` (2 days)     |
+| `serializer` | `None`                |
+| `timeout`    | `5`                   |
+```
+
+| Option       | Default               |
+|--------------|-----------------------|
+| `database`   | (required)            |
+| `expires_in` | `172800` (2 days)     |
+| `serializer` | `None`                |
+| `timeout`    | `5`                   |
 :::
 
 You don't have to make each cell the same width, but it looks clearer if you do.

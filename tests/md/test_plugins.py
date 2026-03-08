@@ -30,7 +30,51 @@ content in paragraph with footnote[^1] markup.
 </section>
 """),
 
-    (  # tables
+    (  # simple table
+        """
+Left Header   | Right Header
+------------- | -------------
+Content Cell  | Content Cell
+""",
+        """<table>
+<thead>
+<tr>
+  <th>Left Header</th>
+  <th>Right Header</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Content Cell</td>
+  <td>Content Cell</td>
+</tr>
+</tbody>
+</table>
+"""),
+
+    (  # full table
+        """
+| Left Header   | Right Header  |
+|---------------|---------------|
+| Content Cell  | Content Cell  |
+""",
+        """<table>
+<thead>
+<tr>
+  <th>Left Header</th>
+  <th>Right Header</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Content Cell</td>
+  <td>Content Cell</td>
+</tr>
+</tbody>
+</table>
+"""),
+
+    (  # table align
         """
 | Left Header  |  Center Header  | Right Header  |
 | :----------- | :-------------: | ------------: |

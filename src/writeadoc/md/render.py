@@ -26,12 +26,13 @@ from .tab import Tab
 md = mistune.Markdown(
     HTMLRenderer(escape=False),
     plugins=[
+        # Built-in plugins
         abbr,
         def_list,
         footnotes,
         table,
         task_lists,
-        #
+        # Custom plugins
         mdjx,
         block_attrs,
         inline_attrs,
@@ -40,11 +41,11 @@ md = mistune.Markdown(
         strikethrough,
         subscript,
         superscript,
-        # md_in_html, ???
         BlockDirective([
+            # Built-in directives
             Include(),
             TableOfContents(),
-            #
+            # Custom directives
             Admonition(),
             Container(),
             Figure(),
