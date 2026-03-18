@@ -105,7 +105,7 @@ class Docs:
             self.strings = strings_data.get(self.site.lang, {})
         else:
             self.strings = {}
-        self.catalog.add_folder(self.views_dir, preload=False)
+        self.catalog.add_folder(self.views_dir)
 
     def check_catalog(self):
         print("\nValidating views...")
