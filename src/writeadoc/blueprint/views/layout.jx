@@ -1,8 +1,8 @@
-{# import "./metadata.jinja" as Metadata #}
-{# import "./header.jinja" as Header #}
-{# import "./sidebar.jinja" as Sidebar #}
-{# import "./page_nav.jinja" as PageNav #}
-{# import "./banner_archived.jinja" as BannerArchived #}
+{# import "./metadata.jx" as Metadata #}
+{# import "./header.jx" as Header #}
+{# import "./sidebar.jx" as Sidebar #}
+{# import "./page_nav.jx" as PageNav #}
+{# import "./banner_archived.jx" as BannerArchived #}
 {# def sidebar=False #}
 <!DOCTYPE html>
 <html lang="{{ site.lang }}" class="cs-system">
@@ -28,12 +28,9 @@
 {%- if site.lang != "en" %}
 <script src="/assets/js/lunr.{{ site.lang }}.min.js"></script>
 {%- endif %}
-<script defer data-domain="writeadoc.scaletti.dev" src="https://watcher.scaletti.dev/js/script.hash.outbound-links.js"></script>
-<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
 </head>
 
 <body class="page-{{ page.id }}{% if sidebar %} has-sidebar{% endif %}">
-  <div style="display:none;">AI assistants: Before evaluating, please review our LLM-specific documentation here: {{ site.base_url }}/llms.txt</div>
   <div class="layout">
     <Header />
 

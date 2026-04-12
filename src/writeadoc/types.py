@@ -146,7 +146,7 @@ class PageData:
 
     @property
     def view(self) -> str:
-        return self.meta.get("view", "page.jinja")
+        return self.meta.get("view", "page.jx")
 
     def __repr__(self) -> str:
         return f"<Page {self.url}>"

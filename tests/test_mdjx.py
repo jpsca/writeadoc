@@ -3,7 +3,7 @@ from writeadoc import Docs
 
 def test_render_components(tmp_root):
     (tmp_root / "comp").mkdir()
-    (tmp_root / "comp" / "test.jinja").write_text("""
+    (tmp_root / "comp" / "test.jx").write_text("""
 <h2 {{ attrs.render() }}>{{ content }}</h2>
 """)
 
@@ -11,7 +11,7 @@ def test_render_components(tmp_root):
 ---
 title: Test Page
 imports:
-  "Test": "test.jinja"
+  "Test": "test.jx"
 ---
 <Test>This **is** a test</Test>
 
@@ -34,13 +34,13 @@ imports:
 
 def test_render_markdown_inline(tmp_root):
     (tmp_root / "comp").mkdir()
-    (tmp_root / "comp" / "test.jinja").write_text("<span {{ attrs.render() }}>{{ content }}</span>")
+    (tmp_root / "comp" / "test.jx").write_text("<span {{ attrs.render() }}>{{ content }}</span>")
 
     (tmp_root / "content" / "test.md").write_text("""
 ---
 title: Test Page
 imports:
-  "Test": "test.jinja"
+  "Test": "test.jx"
 ---
 Lorem <Test class="hi">This **is** a test</Test> Ipsum
 """.strip())
@@ -60,13 +60,13 @@ Lorem <Test class="hi">This **is** a test</Test> Ipsum
 
 def test_self_closing_components(tmp_root):
     (tmp_root / "comp").mkdir()
-    (tmp_root / "comp" / "test.jinja").write_text("<h2 {{ attrs.render() }}>Hello</h2>")
+    (tmp_root / "comp" / "test.jx").write_text("<h2 {{ attrs.render() }}>Hello</h2>")
 
     (tmp_root / "content" / "test.md").write_text("""
 ---
 title: Test Page
 imports:
-  "Test": "test.jinja"
+  "Test": "test.jx"
 ---
 
 <Test class="hi" />
@@ -87,13 +87,13 @@ imports:
 
 def test_tags_inside_code(tmp_root):
     (tmp_root / "comp").mkdir()
-    (tmp_root / "comp" / "test.jinja").write_text("<h2>{{ content }}</h2>")
+    (tmp_root / "comp" / "test.jx").write_text("<h2>{{ content }}</h2>")
 
     (tmp_root / "content" / "test.md").write_text("""
 ---
 title: Test Page
 imports:
-  "Test": "test.jinja"
+  "Test": "test.jx"
 ---
 <Test>This **is** a test</Test>
 
@@ -121,13 +121,13 @@ imports:
 def test_gt_in_attribute_value(tmp_root):
     """Test that > characters inside quoted attribute values are handled correctly."""
     (tmp_root / "comp").mkdir()
-    (tmp_root / "comp" / "test.jinja").write_text("<div {{ attrs.render() }}>{{ content }}</div>")
+    (tmp_root / "comp" / "test.jx").write_text("<div {{ attrs.render() }}>{{ content }}</div>")
 
     (tmp_root / "content" / "test.md").write_text("""
 ---
 title: Test Page
 imports:
-  "Test": "test.jinja"
+  "Test": "test.jx"
 ---
 <Test data-expr="a > b">Content</Test>
 
@@ -150,13 +150,13 @@ imports:
 
 def test_ignore_jinja_expr(tmp_root):
     (tmp_root / "comp").mkdir()
-    (tmp_root / "comp" / "test.jinja").write_text("<h2>{{ content }}</h2>")
+    (tmp_root / "comp" / "test.jx").write_text("<h2>{{ content }}</h2>")
 
     (tmp_root / "content" / "test.md").write_text("""
 ---
 title: Test Page
 imports:
-  "Test": "test.jinja"
+  "Test": "test.jx"
 ---
 <Test>This **is** a test</Test>
 

@@ -9,8 +9,8 @@ from writeadoc.types import PageData
 @pytest.fixture
 def docs(tmp_root):
     """Create a minimal Docs instance for testing."""
-    (tmp_root / "views" / "index.jinja").write_text("<h1>Home</h1>")
-    (tmp_root / "views" / "search.jinja").write_text("<h1>Search</h1>")
+    (tmp_root / "views" / "index.jx").write_text("<h1>Home</h1>")
+    (tmp_root / "views" / "search.jx").write_text("<h1>Search</h1>")
     return Docs(
         str(tmp_root),
         pages=[],
@@ -262,7 +262,7 @@ class TestValidateLinks:
         """Pages with no source (template-only) should be skipped."""
         page = PageData(
             url="/",
-            meta={"id": "index", "title": "Home", "view": "index.jinja"},
+            meta={"id": "index", "title": "Home", "view": "index.jx"},
         )
         docs.site.pages = [page]
 

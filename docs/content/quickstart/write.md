@@ -5,7 +5,7 @@ title: Write
 Success! You are now ready to start writing.
 
 The main content of your page is written in Markdown.
-WriteADoc transforms your Markdown into HTML code and uses the `views/page.jinja` view to generate the final HTML file.
+WriteADoc transforms your Markdown into HTML code and uses the `views/page.jx` view to generate the final HTML file.
 It also does other things, like extracting the page metadata and processing the text to build a searchable index.
 
 It uses common Markdown syntax with many popular extensions. You can read about all the supported syntax in the [Markdown section](/docs/markdown).

@@ -110,7 +110,7 @@ class ChangeHandler(FileSystemEventHandler):
             return
 
         # Check for file changes in current dir or non-hidden subfolders
-        if rel_path.endswith((".py", ".jinja", ".md")) and not any(
+        if rel_path.endswith((".py", ".jx", ".md")) and not any(
             part.startswith(".") for part in rel_path.split(os.sep)
         ):
             print(f"File changed ({event.event_type}):", rel_path)

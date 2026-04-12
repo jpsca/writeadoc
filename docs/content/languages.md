@@ -142,13 +142,13 @@ in each language instance.
 
 Finally, you need to enable the language selector.
 
-Go to the file `views/language_selector.jinja` and remove
+Go to the file `views/language_selector.jx` and remove
 the `{#` at the beginning and the `#}` at the end, so the selector appears in your documentation.
 
 In the same file, add your languages to the list using the keys in the `variants` dictionary from the last step,
 as URL prefixes:
 
-```html+jinja {title="views/language_selector.jinja" hl_lines="5 7"}
+```html+jinja {title="views/language_selector.jx" hl_lines="5 7"}
 <div class="language variant-popover">
     <button type="button" tabindex="0">...</button>
     <div class="popover" role="menu">

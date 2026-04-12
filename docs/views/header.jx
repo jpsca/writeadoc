@@ -1,23 +1,24 @@
-{# import "./version_selector.jinja" as VersionSelector #}
-{# import "./language_selector.jinja" as LanguageSelector #}
-{# import "./color_scheme.jinja" as ColorScheme #}
+{# import "./version_selector.jx" as VersionSelector #}
+{# import "./language_selector.jx" as LanguageSelector #}
+{# import "./color_scheme.jx" as ColorScheme #}
 
 <header class="header">
 	<nav class="wrapper">
 		<a class="header__brand" href="/" aria-label="{{ site.name }}">
-			{# <img src="/assets/images/logo.svg" height="42" alt="{{ site.name }}" /> #}
-			<span>{{ site.name }}</span>
+			<img src="/assets/images/logo.svg" height="42" alt="{{ site.name }}" />
 		</a>
 		<div class="header__links">
 			<a href="/docs/">
 				<span>{{ _('DOCUMENTATION') }}</span>
 			</a>
 			<a href="{{ site.source_code }}" target="_blank" rel="noopener">
+				{{ _insert_asset("icons/github.svg") }}
 				<span>{{ _('SOURCE_CODE') }}</span>
 			</a>
-			{#<a href="#" target="_blank" rel="noopener">
+			<a href="https://discord.gg/aWVP3F4abD" target="_blank" rel="noopener">
+				{{ _insert_asset("icons/discord.svg") }}
 				<span>{{ _('HELP') }}</span>
-			</a>#}
+			</a>
 		</div>
 
 		<VersionSelector />

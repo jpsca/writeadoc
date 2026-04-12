@@ -199,5 +199,5 @@ The home page is special for several reasons:
 
 1. You don't include this file in your `pages` list.
 2. This file **must** be named `index.md` and be directly inside the `content` folder, not in a subfolder.
-3. Unlike other pages, which use the `views/page.jinja` view, the home page uses the `views/index.jinja` view.
-4. You don't even *need* an `index.md` file! If you delete it, the `views/index.jinja` view will be rendered as-is.
+3. Unlike other pages, which use the `views/page.jx` view, the home page uses the `views/index.jx` view.
+4. You don't even *need* an `index.md` file! If you delete it, the `views/index.jx` view will be rendered as-is.

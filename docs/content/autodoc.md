@@ -109,7 +109,7 @@ For optimal results:
 
 ## Customizing the Output
 
-The extracted information is rendered using the `api.jinja` view, recursively. There, you can see it receives a `ds` argument with these fields:
+The extracted information is rendered using the `api.jx` view, recursively. There, you can see it receives a `ds` argument with these fields:
 
 - `name`: The name of the documented element
 - `symbol`: Type of the element (e.g., "class", "function", "method")

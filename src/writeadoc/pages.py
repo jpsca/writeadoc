@@ -144,8 +144,8 @@ class PagesProcessor:
         if self.docs.skip_home:
             return None
 
-        if not (self.docs.views_dir / "index.jinja").exists():
-            logger.warning("No index.jinja view found.")
+        if not (self.docs.views_dir / "index.jx").exists():
+            logger.warning("No index.jx view found.")
             return None
 
         outpath = self.docs.build_dir / self.docs.prefix / "index.html"
@@ -158,7 +158,7 @@ class PagesProcessor:
             html, state = self.render_markdown(source, meta, filepath=md_index)
             meta.setdefault("id", "index")
             meta.setdefault("title", self.docs.site.name)
-            meta.setdefault("view", "index.jinja")
+            meta.setdefault("view", "index.jx")
 
             return PageData(
                 url=url,
@@ -175,7 +175,7 @@ class PagesProcessor:
             meta={
                 "id": "index",
                 "title": self.docs.site.name,
-                "view": "index.jinja",
+                "view": "index.jx",
             },
         )
 
@@ -272,7 +272,7 @@ class PagesProcessor:
         source, meta = self.read_file(filepath)
 
         def _render(**globals: t.Any) -> str:
-            return self.docs.catalog.render("autodoc.md.jinja", **globals)
+            return self.docs.catalog.render("autodoc.md.jx", **globals)
 
         source = render_autodoc(source.strip(), render=_render)
         try:

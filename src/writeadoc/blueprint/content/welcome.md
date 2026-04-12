@@ -3,7 +3,7 @@ title: Welcome
 description: A page description. It overrides the default description.
 ---
 
-This is an example of a regular page. It uses the `page.jinja` view.
+This is an example of a regular page. It uses the `page.jx` view.
 
 ## Header 2
 

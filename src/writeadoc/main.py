@@ -267,8 +267,8 @@ class Docs:
         self.log(outpath)
 
     def _render_search_page(self) -> None:
-        if not (self.views_dir / "search.jinja").exists():
-            logger.warning("No search.jinja view found.")
+        if not (self.views_dir / "search.jx").exists():
+            logger.warning("No search.jx view found.")
             return None
 
         outpath = self.build_dir / self.prefix / "search" / "index.html"
@@ -280,7 +280,7 @@ class Docs:
             meta={
                 "id": "search",
                 "title": "Search",
-                "view": "search.jinja",
+                "view": "search.jx",
             },
         )
         search_data = {}
@@ -330,8 +330,8 @@ class Docs:
             outpath = self.build_dir / self.prefix / file
             outpath.parent.mkdir(parents=True, exist_ok=True)
             try:
-                body = self.catalog.render(f"{file}.jinja")
-            except jx.ImportError:
+                body = self.catalog.render(f"{file}.jx")
+            except jx.ComponentNotFoundError:
                 logger.info("No view found for %s, skipping...", file)
                 continue
             outpath.write_text(body, encoding="utf-8")
@@ -341,7 +341,7 @@ class Docs:
         outpath = self.build_dir / self.prefix / "llms.txt"
         outpath.parent.mkdir(parents=True, exist_ok=True)
         try:
-            body = self.catalog.render("llm.jinja")
+            body = self.catalog.render("llm.jx")
         except jx.JxException as err:
             raise RuntimeError("Error rendering llms.txt") from err
         outpath.write_text(body, encoding="utf-8")

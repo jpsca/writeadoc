@@ -51,12 +51,12 @@ If you haven't removed it from your view, a banner will be added to every page a
 
 ### 3. Enable the version selector
 
-Go to the file `views/version_selector.jinja` and remove
+Go to the file `views/version_selector.jx` and remove
 the `{#` at the beginning and the `#}` at the end, so the selector appears in your documentation.
 
-Add a link to the list of options in the version selector at `views/version_selector.jinja` and rebuild your current documentation.
+Add a link to the list of options in the version selector at `views/version_selector.jx` and rebuild your current documentation.
 
-```html+jinja {title="views/version_selector.jinja" hl_lines="7 8"}
+```html+jinja {title="views/version_selector.jx" hl_lines="7 8"}
 <div class="version variant-popover">
     <button type="button" popovertarget="version-selector" tabindex="0">
         {{ site.version }}
@@ -201,12 +201,12 @@ variants={
 
 ### 4. Enable the version selector
 
-Go to the file `views/version_selector.jinja` and remove
+Go to the file `views/version_selector.jx` and remove
 the `{#` at the beginning and the `#}` at the end, so the selector appears in your documentation.
 
-Add a link to the list of options in the version selector at `views/version_selector.jinja` and rebuild your current documentation.
+Add a link to the list of options in the version selector at `views/version_selector.jx` and rebuild your current documentation.
 
-```html+jinja {title="views/version_selector.jinja" hl_lines="7 8"}
+```html+jinja {title="views/version_selector.jx" hl_lines="7 8"}
 <div class="version variant-popover">
     <button type="button" popovertarget="version-selector" tabindex="0">
         {{ site.version }}
