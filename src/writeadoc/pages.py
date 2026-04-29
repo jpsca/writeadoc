@@ -152,7 +152,7 @@ class PagesProcessor:
         outpath.parent.mkdir(parents=True, exist_ok=True)
         url = f"/{self.docs.prefix}/" if self.docs.prefix else "/"
 
-        md_index = self.docs.content_dir / self.docs.prefix / "index.md"
+        md_index = self.docs.content_dir / "index.md"
         if md_index.exists():
             source, meta = self.read_file(md_index)
             html, state = self.render_markdown(source, meta, filepath=md_index)

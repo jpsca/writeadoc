@@ -374,6 +374,10 @@ class Docs:
         page_urls = {page.url for page in self.site.pages}
         has_warnings = False
 
+        prefixed_folders: tuple[str, ...] = ()
+        if self.prefix:
+            prefixed_folders = ("docs", "assets", "search") if self.is_main else ("docs", "search")
+
         def warn(filename: str, lineno: int, msg: str) -> None:
             nonlocal has_warnings
             if not has_warnings:
@@ -385,7 +389,7 @@ class Docs:
             if not page.source or not page.filepath:
                 continue
 
-            filename = str(page.filepath.relative_to(self.content_dir))
+            filename = str(page.filepath.relative_to(self.root_dir / "content"))
             page_ids = set(rx_id.findall(page.content)) if page.content else set()
 
             for lineno, line in enumerate(page.source.splitlines(), start=1):
@@ -416,6 +420,12 @@ class Docs:
                     if not url.startswith("/"):
                         base = page.url.rstrip("/")
                         url = f"{base}/{url}"
+                    elif prefixed_folders and not url.startswith(f"/{self.prefix}/"):
+                        # Markdown sources reference unprefixed paths; mirror _add_prefix_to_urls
+                        for folder in prefixed_folders:
+                            if url == f"/{folder}" or url.startswith(f"/{folder}/"):
+                                url = f"/{self.prefix}{url}"
+                                break
 
                     # Normalize: ensure trailing slash for page-like URLs (no extension)
                     if "." not in url.split("/")[-1] and not url.endswith("/"):
@@ -426,8 +436,11 @@ class Docs:
                         continue
 
                     # Check asset links against the assets source folder
-                    if url.startswith("/assets/"):
-                        asset_rel = url[len("/assets/"):]
+                    asset_url = url
+                    if self.prefix and asset_url.startswith(f"/{self.prefix}/assets/"):
+                        asset_url = asset_url[len(f"/{self.prefix}"):]
+                    if asset_url.startswith("/assets/"):
+                        asset_rel = asset_url[len("/assets/"):]
                         if (self.assets_dir / asset_rel).exists():
                             continue
                         warn(filename, lineno, f"broken link: {raw_url}")
