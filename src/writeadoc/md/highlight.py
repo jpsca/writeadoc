@@ -83,7 +83,7 @@ def parse_attrs(attrs_str: str) -> dict[str, t.Any]:
         "hl_lines": [],
         "linenostart": 1,
         "linenostep": 1,
-        "filename": None,
+        "filename": "",
     }
 
     # Surronding braces are optional
