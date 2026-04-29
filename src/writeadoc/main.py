@@ -5,6 +5,7 @@ import re
 import shutil
 import signal
 import typing as t
+from collections.abc import Sequence
 from multiprocessing import Process
 from pathlib import Path
 from tempfile import mkdtemp
@@ -21,7 +22,7 @@ from .utils import get_random_messages, logger
 
 
 class Docs:
-    pages: list[str | dict[str, t.Any]]
+    pages: Sequence[str | dict[str, t.Any]]
     site: SiteData
     prefix: str = ""
     variants: "dict[str, Docs]"
@@ -44,7 +45,7 @@ class Docs:
         root: str,
         /,
         *,
-        pages: list[str | dict[str, t.Any]],
+        pages: Sequence[str | dict[str, t.Any]],
         site: dict[str, t.Any] | None = None,
         prefix: str = "",
         variants: "dict[str, Docs] | None" = None,
