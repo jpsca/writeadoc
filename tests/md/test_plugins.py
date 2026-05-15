@@ -36,7 +36,7 @@ Left Header   | Right Header
 ------------- | -------------
 Content Cell  | Content Cell
 """,
-        """<table>
+        """<div class="table-container"><table>
 <thead>
 <tr>
   <th>Left Header</th>
@@ -49,7 +49,7 @@ Content Cell  | Content Cell
   <td>Content Cell</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 """),
 
     (  # full table
@@ -58,7 +58,7 @@ Content Cell  | Content Cell
 |---------------|---------------|
 | Content Cell  | Content Cell  |
 """,
-        """<table>
+        """<div class="table-container"><table>
 <thead>
 <tr>
   <th>Left Header</th>
@@ -71,7 +71,7 @@ Content Cell  | Content Cell
   <td>Content Cell</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 """),
 
     (  # table align
@@ -80,7 +80,7 @@ Content Cell  | Content Cell
 | :----------- | :-------------: | ------------: |
 | Content Cell |  Content Cell   | Content Cell  |
 """,
-        """<table>
+        """<div class="table-container"><table>
 <thead>
 <tr>
   <th style="text-align:left">Left Header</th>
@@ -95,7 +95,7 @@ Content Cell  | Content Cell
   <td style="text-align:right">Content Cell</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 """),
 
     (  # task lists

@@ -311,7 +311,7 @@ class PagesProcessor:
 
     def render_markdown(self, source: str, meta: TMetadata, filepath: Path) -> tuple[str, MutableMapping]:
         source = source.strip()
-        html, state = render_markdown(source, __file__=str(filepath))
+        html, state = render_markdown(source, meta=meta, __file__=str(filepath))
 
         if imports := meta.get("imports"):
             if not isinstance(imports, dict):

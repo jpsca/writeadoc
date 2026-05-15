@@ -18,6 +18,7 @@ class Admonition(DirectivePlugin):
         "tip",
         "warning",
         "error",
+        "wip",
         "new",
     }
 

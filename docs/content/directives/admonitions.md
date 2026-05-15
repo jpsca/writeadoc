@@ -55,7 +55,7 @@ This is an admonition box
 
 ## Supported types
 
-WriteADoc includes these default types: `note`, `tip`, `warning`, `error`, and `new`.
+WriteADoc includes these default types: `note`, `tip`, `warning`, `error`, `wip`, and `new`.
 
 ::: note
 Lorem ipsum dolor sit amet, consectetur
@@ -83,6 +83,10 @@ Lorem ipsum dolor sit amet, consectetur
 adipiscing elit. Nulla et
 euismod nulla. Curabitur feugiat, tortor non consequat finibus, justo
 purus auctor massa, nec semper lorem quam in massa.
+:::
+
+::: wip
+Lorem ipsum dolor sit amet
 :::
 
 ::: new

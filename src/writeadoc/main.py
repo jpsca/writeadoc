@@ -324,14 +324,26 @@ class Docs:
 
     def _render_extra(self) -> None:
         for file in (
+            "not_found.html",
             "sitemap.xml",
             "robots.txt",
             "humans.txt"
         ):
+            url = f"/{self.prefix}/{file}" if self.prefix else f"/{file}"
+            page = PageData(
+                url=url,
+                meta={
+                    "id": file.split(".")[0],
+                    "title": file.replace("_", " ").title(),
+                },
+            )
             outpath = self.build_dir / self.prefix / file
             outpath.parent.mkdir(parents=True, exist_ok=True)
             try:
-                body = self.catalog.render(f"{file}.jx")
+                body = self.catalog.render(
+                    f"{file}.jx",
+                    globals={"page": page}
+                )
             except jx.ComponentNotFoundError:
                 logger.info("No view found for %s, skipping...", file)
                 continue

@@ -1,6 +1,4 @@
-import re
 import typing as t
-import unicodedata
 from collections.abc import MutableMapping
 
 import mistune
@@ -8,9 +6,7 @@ from mistune.directives import Include, TableOfContents
 from mistune.plugins.abbr import abbr
 from mistune.plugins.def_list import def_list
 from mistune.plugins.footnotes import footnotes
-from mistune.plugins.table import table
 from mistune.plugins.task_lists import task_lists
-from mistune.toc import add_toc_hook
 
 from .admonition import Admonition
 from .attrs import block_attrs, inline_attrs
@@ -21,6 +17,8 @@ from .formatting import insert, mark, strikethrough, subscript, superscript
 from .html_renderer import HTMLRenderer
 from .mdjx import mdjx
 from .tab import Tab
+from .table import table
+from .toc import add_toc_hook
 
 
 md = mistune.Markdown(
@@ -54,28 +52,7 @@ md = mistune.Markdown(
     ]
 )
 
-
-def slugify(value: str, separator: str = "-", unicode: bool = True) -> str:
-    """Slugify a string, to make it URL friendly."""
-    if not unicode:
-        # Replace Extended Latin characters with ASCII, i.e. `žlutý` => `zluty`
-        value = unicodedata.normalize("NFKD", value)
-        value = value.encode("ascii", "ignore").decode("ascii")
-    value = re.sub(r"[^\w\s-]", "", value).strip().lower()
-    return re.sub(r"[{}\s]+".format(separator), separator, value)
-
-
-RX_ATTRS_IN_HEADER = re.compile(r"(?<!/)\{([^\n\r}]*)\}")
-
-
-def heading_id(token: dict[str, t.Any], index: int) -> str:
-    if "id" in token.get("attrs", {}):
-        return token["attrs"]["id"]
-    value = RX_ATTRS_IN_HEADER.sub("", token["text"]).strip()
-    return slugify(value)
-
-
-add_toc_hook(md, heading_id=heading_id)
+add_toc_hook(md)
 
 
 def render_markdown(source: str, **kwargs: t.Any) -> tuple[str, MutableMapping]:
