@@ -95,9 +95,9 @@ def number_headings(tokens: list[dict[str, t.Any]]) -> None:
         counters[depth - 1] += 1
 
         if depth == 1:
-            prefix = f"{counters[0]}. "
+            prefix = f'<span class="num">{counters[0]}.</span> '
         else:
-            prefix = ".".join(str(n) for n in counters) + " "
+            prefix = f'<span class="num">{".".join(str(n) for n in counters)}</span> '
         tok["text"] = prefix + tok["text"]
 
 
