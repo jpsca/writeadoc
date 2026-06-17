@@ -6,6 +6,7 @@ import shutil
 import signal
 import typing as t
 from collections.abc import Sequence
+from functools import partial
 from multiprocessing import Process
 from pathlib import Path
 from tempfile import mkdtemp
@@ -150,7 +151,7 @@ class Docs:
         for variant in self.variants.values():
             variant.build_dir = self.build_dir
 
-        self.build()  # Initial build
+        self.build(devmode=True)  # Initial build
         print()
         p = Process(
             target=utils.start_server,
@@ -158,7 +159,7 @@ class Docs:
             daemon=True
         )
         p.start()
-        utils.start_observer(self.root_dir, self.build)
+        utils.start_observer(self.root_dir, partial(self.build, devmode=True))
 
         def shutdown(*args):
             p.terminate()

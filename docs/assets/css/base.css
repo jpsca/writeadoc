@@ -929,6 +929,10 @@ html.cs-dark .highlight {
   opacity: 0.8;
 }
 
+.page__content :is(h1,h2,h3,h4,h5,h6) .num {
+  font-weight: 400;
+}
+
 .page__content .text-center {
   text-align: center;
 }
