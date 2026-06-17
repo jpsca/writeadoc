@@ -134,11 +134,17 @@ class Docs:
             default=False,
             help="Generate a `llms.txt` file with all the markdown content",
         )
+        build_parser.add_argument(
+            "--boring",
+            action="store_true",
+            default=False,
+            help="Remove the random messages from the log output"
+        )
 
         args = parser.parse_args()
 
         if args.command == "build":
-            self.cli_build(archive=args.archive, llm=args.llm)
+            self.cli_build(archive=args.archive, llm=args.llm, boring=args.boring)
         elif args.command in (None, "run"):
             self.cli_run()
         else:
@@ -169,7 +175,7 @@ class Docs:
         signal.signal(signal.SIGINT, shutdown)
         signal.signal(signal.SIGTERM, shutdown)
 
-    def cli_build(self, *, archive: bool, llm: bool = False) -> None:
+    def cli_build(self, *, archive: bool, llm: bool = False, boring: bool = False) -> None:
         """Build the documentation for deployment.
         """
         if archive:
@@ -183,23 +189,25 @@ class Docs:
             variant.build_dir = self.build_dir
             variant.prefix = f"{self.prefix}/{prefix}" if self.prefix else prefix
 
-        self.build(devmode=False, llm=llm)
+        self.build(devmode=False, llm=llm, boring=boring)
         print("\nDocumentation built successfully.")
         if archive:
             print(f"Archived documentation is available in the `archive/{self.site.version}` folder.")
         else:
             print("Documentation is available in the `build` folder.")
 
-    def build(self, *, devmode: bool = True, llm: bool = False) -> None:
-        messages = get_random_messages(3)
-        print(f"{messages[0]}...")
+    def build(self, *, devmode: bool = True, llm: bool = False, boring: bool = False) -> None:
+        if not boring:
+            messages = get_random_messages(3)
+            print(f"{messages[0]}...")
 
         for variant in self.variants.values():
             variant.build(devmode=devmode, llm=llm)
 
         print("Processing pages...")
         nav, pages = self.pages_processor.run(self.pages)
-        print(f"{messages[1]}...")
+        if not boring:
+            print(f"{messages[1]}...")
 
         self.site.nav = nav
         self.site.pages = pages
@@ -210,7 +218,8 @@ class Docs:
         print("Rendering pages...")
         for page in pages:
             self._render_page(page)
-        print(f"{messages[2]}...")
+        if not boring:
+            print(f"{messages[2]}...")
 
         if llm:
             print("Building llms.txt...")
