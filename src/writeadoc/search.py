@@ -107,6 +107,23 @@ HTML_FRAGMENT_SEP = (
 
 RX_MULTIPLE_SPACES = re.compile(r"\s+")
 
+# Compiled once. `[^>]*` (not `.*?`) matches attributes without backtracking,
+# and `\b` keeps short tag names from matching longer ones (e.g. `a` vs `article`).
+RX_REMOVE_SELF_CLOSING = re.compile(
+    rf"<(?:{'|'.join(REMOVE_SELF_CLOSING_TAGS)})\b[^>]*/?>",
+    flags=re.IGNORECASE,
+)
+RX_REMOVE_TAGS_AND_CONTENTS = re.compile(
+    rf"<({'|'.join(REMOVE_TAGS_AND_CONTENTS)})\b[^>]*>.*?</\1\s*>",
+    flags=re.DOTALL | re.IGNORECASE,
+)
+# Unwrap tags by deleting the open/close markers separately. Pairing them with
+# `<tag>(.*?)</tag>` backtracks catastrophically on deeply nested tags.
+RX_REMOVE_TAGS_KEEP_CONTENT = re.compile(
+    rf"</?(?:{'|'.join(REMOVE_TAGS_KEEP_CONTENT)})\b[^>]*>",
+    flags=re.IGNORECASE,
+)
+
 
 def prepare_html(html: str) -> str:
     """
@@ -121,18 +138,10 @@ def prepare_html(html: str) -> str:
     if not html:
         return ""
 
-    # Remove self-closing tags
-    for tag in REMOVE_SELF_CLOSING_TAGS:
-        html = re.sub(rf"<{tag}.*?/>", "", html, flags=re.DOTALL)
-    # Remove tags and their contents
-    for tag in REMOVE_TAGS_AND_CONTENTS:
-        html = re.sub(rf"<{tag}.*?>.*?</{tag}>", "", html, flags=re.DOTALL)
-    # Remove tags but keep their contents
-    for tag in REMOVE_TAGS_KEEP_CONTENT:
-        html = re.sub(rf"<{tag}.*?>(.*?)</{tag}>", r"\1", html, flags=re.DOTALL)
-
-    html = html.strip()
-    return html
+    html = RX_REMOVE_SELF_CLOSING.sub("", html)
+    html = RX_REMOVE_TAGS_AND_CONTENTS.sub("", html)
+    html = RX_REMOVE_TAGS_KEEP_CONTENT.sub("", html)
+    return html.strip()
 
 
 class TextExtractor(HTMLParser):

@@ -66,3 +66,40 @@ def test_extractor():
             "url": "/docs/foobar/test-page/#s-encapsulated",
         },
     }
+
+
+def test_extractor_nested_tags():
+    """Deeply nested unwrap-tags (as produced by autodoc + Pygments) must not
+    corrupt `<pre>` blocks, and removed tags must drop their contents.
+    """
+    html = """
+<h2 id="api">API</h2>
+<div class="autodoc"><div class="member"><div class="signature">
+<pre><span class="kn">import</span> <span class="nn">peewee</span>
+<span class="k">class</span> <span class="nc">Post</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">pw</span><span class="o">.</span><span class="n">CharField</span><span class="p">()</span></pre>
+</div></div></div>
+<svg viewBox="0 0 10 10"><path d="M0 0"/></svg>
+<script>console.log("drop me");</script>
+<p>Trailing <a href="#x"><code>text</code></a> kept.</p>
+"""
+    page = PageData(
+        content=html,
+        url="/docs/api/",
+        section_title="API",
+        meta={"id": "api", "title": "API"},
+    )
+    result = extract_search_data(page)
+
+    # The code block survives intact (the old paired-regex split it apart).
+    pre_frag = result["/docs/api/#api1"]["content"]
+    assert pre_frag.startswith("<pre>import peewee")
+    assert "class Post(BaseModel):" in pre_frag
+    assert "title = pw.CharField()" in pre_frag
+    assert pre_frag.endswith("</pre>")
+
+    # Stripped-with-contents tags leave no trace; unwrapped tags keep their text.
+    joined = " ".join(frag["content"] for frag in result.values())
+    assert "drop me" not in joined
+    assert "viewBox" not in joined
+    assert "Trailing text kept." in joined
