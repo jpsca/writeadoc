@@ -1,3 +1,4 @@
+import re
 import typing as t
 from collections.abc import MutableMapping, Sequence
 from pathlib import Path
@@ -19,6 +20,11 @@ from .utils import logger
 
 if t.TYPE_CHECKING:
     from .main import Docs
+
+
+_RX_FILL_TAG = re.compile(
+    r"{%-?\s*(?:fill\s+[0-9A-Za-z_.:$-]+|endfill)\s*-?%}"
+)
 
 
 class PagesProcessor:
@@ -323,13 +329,110 @@ class PagesProcessor:
     def render_mdjx(self, source: str, imports: dict[str, str]) -> str:
         OPEN_REPL = "\u0002"
         CLOSE_REPL = "\u0003"
+        source, fill_tags = self._protect_mdjx_fill_tags(source, imports)
         source = source.replace("{", OPEN_REPL).replace("}", CLOSE_REPL)
+        for token, tag in fill_tags:
+            source = source.replace(token, tag)
         jx_imports = "\n".join(
             f'{{# import "{path}" as {name} #}}' for name, path in imports.items()
         )
         html = self.docs.catalog.render_string(f"{jx_imports}\n{source}")
         html = str(html).replace(OPEN_REPL, "{").replace(CLOSE_REPL, "}")
         return html
+
+    def _protect_mdjx_fill_tags(
+        self,
+        source: str,
+        imports: dict[str, str],
+    ) -> tuple[str, list[tuple[str, str]]]:
+        if "{%" not in source:
+            return source, []
+
+        names = [re.escape(name) for name in imports]
+        if not names:
+            return source, []
+
+        tag_rx = re.compile(rf"<(?P<tag>{'|'.join(names)})(?=\s|/|>)")
+        fill_tags: list[tuple[str, str]] = []
+
+        def protect_fill(match: re.Match[str]) -> str:
+            token = f"\u0004WAD_FILL_{len(fill_tags)}\u0005"
+            fill_tags.append((token, match.group(0)))
+            return token
+
+        result = []
+        pos = 0
+
+        while match := tag_rx.search(source, pos):
+            tag = match.group("tag")
+            tag_end = self._find_tag_end(source, match.end())
+            if tag_end == -1:
+                pos = match.end()
+                continue
+
+            if source[match.start():tag_end].rstrip().endswith("/>"):
+                pos = tag_end
+                continue
+
+            close_start, close_end = self._find_closing_tag(source, tag, tag_end)
+            if close_start == -1:
+                pos = tag_end
+                continue
+
+            result.append(source[pos:tag_end])
+            result.append(_RX_FILL_TAG.sub(protect_fill, source[tag_end:close_start]))
+            result.append(source[close_start:close_end])
+            pos = close_end
+
+        if not result:
+            return source, fill_tags
+
+        result.append(source[pos:])
+        return "".join(result), fill_tags
+
+    def _find_closing_tag(self, source: str, tag: str, pos: int) -> tuple[int, int]:
+        open_rx = re.compile(rf"<{re.escape(tag)}(?=\s|/|>)")
+        close_tag = f"</{tag}>"
+        close_len = len(close_tag)
+        depth = 1
+
+        while depth:
+            next_open = open_rx.search(source, pos)
+            next_close = source.find(close_tag, pos)
+
+            if next_close == -1:
+                return -1, -1
+
+            if next_open and next_open.start() < next_close:
+                tag_end = self._find_tag_end(source, next_open.end())
+                if tag_end == -1:
+                    return -1, -1
+                if not source[next_open.start():tag_end].rstrip().endswith("/>"):
+                    depth += 1
+                pos = tag_end
+                continue
+
+            depth -= 1
+            if depth == 0:
+                return next_close, next_close + close_len
+            pos = next_close + close_len
+
+        return -1, -1
+
+    def _find_tag_end(self, source: str, pos: int) -> int:
+        in_single_quotes = False
+        in_double_quotes = False
+
+        for i in range(pos, len(source)):
+            ch = source[i]
+            if ch == "'" and not in_double_quotes:
+                in_single_quotes = not in_single_quotes
+            elif ch == '"' and not in_single_quotes:
+                in_double_quotes = not in_double_quotes
+            elif ch == ">" and not in_single_quotes and not in_double_quotes:
+                return i + 1
+
+        return -1
 
     def set_prev_next(self) -> None:
         """Set the previous and next references for each page in the

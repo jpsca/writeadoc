@@ -181,3 +181,97 @@ imports:
     result = (tmp_root / "build" / "docs" / "test" / "index.html").read_text()
     print(result)
     assert result == expected
+
+
+def test_render_component_slots(tmp_root):
+    (tmp_root / "comp").mkdir()
+    (tmp_root / "comp" / "button.jx").write_text("""
+<button>
+  <span>{% slot prefix %}{% endslot %}</span>
+  <strong>{{ content }}</strong>
+</button>
+""")
+
+    (tmp_root / "content" / "test.md").write_text("""
+---
+title: Test Page
+imports:
+  "Button": "button.jx"
+---
+<Button>
+{% fill prefix %}
+foobar
+{% endfill %}
+label
+</Button>
+""".strip())
+
+    docs = Docs(tmp_root, pages=["test.md"])
+    docs.catalog.add_folder(tmp_root / "comp")
+    docs.build()
+
+    result = (tmp_root / "build" / "docs" / "test" / "index.html").read_text()
+    print(result)
+    assert "<span>\nfoobar\n</span>" in result
+    assert "<strong>label</strong>" in result
+    assert "{% fill prefix %}" not in result
+
+
+def test_render_component_slots_with_trim_markers(tmp_root):
+    (tmp_root / "comp").mkdir()
+    (tmp_root / "comp" / "button.jx").write_text("""
+<button>
+  <span>{% slot prefix %}{% endslot %}</span>
+  <strong>{{ content }}</strong>
+</button>
+""")
+
+    (tmp_root / "content" / "test.md").write_text("""
+---
+title: Test Page
+imports:
+  "Button": "button.jx"
+---
+<Button>
+{% fill prefix -%}
+foobar
+{%- endfill %}
+label
+</Button>
+""".strip())
+
+    docs = Docs(tmp_root, pages=["test.md"])
+    docs.catalog.add_folder(tmp_root / "comp")
+    docs.build()
+
+    result = (tmp_root / "build" / "docs" / "test" / "index.html").read_text()
+    print(result)
+    assert "<span>foobar</span>" in result
+    assert "<strong>label</strong>" in result
+
+
+def test_fill_outside_component_renders_literally(tmp_root):
+    (tmp_root / "comp").mkdir()
+    (tmp_root / "comp" / "test.jx").write_text("<h2>{{ content }}</h2>")
+
+    (tmp_root / "content" / "test.md").write_text("""
+---
+title: Test Page
+imports:
+  "Test": "test.jx"
+---
+\{% fill prefix %}
+literal
+\{% endfill %}
+
+<Test>ok</Test>
+""".strip())
+
+    docs = Docs(tmp_root, pages=["test.md"])
+    docs.catalog.add_folder(tmp_root / "comp")
+    docs.build()
+
+    result = (tmp_root / "build" / "docs" / "test" / "index.html").read_text()
+    print(result)
+    assert "<p>{% fill prefix %}\nliteral\n{% endfill %}</p>" in result
+    assert "<h2>ok</h2>" in result
