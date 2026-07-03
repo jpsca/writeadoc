@@ -58,3 +58,22 @@ def test_build_with_no_random_messages(mocker, docs):
         call("Processing pages..."),
         call("Rendering pages..."),
     ])
+
+
+def test_archive_build_fingerprints_prefixed_assets(tmp_root):
+    (tmp_root / "assets" / "app.css").write_text("body {}")
+    (tmp_root / "views" / "page.jx").write_text(
+        '<link href="/assets/app.css" rel="stylesheet">{{ page.content or content }}'
+    )
+    (tmp_root / "content" / "test.md").write_text("""
+---
+title: Test Page
+---
+Hello
+""".strip())
+
+    docs = Docs(tmp_root, pages=["test.md"], site={"version": "1.0"})
+    docs.cli_build(archive=True, boring=True)
+
+    result = (tmp_root / "archive" / "1.0" / "docs" / "test" / "index.html").read_text()
+    assert 'href="/1.0/assets/app.css?v=' in result

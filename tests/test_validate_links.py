@@ -230,6 +230,25 @@ class TestValidateLinks:
         output = capsys.readouterr().out
         assert "broken link" not in output
 
+    def test_parent_relative_link_resolved_against_page_url(self, docs, capsys):
+        """Parent relative links should be normalized before validation."""
+        page1 = _make_page(
+            source="See [usage](../usage/)",
+            filepath=docs.content_dir / "start" / "intro.md",
+            url="/docs/start/intro/",
+        )
+        page2 = _make_page(
+            source="Hello",
+            filepath=docs.content_dir / "start" / "usage.md",
+            url="/docs/start/usage/",
+        )
+        docs.site.pages = [page1, page2]
+
+        docs._validate_links()
+
+        output = capsys.readouterr().out
+        assert "broken link" not in output
+
     def test_broken_relative_link(self, docs, capsys):
         """A relative link that doesn't resolve should warn."""
         page = _make_page(

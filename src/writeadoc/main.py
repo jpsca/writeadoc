@@ -1,6 +1,7 @@
 import argparse
 import datetime
 import json
+import posixpath
 import re
 import shutil
 import signal
@@ -442,7 +443,9 @@ class Docs:
                     # Resolve relative URLs against the page's own URL
                     if not url.startswith("/"):
                         base = page.url.rstrip("/")
-                        url = f"{base}/{url}"
+                        url = posixpath.normpath(f"{base}/{url}")
+                        if not url.startswith("/"):
+                            url = f"/{url}"
                     elif prefixed_folders and not url.startswith(f"/{self.prefix}/"):
                         # Markdown sources reference unprefixed paths; mirror _add_prefix_to_urls
                         for folder in prefixed_folders:
@@ -523,12 +526,23 @@ class Docs:
                 print(f"Fingerprinting {old_name} -> {new_name}")
 
         # Update references in HTML files
+        prefixes = ("",)
+        if self.prefix:
+            prefixes = (f"/{self.prefix}", "")
+
         for html_file in (self.build_dir / self.prefix).rglob("*.html"):
             html_content = html_file.read_text()
             for old_name, new_name in fingerprints.items():
-                html_content = (
-                    html_content
-                    .replace(f'href="/assets/{old_name}"', f'href="/assets/{new_name}"')
-                    .replace(f'src="/assets/{old_name}"', f'src="/assets/{new_name}"')
-                )
+                for prefix in prefixes:
+                    html_content = (
+                        html_content
+                        .replace(
+                            f'href="{prefix}/assets/{old_name}"',
+                            f'href="{prefix}/assets/{new_name}"',
+                        )
+                        .replace(
+                            f'src="{prefix}/assets/{old_name}"',
+                            f'src="{prefix}/assets/{new_name}"',
+                        )
+                    )
             html_file.write_text(html_content)

@@ -25,15 +25,26 @@ logger.setLevel(logging.WARNING)
 logger.addHandler(logging.StreamHandler())
 
 META_START = "---"
-META_END = "\n---"
 
 
 def extract_metadata(source: str) -> tuple[str, TMetadata]:
-    if not source.startswith(META_START):
+    lines = source.splitlines(keepends=True)
+    if not lines or lines[0].strip() != META_START:
         return source, {}
 
-    source = source.strip().lstrip("- ")
-    front_matter, source = source.split(META_END, 1)
+    front_matter = ""
+    body = ""
+    for i, line in enumerate(lines[1:], start=1):
+        if line.strip() == META_START:
+            front_matter = "".join(lines[1:i])
+            body = "".join(lines[i + 1:])
+            break
+    else:
+        raise InvalidFrontMatter(
+            truncate(source),
+            "Missing closing front matter delimiter",
+        )
+
     try:
         data = strictyaml.load(front_matter).data
         if isinstance(data, dict):
@@ -41,9 +52,9 @@ def extract_metadata(source: str) -> tuple[str, TMetadata]:
         else:
             meta = {}
     except Exception as err:
-        raise InvalidFrontMatter(truncate(source), *err.args) from err
+        raise InvalidFrontMatter(truncate(body), *err.args) from err
 
-    return source.strip().lstrip("- "), meta
+    return body.strip(), meta
 
 
 def truncate(source: str, limit: int = 400) -> str:
@@ -250,5 +261,4 @@ def render_metadata(meta: TMetadata, **kwargs) -> str:
         return ""
     yaml_content = dict_to_yaml(meta)
     return f"---\n{yaml_content}\n---"
-
 
