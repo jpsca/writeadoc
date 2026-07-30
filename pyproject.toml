@@ -3,7 +3,7 @@ requires = ["setuptools"]
 
 [project]
 name = "writeadoc"
-version = "0.26.0"
+version = "0.27.0"
 description = "Focus on your content and let WriteADoc take care of the rest"
 authors = [
     {name = "Juan Pablo Scaletti", email = "juanpablo@jpscaletti.com"},
@@ -15,7 +15,7 @@ dependencies = [
     "docstring-parser>=0.17.0",
     "hecto>=2.0.1",
     "jinja2>=3.1.6",
-    "jx>=0.11.0",
+    "jx>=0.12.0",
     "mistune>=3.2.0",
     "pygments>=2.19.2",
     "strictyaml>=1.7.3",

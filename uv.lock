@@ -251,14 +251,15 @@ wheels = [
 
 [[package]]
 name = "jx"
-version = "0.11.0"
+version = "0.12.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jinja2" },
+    { name = "writeadoc" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ee/89/2aaff3d5eef733e70c57a492a415df86d16bcff244db9d17a8b80dff7e17/jx-0.11.0.tar.gz", hash = "sha256:811c3b8480086e2986622ab15f81d165dcabb3793de7b4dbb585682e4b8fe848", size = 44814, upload-time = "2026-04-12T18:02:28.772Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f8/56/ed3510cbde70975f8d0b55718e68edc58231f7d93c26dada212a4847d768/jx-0.12.0.tar.gz", hash = "sha256:b34e24e02e2b17faa7cf6298e8dd9b1ea0da619f430b2fa9ebd6c959e7152fe8", size = 45040, upload-time = "2026-07-30T15:58:30.163Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/31/30/ab656b3f91b7e7b22c7bb026b980f5fd25b6226b167ff1105849a0fd24c7/jx-0.11.0-py3-none-any.whl", hash = "sha256:d978f93b56393e5908adfc4e1bcb7ce6ef0452b92be6f9cd0b3f7ce46e765eb1", size = 27813, upload-time = "2026-04-12T18:02:29.881Z" },
+    { url = "https://files.pythonhosted.org/packages/22/10/1ebfc95579fd91a1ca1a6df889758b2ef23a8490ac3f29f862875ad95a92/jx-0.12.0-py3-none-any.whl", hash = "sha256:035b521f87df5424da7e7470d9a83da6637f79340418fc86066285661c8b3d1a", size = 27870, upload-time = "2026-07-30T15:58:28.987Z" },
 ]
 
 [[package]]
@@ -735,7 +736,7 @@ wheels = [
 
 [[package]]
 name = "writeadoc"
-version = "0.26.0"
+version = "0.27.0"
 source = { editable = "." }
 dependencies = [
     { name = "docstring-parser" },
@@ -767,7 +768,7 @@ requires-dist = [
     { name = "docstring-parser", specifier = ">=0.17.0" },
     { name = "hecto", specifier = ">=2.0.1" },
     { name = "jinja2", specifier = ">=3.1.6" },
-    { name = "jx", specifier = ">=0.11.0" },
+    { name = "jx", specifier = ">=0.12.0" },
     { name = "mistune", specifier = ">=3.2.0" },
     { name = "pygments", specifier = ">=2.19.2" },
     { name = "strictyaml", specifier = ">=1.7.3" },
