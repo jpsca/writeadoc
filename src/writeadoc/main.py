@@ -1,7 +1,6 @@
 import argparse
 import datetime
 import json
-import posixpath
 import re
 import shutil
 import signal
@@ -18,6 +17,7 @@ from jx.tools import check_all
 from markupsafe import Markup
 
 from . import utils
+from .links import validate_links
 from .pages import PagesProcessor
 from .types import PageData, SiteData
 from .utils import get_random_messages, logger
@@ -393,99 +393,22 @@ class Docs:
             html_file.write_text(new_content)
 
     def _validate_links(self) -> None:
-        rx_link = re.compile(r"\[([^\]]*)\]\(([^)\s]+)(?:\s[^)]*)?\)")
-        rx_id = re.compile(r'\bid=["\']([^"\']+)["\']')
-        page_urls = {page.url for page in self.site.pages}
-        has_warnings = False
+        warnings = validate_links(
+            self.site.pages,
+            content_root=self.root_dir / "content",
+            assets_dir=self.assets_dir,
+            build_dir=self.build_dir,
+            root_dir=self.root_dir,
+            prefix=self.prefix,
+            is_main=self.is_main,
+        )
+        if not warnings:
+            return
 
-        prefixed_folders: tuple[str, ...] = ()
-        if self.prefix:
-            prefixed_folders = ("docs", "assets", "search") if self.is_main else ("docs", "search")
-
-        def warn(filename: str, lineno: int, msg: str) -> None:
-            nonlocal has_warnings
-            if not has_warnings:
-                print("\n⚡ WARNING:")
-                has_warnings = True
-            print(f"  {filename}:{lineno} - {msg}")
-
-        for page in self.site.pages:
-            if not page.source or not page.filepath:
-                continue
-
-            filename = str(page.filepath.relative_to(self.root_dir / "content"))
-            page_ids = set(rx_id.findall(page.content)) if page.content else set()
-
-            for lineno, line in enumerate(page.source.splitlines(), start=1):
-                for match in rx_link.finditer(line):
-                    raw_url = match.group(2)
-
-                    # Split URL and anchor fragment
-                    if "#" in raw_url:
-                        url, anchor = raw_url.split("#", 1)
-                    else:
-                        url, anchor = raw_url, ""
-
-                    # Anchor-only link: validate against page IDs
-                    if not url:
-                        if anchor and page_ids and anchor not in page_ids:
-                            warn(filename, lineno, f"broken anchor: #{anchor}")
-                        continue
-
-                    # Skip external links and mailto/tel
-                    if re.match(r"^(https?://|mailto:|tel:)", url):
-                        continue
-
-                    # Skip llms.txt references
-                    if url.startswith("/llms.txt"):
-                        continue
-
-                    # Resolve relative URLs against the page's own URL
-                    if not url.startswith("/"):
-                        base = page.url.rstrip("/")
-                        url = posixpath.normpath(f"{base}/{url}")
-                        if not url.startswith("/"):
-                            url = f"/{url}"
-                    elif prefixed_folders and not url.startswith(f"/{self.prefix}/"):
-                        # Markdown sources reference unprefixed paths; mirror _add_prefix_to_urls
-                        for folder in prefixed_folders:
-                            if url == f"/{folder}" or url.startswith(f"/{folder}/"):
-                                url = f"/{self.prefix}{url}"
-                                break
-
-                    # Normalize: ensure trailing slash for page-like URLs (no extension)
-                    if "." not in url.split("/")[-1] and not url.endswith("/"):
-                        url = f"{url}/"
-
-                    # Check page URLs
-                    if url in page_urls:
-                        continue
-
-                    # Check asset links against the assets source folder
-                    asset_url = url
-                    if self.prefix and asset_url.startswith(f"/{self.prefix}/assets/"):
-                        asset_url = asset_url[len(f"/{self.prefix}"):]
-                    if asset_url.startswith("/assets/"):
-                        asset_rel = asset_url[len("/assets/"):]
-                        if (self.assets_dir / asset_rel).exists():
-                            continue
-                        warn(filename, lineno, f"broken link: {raw_url}")
-                        continue
-
-                    # Check files in build dir
-                    file_path = self.build_dir / url.strip("/")
-                    if file_path.exists():
-                        continue
-
-                    # Check files in root dir (for source-relative paths)
-                    root_path = self.root_dir / url.strip("/")
-                    if root_path.exists():
-                        continue
-
-                    warn(filename, lineno, f"broken link: {raw_url}")
-
-        if has_warnings:
-            print()
+        print("\n⚡ WARNING:")
+        for warning in warnings:
+            print(f"  {warning.filename}:{warning.lineno} - {warning.message}")
+        print()
 
     def _symlink_assets(self) -> None:
         if not self.assets_dir.exists():
