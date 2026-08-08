@@ -17,6 +17,17 @@ __all__ = (
 TMetadata = dict[str, t.Any]
 
 
+def slug_from_url(url: str) -> str:
+    """Derive a readable identifier from a page URL."""
+    return (
+        url.strip()
+        .replace("docs/", "")
+        .replace("/", "-")
+        .replace(" ", "-")
+        .strip("-")
+    )
+
+
 class TSearchPageData(t.TypedDict):
     """
     SearchData represents the data structure for search functionality.
@@ -51,14 +62,7 @@ class NavItem:
         pages: list["NavItem"] | None = None,
         closed: bool = False,
     ):
-        slug = (
-            url.strip()
-            .replace("docs/", "")
-            .replace("/", "-")
-            .replace(" ", "-")
-            .strip("-")
-        )
-        self.id = id or slug or uuid4().hex
+        self.id = id or slug_from_url(url) or uuid4().hex
         self.title = title
         self.url = url
         self.icon = icon
@@ -114,14 +118,7 @@ class PageData:
         parents: tuple[str, ...] = (),
     ):
         meta = meta or {}
-        slug = (
-            url.strip()
-            .replace("docs/", "")
-            .replace("/", "-")
-            .replace(" ", "-")
-            .strip("-")
-        )
-        meta.setdefault("id", slug or uuid4().hex)
+        meta.setdefault("id", slug_from_url(url) or uuid4().hex)
         self.url = url
         self.section_title = section_title
         self.section_url = section_url

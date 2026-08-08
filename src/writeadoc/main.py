@@ -17,7 +17,7 @@ from jx.tools import check_all
 from markupsafe import Markup
 
 from . import utils
-from .links import validate_links
+from .links import get_prefixed_folders, validate_links
 from .pages import PagesProcessor
 from .types import PageData, SiteData
 from .utils import get_random_messages, logger
@@ -264,10 +264,13 @@ class Docs:
 
     # Private
 
-    def _render_page(self, page: PageData) -> None:
-        outpath = self.build_dir / str(page.url).strip("/") / "index.html"
+    def _write(self, outpath: Path, content: str) -> None:
+        """Write a generated file, creating its parent folders."""
         outpath.parent.mkdir(parents=True, exist_ok=True)
+        outpath.write_text(content, encoding="utf-8")
+        self.log(outpath)
 
+    def _render_page(self, page: PageData) -> None:
         try:
             html = self.catalog.render(
                 page.view,
@@ -275,16 +278,14 @@ class Docs:
             )
         except Exception as err:
             raise RuntimeError(f"Error rendering {page.filepath}") from err
-        outpath.write_text(html, encoding="utf-8")
-        self.log(outpath)
+
+        self._write(self.build_dir / str(page.url).strip("/") / "index.html", html)
 
     def _render_search_page(self) -> None:
         if not (self.views_dir / "search.jx").exists():
             logger.warning("No search.jx view found.")
             return None
 
-        outpath = self.build_dir / self.prefix / "search" / "index.html"
-        outpath.parent.mkdir(parents=True, exist_ok=True)
         url = f"/{self.prefix}/search/" if self.prefix else "/search/"
 
         page = PageData(
@@ -307,8 +308,8 @@ class Docs:
             )
         except jx.JxException as err:
             raise RuntimeError("Error rendering search page") from err
-        outpath.write_text(html, encoding="utf-8")
-        self.log(outpath)
+
+        self._write(self.build_dir / self.prefix / "search" / "index.html", html)
 
     def _render_redirect_pages(self) -> None:
         if len(self.site.pages) < 2:
@@ -323,15 +324,10 @@ class Docs:
             "<title></title></head><body></body></html>"
         )
 
-        outpath = self.build_dir / self.prefix / "docs" / "index.html"
-        outpath.parent.mkdir(parents=True, exist_ok=True)
-        outpath.write_text(html, encoding="utf-8")
-        self.log(outpath)
+        self._write(self.build_dir / self.prefix / "docs" / "index.html", html)
 
         if self.skip_home:
-            outpath = self.build_dir / self.prefix / "index.html"
-            outpath.write_text(html, encoding="utf-8")
-            self.log(outpath)
+            self._write(self.build_dir / self.prefix / "index.html", html)
 
     def _render_extra(self) -> None:
         for file in (
@@ -348,8 +344,6 @@ class Docs:
                     "title": file.replace("_", " ").title(),
                 },
             )
-            outpath = self.build_dir / self.prefix / file
-            outpath.parent.mkdir(parents=True, exist_ok=True)
             try:
                 body = self.catalog.render(
                     f"{file}.jx",
@@ -358,25 +352,23 @@ class Docs:
             except jx.ComponentNotFoundError:
                 logger.info("No view found for %s, skipping...", file)
                 continue
-            outpath.write_text(body, encoding="utf-8")
-            self.log(outpath)
+
+            self._write(self.build_dir / self.prefix / file, body)
 
     def _render_llm_file(self) -> None:
-        outpath = self.build_dir / self.prefix / "llms.txt"
-        outpath.parent.mkdir(parents=True, exist_ok=True)
         try:
             body = self.catalog.render("llm.jx")
         except jx.JxException as err:
             raise RuntimeError("Error rendering llms.txt") from err
-        outpath.write_text(body, encoding="utf-8")
-        self.log(outpath)
+
+        self._write(self.build_dir / self.prefix / "llms.txt", body)
 
     def _add_prefix_to_urls(self) -> None:
         """Update URLs in the site data for archived documentation."""
         if not self.prefix:
             return
 
-        folders = "docs|assets|search" if self.is_main else "docs|search"
+        folders = "|".join(get_prefixed_folders(prefix=self.prefix, is_main=self.is_main))
         rx_urls = re.compile(fr"""(href|src|action|poster|data|srcset|data-src)=("|')/({folders})/""")
 
         build_dir = self.build_dir / self.prefix
