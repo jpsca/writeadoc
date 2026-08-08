@@ -186,10 +186,31 @@ class PageData:
 
 
 class SiteData:
+    """The site-wide metadata, available to the views as `site`.
+
+    Any other key given to `Docs(site={...})` becomes an attribute too, for the
+    views to use. Reading one that was never set raises, so a typo in a view
+    fails the build instead of quietly rendering nothing.
+
+    Attributes:
+        name: The name of the documentation.
+        version: The version being documented.
+        base_url: The absolute URL of the site, without a trailing slash.
+        lang: The language code of this documentation.
+        description: Used by the default theme for the meta description.
+        source_code: Used by the default theme to link to the repository.
+        archived: Whether this is an archived build of an older version.
+        pages: Every page, in reading order. Filled in by the build.
+        nav: The navigation tree. Filled in by the build.
+
+    """
+
     name: str = "WriteADoc"
     version: str = "1.0"
     base_url: str = ""
     lang: str = "en"
+    description: str = ""
+    source_code: str = ""
     archived: bool = False
     pages: list[PageData]
     nav: list[NavItem]
@@ -207,6 +228,3 @@ class SiteData:
         self.archived = False
         self.pages = []
         self.nav = []
-
-    def __getattr__(self, name: str) -> t.Any:
-        return None
