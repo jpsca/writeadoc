@@ -25,22 +25,12 @@ RX_FENCED = re.compile(r"\n```+.*?\n[\s\S]*?\n```+\n", re.MULTILINE)
 
 
 @dataclass(slots=True)
-class AttrDocstring:
-    symbol: str = ""
-    name: str = ""
-    label: str = "attribute"
-    short_description: str = ""
-    long_description: str = ""
-    description: str = ""
-
-
-@dataclass(slots=True)
 class Docstring:
     name: str = ""
     symbol: str = ""
     label: str = ""
     signature: str = ""
-    params: list[AttrDocstring] = field(default_factory=list)
+    params: list["Docstring"] = field(default_factory=list)
 
     # First paragraph of the description
     short_description: str = ""
@@ -63,9 +53,9 @@ class Docstring:
     # Inheritance information
     bases: list[str] = field(default_factory=list)
     # Attributes
-    attrs: list[AttrDocstring] = field(default_factory=list)
+    attrs: list["Docstring"] = field(default_factory=list)
     # Properties
-    properties: list[AttrDocstring] = field(default_factory=list)
+    properties: list["Docstring"] = field(default_factory=list)
     # Methods
     methods: list["Docstring"] = field(default_factory=list)
 
@@ -341,7 +331,7 @@ def autodoc_attr(
     *,
     show_name: bool = True,
     symbol: str = "attr",
-) -> AttrDocstring:
+) -> Docstring:
     if attr.type_name:
         name = f"{attr.arg_name}: {attr.type_name}"
     else:
@@ -350,7 +340,7 @@ def autodoc_attr(
     description = (attr.description or "").strip()
     short_description, long_description = split_description(description)
 
-    return AttrDocstring(
+    return Docstring(
         symbol=symbol if show_name else "",
         name=name if show_name else "",
         label="attribute",

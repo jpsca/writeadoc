@@ -1,5 +1,9 @@
+from pathlib import Path
+
 from docstring_parser.common import DocstringParam
 
+import writeadoc
+from writeadoc import Docs
 from writeadoc.autodoc import (
     autodoc,
     autodoc_attr,
@@ -11,6 +15,9 @@ from writeadoc.autodoc import (
     render_autodoc,
     split_description,
 )
+
+
+BLUEPRINT_VIEWS = Path(writeadoc.__file__).parent / "blueprint" / "views"
 
 
 class SimpleClass:
@@ -356,3 +363,27 @@ def test_render_autodoc():
 AUTODOC FOR sample_function
 """.strip()
 
+
+
+def test_render_class_with_attributes(tmp_root):
+    """A class documented with an `Attributes:` section renders.
+
+    Regression: `autodoc_attr` returned a type the `Autodoc` component could not
+    render, so any such class crashed the build.
+    """
+    (tmp_root / "views" / "autodoc.md.jx").write_text(
+        (BLUEPRINT_VIEWS / "autodoc.md.jx").read_text()
+    )
+    (tmp_root / "content" / "api.md").write_text(
+        "---\ntitle: API\n---\n\n::: api tests.test_autodoc.SimpleClass\n:::\n"
+    )
+
+    docs = Docs(tmp_root, pages=["api.md"])
+    docs._set_build_target(build_dir=tmp_root / "out", prefix="")
+    docs.build(devmode=True, boring=True)
+
+    html = (tmp_root / "out" / "docs" / "api" / "index.html").read_text()
+    assert "attr1" in html
+    assert "First attribute." in html
+    assert "attr2" in html
+    assert "Second attribute." in html
