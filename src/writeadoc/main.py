@@ -75,19 +75,20 @@ class Docs:
         self.assets_dir = root_dir / "assets"
         self.views_dir = root_dir / "views"
         self.archive_dir = root_dir / "archive"
-        self.build_dir = root_dir / "build"
 
         self.pages = pages
         self.site = SiteData(**(site or {}))
-        self.prefix = prefix.strip("/").strip()
         self.skip_home = skip_home
 
-        variants = variants or {}
-        for prefix, variant in variants.items():
-            variant.content_dir = self.content_dir / prefix
-            variant.prefix = f"{self.prefix}/{prefix}" if self.prefix else prefix
+        self.variants = variants or {}
+        for name, variant in self.variants.items():
+            variant.content_dir = self.content_dir / name
             variant.is_main = False
-        self.variants = variants
+
+        self._set_build_target(
+            build_dir=root_dir / "build",
+            prefix=prefix.strip("/").strip(),
+        )
 
         self.pages_processor = PagesProcessor(self)
 
@@ -100,6 +101,22 @@ class Docs:
         )
         self.init_catalog()
         self.check_catalog()
+
+    def _set_build_target(self, *, build_dir: Path, prefix: str) -> None:
+        """Point this documentation, and its variants, at a build target.
+
+        Variants are written into the same build folder as their parent, under a
+        prefix nested below the parent's. This is the only place that composes
+        prefixes, so `_add_prefix_to_urls` and the views stay in agreement.
+
+        Only direct variants are updated, matching the single level of nesting
+        the CLI supports.
+        """
+        self.build_dir = build_dir
+        self.prefix = prefix
+        for name, variant in self.variants.items():
+            variant.build_dir = build_dir
+            variant.prefix = f"{prefix}/{name}" if prefix else name
 
     def init_catalog(self):
         strings_file = self.views_dir / "strings.json"
@@ -154,9 +171,10 @@ class Docs:
     def cli_run(self) -> None:
         """Run the documentation server and watch for changes.
         """
-        self.build_dir = Path(mkdtemp(prefix="wad-"))
-        for variant in self.variants.values():
-            variant.build_dir = self.build_dir
+        self._set_build_target(
+            build_dir=Path(mkdtemp(prefix="wad-")),
+            prefix=self.prefix,
+        )
 
         self.build(devmode=True)  # Initial build
         print()
@@ -180,15 +198,17 @@ class Docs:
         """Build the documentation for deployment.
         """
         if archive:
-            self.build_dir = self.archive_dir
-            self.prefix = f"{self.prefix}/{self.site.version}" if self.prefix else self.site.version
+            version = self.site.version
+            self._set_build_target(
+                build_dir=self.archive_dir,
+                prefix=f"{self.prefix}/{version}" if self.prefix else version,
+            )
             self.site.archived = True
         else:
-            self.build_dir = self.root_dir / "build"
-
-        for prefix, variant in self.variants.items():
-            variant.build_dir = self.build_dir
-            variant.prefix = f"{self.prefix}/{prefix}" if self.prefix else prefix
+            self._set_build_target(
+                build_dir=self.root_dir / "build",
+                prefix=self.prefix,
+            )
 
         self.build(devmode=False, llm=llm, boring=boring)
         print("\nDocumentation built successfully.")
