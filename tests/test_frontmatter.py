@@ -1,4 +1,4 @@
-from writeadoc.utils import extract_metadata
+from writeadoc.frontmatter import extract_metadata
 
 
 def test_extract_metadata_preserves_leading_list_marker():

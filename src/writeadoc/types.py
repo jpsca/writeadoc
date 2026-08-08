@@ -3,6 +3,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from uuid import uuid4
 
+from .frontmatter import render_metadata
+
 
 __all__ = (
     "TMetadata",
@@ -180,9 +182,7 @@ class PageData:
         return f"<Page {self.url}>"
 
     def render_metadata(self, **kwargs) -> str:
-        from . import utils
-
-        return utils.render_metadata(self.meta, **kwargs)
+        return render_metadata(self.meta, **kwargs)
 
 
 class SiteData:

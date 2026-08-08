@@ -16,7 +16,7 @@ import jx
 from jx.tools import check_all
 from markupsafe import Markup
 
-from . import utils
+from .devserver import start_observer, start_server
 from .links import get_prefixed_folders, validate_links
 from .pages import PagesProcessor
 from .types import Build, PageData, SiteData
@@ -180,12 +180,12 @@ class Docs:
         self.build(devmode=True)  # Initial build
         print()
         p = Process(
-            target=utils.start_server,
+            target=start_server,
             args=(str(self.build_target.dir),),
             daemon=True
         )
         p.start()
-        utils.start_observer(self.root_dir, partial(self.build, devmode=True))
+        start_observer(self.root_dir, partial(self.build, devmode=True))
 
         def shutdown(*args):
             p.terminate()

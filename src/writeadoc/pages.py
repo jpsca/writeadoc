@@ -5,9 +5,10 @@ from uuid import uuid4
 
 from markupsafe import Markup
 
-from . import search, utils
+from . import search
 from .autodoc import render_autodoc
 from .components import render_components
+from .frontmatter import extract_metadata
 from .md import render_markdown
 from .types import (
     NavItem,
@@ -307,7 +308,7 @@ class PagesProcessor:
 
         logger.debug("Processing page: %s", filepath.relative_to(self.docs.content_dir))
         source = filepath.read_text(encoding="utf-8")
-        source, meta = utils.extract_metadata(source)
+        source, meta = extract_metadata(source)
         return source, meta
 
     def render_markdown(self, source: str, meta: TMetadata, filepath: Path) -> tuple[str, MutableMapping]:
