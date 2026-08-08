@@ -141,7 +141,7 @@ def test_docs_devmode_build(tmp_path):
     """`build(devmode=True)`: symlinked assets, no fingerprinting."""
     docs = load_real_docs()
     freeze_now(docs)
-    docs.build_dir = tmp_path
+    docs._set_build_target(build_dir=tmp_path, prefix=docs.build_target.prefix)
 
     docs.build(devmode=True, boring=True)
 
@@ -152,7 +152,7 @@ def test_docs_release_build(tmp_path):
     """`build(devmode=False, llm=True)`: copied assets, fingerprinted URLs, llms.txt."""
     docs = load_real_docs()
     freeze_now(docs)
-    docs.build_dir = tmp_path
+    docs._set_build_target(build_dir=tmp_path, prefix=docs.build_target.prefix)
 
     docs.build(devmode=False, llm=True, boring=True)
 
@@ -177,9 +177,9 @@ PAGE_VIEW = """
 # so the manifest captures how prefixes are propagated.
 ROBOTS_VIEW = """
 User-Agent: *
-Disallow: /{{ docs.prefix }}/search/
-{% for variant in docs.variants.values() -%}
-Disallow: /{{ variant.prefix }}/search/
+Disallow: {{ build.base_url }}search/
+{% for variant in build.variants.values() -%}
+Disallow: {{ variant.base_url }}search/
 {% endfor -%}
 Sitemap: {{ site.base_url }}/sitemap.xml
 """.strip()

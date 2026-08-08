@@ -19,14 +19,14 @@ from markupsafe import Markup
 from . import utils
 from .links import get_prefixed_folders, validate_links
 from .pages import PagesProcessor
-from .types import PageData, SiteData
+from .types import Build, PageData, SiteData
 from .utils import get_random_messages, logger
 
 
 class Docs:
     pages: Sequence[str | dict[str, t.Any]]
     site: SiteData
-    prefix: str = ""
+    build_target: Build
     variants: "dict[str, Docs]"
     is_main: bool = True
     skip_home: bool = False
@@ -38,7 +38,7 @@ class Docs:
     content_dir: Path
     assets_dir: Path
     views_dir: Path
-    build_dir: Path
+    archive_dir: Path
 
     debug: bool = False
 
@@ -85,11 +85,6 @@ class Docs:
             variant.content_dir = self.content_dir / name
             variant.is_main = False
 
-        self._set_build_target(
-            build_dir=root_dir / "build",
-            prefix=prefix.strip("/").strip(),
-        )
-
         self.pages_processor = PagesProcessor(self)
 
         self.catalog = jx.Catalog(
@@ -99,24 +94,30 @@ class Docs:
             _now=datetime.datetime.now(tz=datetime.timezone.utc),
             _insert_asset=self.insert_asset,
         )
+        self._set_build_target(
+            build_dir=root_dir / "build",
+            prefix=prefix.strip("/").strip(),
+        )
         self.init_catalog()
         self.check_catalog()
 
     def _set_build_target(self, *, build_dir: Path, prefix: str) -> None:
         """Point this documentation, and its variants, at a build target.
 
-        Variants are written into the same build folder as their parent, under a
-        prefix nested below the parent's. This is the only place that composes
-        prefixes, so `_add_prefix_to_urls` and the views stay in agreement.
-
-        Only direct variants are updated, matching the single level of nesting
-        the CLI supports.
+        Variants are written into the same folder as their parent, under a prefix
+        nested below the parent's. This is the only place that composes prefixes,
+        so `_add_prefix_to_urls` and the views stay in agreement.
         """
-        self.build_dir = build_dir
-        self.prefix = prefix
+        variants = {}
         for name, variant in self.variants.items():
-            variant.build_dir = build_dir
-            variant.prefix = f"{prefix}/{name}" if prefix else name
+            variant._set_build_target(
+                build_dir=build_dir,
+                prefix=f"{prefix}/{name}" if prefix else name,
+            )
+            variants[name] = variant.build_target
+
+        self.build_target = Build(dir=build_dir, prefix=prefix, variants=variants)
+        self.catalog.jinja_env.globals["build"] = self.build_target
 
     def init_catalog(self):
         strings_file = self.views_dir / "strings.json"
@@ -173,14 +174,14 @@ class Docs:
         """
         self._set_build_target(
             build_dir=Path(mkdtemp(prefix="wad-")),
-            prefix=self.prefix,
+            prefix=self.build_target.prefix,
         )
 
         self.build(devmode=True)  # Initial build
         print()
         p = Process(
             target=utils.start_server,
-            args=(str(self.build_dir),),
+            args=(str(self.build_target.dir),),
             daemon=True
         )
         p.start()
@@ -201,13 +202,13 @@ class Docs:
             version = self.site.version
             self._set_build_target(
                 build_dir=self.archive_dir,
-                prefix=f"{self.prefix}/{version}" if self.prefix else version,
+                prefix=f"{self.build_target.prefix}/{version}" if self.build_target.prefix else version,
             )
             self.site.archived = True
         else:
             self._set_build_target(
                 build_dir=self.root_dir / "build",
-                prefix=self.prefix,
+                prefix=self.build_target.prefix,
             )
 
         self.build(devmode=False, llm=llm, boring=boring)
@@ -233,8 +234,8 @@ class Docs:
         self.site.nav = nav
         self.site.pages = pages
 
-        if self.prefix and not self.site.base_url.endswith(f"/{self.prefix}"):
-            self.site.base_url = f"{self.site.base_url}/{self.prefix}"
+        if self.build_target.prefix and not self.site.base_url.endswith(f"/{self.build_target.prefix}"):
+            self.site.base_url = f"{self.site.base_url}/{self.build_target.prefix}"
 
         print("Rendering pages...")
         for page in pages:
@@ -299,14 +300,14 @@ class Docs:
         except Exception as err:
             raise RuntimeError(f"Error rendering {page.filepath}") from err
 
-        self._write(self.build_dir / str(page.url).strip("/") / "index.html", html)
+        self._write(self.build_target.dir / str(page.url).strip("/") / "index.html", html)
 
     def _render_search_page(self) -> None:
         if not (self.views_dir / "search.jx").exists():
             logger.warning("No search.jx view found.")
             return None
 
-        url = f"/{self.prefix}/search/" if self.prefix else "/search/"
+        url = f"{self.build_target.base_url}search/"
 
         page = PageData(
             url=url,
@@ -329,7 +330,7 @@ class Docs:
         except jx.JxException as err:
             raise RuntimeError("Error rendering search page") from err
 
-        self._write(self.build_dir / self.prefix / "search" / "index.html", html)
+        self._write(self.build_target.out_dir / "search" / "index.html", html)
 
     def _render_redirect_pages(self) -> None:
         if len(self.site.pages) < 2:
@@ -344,10 +345,10 @@ class Docs:
             "<title></title></head><body></body></html>"
         )
 
-        self._write(self.build_dir / self.prefix / "docs" / "index.html", html)
+        self._write(self.build_target.out_dir / "docs" / "index.html", html)
 
         if self.skip_home:
-            self._write(self.build_dir / self.prefix / "index.html", html)
+            self._write(self.build_target.out_dir / "index.html", html)
 
     def _render_extra(self) -> None:
         for file in (
@@ -356,7 +357,7 @@ class Docs:
             "robots.txt",
             "humans.txt"
         ):
-            url = f"/{self.prefix}/{file}" if self.prefix else f"/{file}"
+            url = f"{self.build_target.base_url}{file}"
             page = PageData(
                 url=url,
                 meta={
@@ -373,7 +374,7 @@ class Docs:
                 logger.info("No view found for %s, skipping...", file)
                 continue
 
-            self._write(self.build_dir / self.prefix / file, body)
+            self._write(self.build_target.out_dir / file, body)
 
     def _render_llm_file(self) -> None:
         try:
@@ -381,17 +382,17 @@ class Docs:
         except jx.JxException as err:
             raise RuntimeError("Error rendering llms.txt") from err
 
-        self._write(self.build_dir / self.prefix / "llms.txt", body)
+        self._write(self.build_target.out_dir / "llms.txt", body)
 
     def _add_prefix_to_urls(self) -> None:
         """Update URLs in the site data for archived documentation."""
-        if not self.prefix:
+        if not self.build_target.prefix:
             return
 
-        folders = "|".join(get_prefixed_folders(prefix=self.prefix, is_main=self.is_main))
+        folders = "|".join(get_prefixed_folders(prefix=self.build_target.prefix, is_main=self.is_main))
         rx_urls = re.compile(fr"""(href|src|action|poster|data|srcset|data-src)=("|')/({folders})/""")
 
-        build_dir = self.build_dir / self.prefix
+        build_dir = self.build_target.out_dir
         for html_file in build_dir.rglob("*.html"):
             content = html_file.read_text()
 
@@ -399,7 +400,7 @@ class Docs:
                 attr = match.group(1)
                 quote = match.group(2)
                 url = match.group(3)
-                return f"{attr}={quote}/{self.prefix}/{url}/"
+                return f"{attr}={quote}/{self.build_target.prefix}/{url}/"
 
             new_content = rx_urls.sub(replace_url, content)
             html_file.write_text(new_content)
@@ -409,9 +410,9 @@ class Docs:
             self.site.pages,
             content_root=self.root_dir / "content",
             assets_dir=self.assets_dir,
-            build_dir=self.build_dir,
+            build_dir=self.build_target.dir,
             root_dir=self.root_dir,
-            prefix=self.prefix,
+            prefix=self.build_target.prefix,
             is_main=self.is_main,
         )
         if not warnings:
@@ -425,7 +426,7 @@ class Docs:
     def _symlink_assets(self) -> None:
         if not self.assets_dir.exists():
             return
-        target_path = self.build_dir / self.prefix / "assets"
+        target_path = self.build_target.out_dir / "assets"
         if target_path.is_symlink():
             target_path.unlink()
         elif target_path.exists():
@@ -436,7 +437,7 @@ class Docs:
     def _copy_assets(self) -> None:
         if not self.assets_dir.exists():
             return
-        target_path = self.build_dir / self.prefix / "assets"
+        target_path = self.build_target.out_dir / "assets"
         shutil.copytree(
             self.assets_dir,
             target_path,
@@ -445,7 +446,7 @@ class Docs:
 
     def _fingerprint_assets(self) -> None:
         """Add fingerprinting to asset files for cache busting."""
-        assets_path = self.build_dir / self.prefix / "assets"
+        assets_path = self.build_target.out_dir / "assets"
         if not assets_path.exists():
             return
 
@@ -462,10 +463,10 @@ class Docs:
 
         # Update references in HTML files
         prefixes = ("",)
-        if self.prefix:
-            prefixes = (f"/{self.prefix}", "")
+        if self.build_target.prefix:
+            prefixes = (f"/{self.build_target.prefix}", "")
 
-        for html_file in (self.build_dir / self.prefix).rglob("*.html"):
+        for html_file in (self.build_target.out_dir).rglob("*.html"):
             html_content = html_file.read_text()
             for old_name, new_name in fingerprints.items():
                 for prefix in prefixes:

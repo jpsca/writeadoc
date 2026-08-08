@@ -1,11 +1,12 @@
 import typing as t
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from uuid import uuid4
 
 
 __all__ = (
     "TMetadata",
+    "Build",
     "PageRef",
     "TSearchPageData",
     "NavItem",
@@ -15,6 +16,36 @@ __all__ = (
 
 
 TMetadata = dict[str, t.Any]
+
+
+@dataclass(frozen=True)
+class Build:
+    """Where the documentation is being written, and under which URL prefix.
+
+    Available to the views as `build`. A variant's prefix is nested below its
+    parent's, and every variant is written into the same folder, so a view can
+    reach them all through `build.variants`.
+
+    Attributes:
+        dir: The folder the generated files are written into.
+        prefix: The URL prefix of this documentation, without slashes.
+        variants: The build of each variant, by name.
+
+    """
+
+    dir: Path
+    prefix: str = ""
+    variants: "dict[str, Build]" = field(default_factory=dict)
+
+    @property
+    def out_dir(self) -> Path:
+        """The folder this documentation's own files are written into."""
+        return self.dir / self.prefix
+
+    @property
+    def base_url(self) -> str:
+        """The root URL path this documentation is served from."""
+        return f"/{self.prefix}/" if self.prefix else "/"
 
 
 def slug_from_url(url: str) -> str:

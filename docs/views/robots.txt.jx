@@ -1,11 +1,7 @@
 User-Agent: *
 Allow: /
-{% if docs.prefix -%}
-Disallow: /{{ docs.prefix }}/search/
-{% else -%}
-Disallow: /search/
-{% endif -%}
-{% for variant in docs.variants.values() -%}
-Disallow: /{{ variant.prefix }}/search/
+Disallow: {{ build.base_url }}search/
+{% for variant in build.variants.values() -%}
+Disallow: {{ variant.base_url }}search/
 {% endfor -%}
 Sitemap: {{ site.base_url }}/sitemap.xml

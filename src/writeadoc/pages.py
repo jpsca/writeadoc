@@ -154,9 +154,9 @@ class PagesProcessor:
             logger.warning("No index.jx view found.")
             return None
 
-        outpath = self.docs.build_dir / self.docs.prefix / "index.html"
+        outpath = self.docs.build_target.out_dir / "index.html"
         outpath.parent.mkdir(parents=True, exist_ok=True)
-        url = f"/{self.docs.prefix}/" if self.docs.prefix else "/"
+        url = self.docs.build_target.base_url
 
         md_index = self.docs.content_dir / "index.md"
         if md_index.exists():
@@ -271,8 +271,8 @@ class PagesProcessor:
         parents: tuple[str, ...] = (),
     ) -> NavItem:
         url = f"/docs/{Path(filename).with_suffix('').as_posix().strip('/')}/"
-        if self.docs.prefix:
-            url = f"/{self.docs.prefix}{url}"
+        if self.docs.build_target.prefix:
+            url = f"/{self.docs.build_target.prefix}{url}"
 
         filepath = self.docs.content_dir / filename
         source, meta = self.read_file(filepath)
