@@ -5,6 +5,7 @@ import re
 import shutil
 import signal
 import typing as t
+import warnings
 from collections.abc import Sequence
 from functools import partial
 from multiprocessing import Process
@@ -21,6 +22,23 @@ from .links import get_prefixed_folders, validate_links
 from .pages import PagesProcessor
 from .types import Build, PageData, SiteData
 from .utils import get_random_messages, logger
+
+
+def warn_moved(old: str, new: str) -> None:
+    """Warn that a `Docs` attribute moved onto the build object.
+
+    `FutureWarning` rather than `DeprecationWarning` on purpose: the reader is
+    running `python docs.py build`, and a `DeprecationWarning` raised from inside
+    a template render is silent under the default filters, which would make the
+    warning useless.
+    """
+    warnings.warn(
+        f"`docs.{old}` is deprecated and will be removed in 0.29."
+        f" Use `{new}` in a view, or `docs.build_target.{new.split('.')[1]}`"
+        " in Python.",
+        FutureWarning,
+        stacklevel=3,
+    )
 
 
 class Docs:
@@ -118,6 +136,30 @@ class Docs:
 
         self.build_target = Build(dir=build_dir, prefix=prefix, variants=variants)
         self.catalog.jinja_env.globals["build"] = self.build_target
+
+    # Deprecated, removed in 0.29
+
+    @property
+    def prefix(self) -> str:
+        """Deprecated. Use `build.prefix` in a view, `build_target.prefix` in Python."""
+        warn_moved("prefix", "build.prefix")
+        return self.build_target.prefix
+
+    @prefix.setter
+    def prefix(self, value: str) -> None:
+        warn_moved("prefix", "build.prefix")
+        self._set_build_target(build_dir=self.build_target.dir, prefix=value)
+
+    @property
+    def build_dir(self) -> Path:
+        """Deprecated. Use `build.dir` in a view, `build_target.dir` in Python."""
+        warn_moved("build_dir", "build.dir")
+        return self.build_target.dir
+
+    @build_dir.setter
+    def build_dir(self, value: Path) -> None:
+        warn_moved("build_dir", "build.dir")
+        self._set_build_target(build_dir=value, prefix=self.build_target.prefix)
 
     def init_catalog(self):
         strings_file = self.views_dir / "strings.json"
