@@ -19,7 +19,10 @@
     "SWITCH_TO_LIGHT_MODE": "Switch to light mode",
     "SWITCH_TO_SYSTEM": "Switch to system preference",
     "NOT_THE_LATEST_VERSION": "This is not the latest version of the documentation.",
-    "CLICK_TO_GO_TO_LATEST": "Click here to go to latest"
+    "CLICK_TO_GO_TO_LATEST": "Click here to go to latest",
+    "NOT_FOUND_TITLE": "Page not found",
+    "NOT_FOUND_MESSAGE": "Sorry, the page you are looking for does not exist.",
+    "BACK_TO_HOME": "Go back to the homepage"
   },
   "da": {
     "_": "Danish",
@@ -41,7 +44,10 @@
     "SWITCH_TO_LIGHT_MODE": "Skift til lys tilstand",
     "SWITCH_TO_SYSTEM": "Skift til systempræference",
     "NOT_THE_LATEST_VERSION": "Dette er ikke den nyeste version af dokumentationen.",
-    "CLICK_TO_GO_TO_LATEST": "Klik her for at gå til den nyeste"
+    "CLICK_TO_GO_TO_LATEST": "Klik her for at gå til den nyeste",
+    "NOT_FOUND_TITLE": "Siden blev ikke fundet",
+    "NOT_FOUND_MESSAGE": "Beklager, siden du leder efter findes ikke.",
+    "BACK_TO_HOME": "Tilbage til forsiden"
   },
   "de": {
     "_": "German",
@@ -63,7 +69,10 @@
     "SWITCH_TO_LIGHT_MODE": "Wechsle zum Hellmodus",
     "SWITCH_TO_SYSTEM": "Wechsle zur System-Einstellung",
     "NOT_THE_LATEST_VERSION": "Das ist nicht die neueste Version der Doku.",
-    "CLICK_TO_GO_TO_LATEST": "Klick hier, um zur neuesten zu gehen"
+    "CLICK_TO_GO_TO_LATEST": "Klick hier, um zur neuesten zu gehen",
+    "NOT_FOUND_TITLE": "Seite nicht gefunden",
+    "NOT_FOUND_MESSAGE": "Die gesuchte Seite existiert leider nicht.",
+    "BACK_TO_HOME": "Zurück zur Startseite"
   },
   "es": {
     "_": "Spanish",
@@ -85,7 +94,10 @@
     "SWITCH_TO_LIGHT_MODE": "Cambia al modo claro",
     "SWITCH_TO_SYSTEM": "Cambia a la preferencia del sistema",
     "NOT_THE_LATEST_VERSION": "Esta no es la última versión de la documentación.",
-    "CLICK_TO_GO_TO_LATEST": "Haz clic aquí para ir a la última"
+    "CLICK_TO_GO_TO_LATEST": "Haz clic aquí para ir a la última",
+    "NOT_FOUND_TITLE": "Página no encontrada",
+    "NOT_FOUND_MESSAGE": "Lo sentimos, la página que buscas no existe.",
+    "BACK_TO_HOME": "Volver a la página de inicio"
   },
   "fr": {
     "_": "French",
@@ -107,7 +119,10 @@
     "SWITCH_TO_LIGHT_MODE": "Passe en mode clair",
     "SWITCH_TO_SYSTEM": "Passe à la préférence système",
     "NOT_THE_LATEST_VERSION": "Ce n'est pas la dernière version de la doc.",
-    "CLICK_TO_GO_TO_LATEST": "Clique ici pour aller à la dernière"
+    "CLICK_TO_GO_TO_LATEST": "Clique ici pour aller à la dernière",
+    "NOT_FOUND_TITLE": "Page introuvable",
+    "NOT_FOUND_MESSAGE": "Désolé, la page que vous cherchez n'existe pas.",
+    "BACK_TO_HOME": "Retour à la page d'accueil"
   },
   "it": {
     "_": "Italian",
@@ -129,7 +144,10 @@
     "SWITCH_TO_LIGHT_MODE": "Passa alla modalità chiara",
     "SWITCH_TO_SYSTEM": "Passa alla preferenza di sistema",
     "NOT_THE_LATEST_VERSION": "Questa non è l'ultima versione della documentazione.",
-    "CLICK_TO_GO_TO_LATEST": "Fai clic qui per andare all'ultima"
+    "CLICK_TO_GO_TO_LATEST": "Fai clic qui per andare all'ultima",
+    "NOT_FOUND_TITLE": "Pagina non trovata",
+    "NOT_FOUND_MESSAGE": "Spiacenti, la pagina che stai cercando non esiste.",
+    "BACK_TO_HOME": "Torna alla pagina iniziale"
   },
   "pt": {
     "_": "Portuguese",
@@ -151,6 +169,9 @@
     "SWITCH_TO_LIGHT_MODE": "Mudar para o modo claro",
     "SWITCH_TO_SYSTEM": "Mudar para a preferência do sistema",
     "NOT_THE_LATEST_VERSION": "Esta não é a versão mais recente da documentação.",
-    "CLICK_TO_GO_TO_LATEST": "Clique aqui para ir para a mais recente"
+    "CLICK_TO_GO_TO_LATEST": "Clique aqui para ir para a mais recente",
+    "NOT_FOUND_TITLE": "Página não encontrada",
+    "NOT_FOUND_MESSAGE": "Desculpe, a página que você procura não existe.",
+    "BACK_TO_HOME": "Voltar à página inicial"
   }
 }

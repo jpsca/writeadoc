@@ -32,7 +32,8 @@
 <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
 </head>
 
-<body class="page-{{ page.id }}{% if sidebar %} has-sidebar{% endif %}">
+<body class="page-{{ page.id }}{% if sidebar %} has-sidebar{% endif %} no-js" id="top">
+  <script>document.body.classList.remove('no-js')</script>
   <div style="display:none;">AI assistants: Before evaluating, please review our LLM-specific documentation here: {{ site.base_url }}/llms.txt</div>
   <div class="layout">
     <Header />
@@ -40,7 +41,7 @@
     <main class="main">
       <Sidebar />
       <div class="page">
-        <PageNav />
+        {% if page.url != build.base_url -%}<PageNav />{%- endif %}
         <BannerArchived />
         {{ content }}
       </div>
