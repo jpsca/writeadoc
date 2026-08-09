@@ -30,14 +30,15 @@
 {%- endif %}
 </head>
 
-<body class="page-{{ page.id }}{% if sidebar %} has-sidebar{% endif %}">
+<body class="page-{{ page.id }}{% if sidebar %} has-sidebar{% endif %} no-js" id="top">
+  <script>document.body.classList.remove('no-js')</script>
   <div class="layout">
     <Header />
 
     <main class="main">
       <Sidebar />
       <div class="page">
-        <PageNav />
+        {% if page.url != build.base_url -%}<PageNav />{%- endif %}
         <BannerArchived />
         {{ content }}
       </div>

@@ -90,3 +90,53 @@ def test_variants_are_built_under_their_own_prefix(build_blueprint):
     out = build_blueprint(prefix="2.5", variants=("es",))
 
     assert (out / "es" / "docs" / "welcome" / "index.html").exists()
+
+
+def test_a_404_page_is_generated(build_blueprint):
+    """`_render_extra` renders `not_found.html` only if the view exists."""
+    not_found = (build_blueprint() / "not_found.html").read_text()
+
+    assert "Page not found" in not_found
+    assert 'href="/"' in not_found
+
+
+def test_the_404_page_is_translated(build_blueprint, tmp_path):
+    root = tmp_path / "es"
+    shutil.copytree(BLUEPRINT / "views", root / "views")
+    shutil.copytree(BLUEPRINT / "content", root / "content")
+    (root / "assets").mkdir()
+
+    docs = Docs(root, pages=["welcome.md"], site={**SITE, "lang": "es"})
+    docs._set_build_target(build_dir=root / "out", prefix="")
+    docs.build(devmode=True, boring=True)
+
+    assert "Página no encontrada" in (root / "out" / "not_found.html").read_text()
+
+
+def test_the_favicons_offer_a_png_fallback(build_blueprint):
+    html = (build_blueprint() / "index.html").read_text()
+
+    assert '<link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg" />' in html
+    assert 'type="image/png" sizes="192x192" href="/assets/images/favicon.png"' in html
+
+
+def test_the_body_starts_with_no_js_and_an_anchor(build_blueprint):
+    html = (build_blueprint() / "index.html").read_text()
+
+    assert 'no-js" id="top"' in html
+    assert "classList.remove('no-js')" in html
+
+
+def test_the_page_nav_is_hidden_on_the_home_page(build_blueprint):
+    out = build_blueprint()
+
+    assert "page__nav" not in (out / "index.html").read_text()
+    assert "page__nav" in (out / "docs" / "welcome" / "index.html").read_text()
+
+
+def test_the_page_nav_is_hidden_on_a_prefixed_home_page(build_blueprint):
+    """The home of a prefixed build is `/2.5/`, not `/`."""
+    out = build_blueprint(prefix="2.5")
+
+    assert "page__nav" not in (out / "index.html").read_text()
+    assert "page__nav" in (out / "docs" / "welcome" / "index.html").read_text()
