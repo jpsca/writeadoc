@@ -193,6 +193,17 @@ docs = Docs(
 
 `"lang"` is only required if your docs are translated into [multiple languages](/docs/languages/).
 
+::: warning
+Reading site metadata that was never set fails the build, so that a typo in a
+view, like `site.nmae`, is reported instead of quietly rendering nothing.
+
+If a view has to work whether or not a key is set, test for it first:
+
+```jinja
+{% if site.twitter is defined %}...{% endif %}
+```
+:::
+
 ## The Home page
 
 The home page is special for several reasons:
