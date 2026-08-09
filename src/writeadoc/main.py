@@ -343,6 +343,28 @@ class Docs:
             raise RuntimeError(f"Error rendering {page.filepath}") from err
 
         self._write(self.build_target.dir / str(page.url).strip("/") / "index.html", html)
+        self._write_source(page)
+
+    def _write_source(self, page: PageData) -> None:
+        """Write the markdown of a page beside it, as `<url>.md`.
+
+        A page served at `/docs/models/` also gets a `/docs/models.md` holding
+        its front matter and its markdown, so the source of any page can be read
+        by appending `.md` to its URL. Pages rendered straight from a view, with
+        no markdown behind them, are skipped.
+
+        The markdown is the one the page was built from, so autodoc blocks appear
+        expanded, matching what `llms.txt` contains.
+        """
+        if not page.source:
+            return
+
+        if page.url == self.build_target.base_url:
+            outpath = self.build_target.out_dir / "index.md"
+        else:
+            outpath = self.build_target.dir / f"{str(page.url).strip('/')}.md"
+
+        self._write(outpath, f"{page.render_metadata(url=page.url)}\n\n{page.source}\n")
 
     def _render_search_page(self) -> None:
         if not (self.views_dir / "search.jx").exists():
