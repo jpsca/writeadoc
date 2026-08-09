@@ -99,3 +99,99 @@ def test_the_archive_build_publishes_them_too(tmp_root):
     docs.cli_build(archive=True, boring=True)
 
     assert (tmp_root / "archive" / "2.5" / "docs" / "one.md").exists()
+
+
+class TestLinksUnderAPrefix:
+    """The markdown has to stay inside its own prefix, like the HTML does."""
+
+    @pytest.fixture
+    def project(self, tmp_root):
+        (tmp_root / "views" / "index.jx").write_text("<h1>{{ site.name }}</h1>")
+        (tmp_root / "content" / "one.md").write_text(
+            "---\ntitle: One\n---\n\nSee [two](/docs/two/) and ![a](/assets/a.png)."
+        )
+        (tmp_root / "content" / "two.md").write_text("---\ntitle: Two\n---\n\nEnd.")
+        (tmp_root / "assets" / "a.png").write_text("x")
+        return tmp_root
+
+    def _one_md(self, docs) -> str:
+        return (docs.build_target.out_dir / "docs" / "one.md").read_text()
+
+    def test_a_prefixed_build_rewrites_them(self, project):
+        docs = Docs(project, pages=["one.md", "two.md"], prefix="v2")
+        docs._set_build_target(build_dir=project / "out", prefix="v2")
+        docs.build(devmode=True, boring=True)
+
+        assert "[two](/v2/docs/two/)" in self._one_md(docs)
+        assert "![a](/v2/assets/a.png)" in self._one_md(docs)
+
+    def test_an_archived_build_keeps_the_source_links(self, project):
+        docs = Docs(project, pages=["one.md", "two.md"], site={"version": "2.5"})
+        docs.cli_build(archive=True, boring=True)
+
+        assert "[two](/docs/two/)" in self._one_md(docs)
+        assert "![a](/assets/a.png)" in self._one_md(docs)
+
+    def test_an_unprefixed_build_leaves_them_alone(self, project):
+        docs = Docs(project, pages=["one.md", "two.md"])
+        docs._set_build_target(build_dir=project / "out", prefix="")
+        docs.build(devmode=True, boring=True)
+
+        assert "[two](/docs/two/)" in self._one_md(docs)
+
+    def test_a_variant_does_not_prefix_the_shared_assets(self, project):
+        """Variants share the main site's assets folder, as in the HTML."""
+        (project / "content" / "es").mkdir()
+        for name in ("one.md", "two.md"):
+            (project / "content" / name).rename(project / "content" / "es" / name)
+            (project / "content" / name).write_text(f"---\ntitle: {name}\n---\n\nx")
+
+        variant = Docs(project, pages=["one.md", "two.md"], site={"lang": "es"})
+        docs = Docs(project, pages=["one.md", "two.md"], variants={"es": variant})
+        docs._set_build_target(build_dir=project / "out", prefix="")
+        docs.build(devmode=True, boring=True)
+
+        source = (variant.build_target.out_dir / "docs" / "one.md").read_text()
+        assert "[two](/es/docs/two/)" in source
+        assert "![a](/assets/a.png)" in source
+
+
+def test_an_archived_build_marks_its_variants_archived_too(tmp_root):
+    """`site.archived` drives the banner as well as the markdown links."""
+    (tmp_root / "views" / "index.jx").write_text("<h1>{{ site.name }}</h1>")
+    (tmp_root / "content" / "es").mkdir()
+    (tmp_root / "content" / "one.md").write_text("---\ntitle: One\n---\n\nx")
+    (tmp_root / "content" / "es" / "one.md").write_text("---\ntitle: Uno\n---\n\nx")
+
+    variant = Docs(tmp_root, pages=["one.md"], site={"lang": "es"})
+    docs = Docs(tmp_root, pages=["one.md"], site={"version": "2.5"}, variants={"es": variant})
+    docs.cli_build(archive=True, boring=True)
+
+    assert docs.site.archived is True
+    assert variant.site.archived is True
+
+
+def test_links_inside_a_code_block_are_examples_not_links(tmp_root):
+    """The docs show markdown snippets; prefixing those would corrupt them."""
+    (tmp_root / "views" / "index.jx").write_text("<h1>{{ site.name }}</h1>")
+    (tmp_root / "content" / "one.md").write_text(
+        "---\ntitle: One\n---\n\n"
+        "A real link to [two](/docs/two/).\n\n"
+        "```markdown\n"
+        "![alt](/assets/images/image.png)\n"
+        "[example](/docs/other/)\n"
+        "```\n\n"
+        "Another real one: [two again](/docs/two/).\n"
+    )
+    (tmp_root / "content" / "two.md").write_text("---\ntitle: Two\n---\n\nEnd.")
+
+    docs = Docs(tmp_root, pages=["one.md", "two.md"], prefix="v2")
+    docs._set_build_target(build_dir=tmp_root / "out", prefix="v2")
+    docs.build(devmode=True, boring=True)
+
+    source = (docs.build_target.out_dir / "docs" / "one.md").read_text()
+
+    assert source.count("[two](/v2/docs/two/)") == 1
+    assert "[two again](/v2/docs/two/)" in source
+    assert "![alt](/assets/images/image.png)" in source
+    assert "[example](/docs/other/)" in source

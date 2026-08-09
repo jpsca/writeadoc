@@ -9,12 +9,15 @@ from pathlib import Path
 from .types import PageData
 
 
-__all__ = ("LinkWarning", "validate_links")
+__all__ = ("LinkWarning", "add_prefix_to_markdown", "validate_links")
 
 
 RX_LINK = re.compile(r"\[([^\]]*)\]\(([^)\s]+)(?:\s[^)]*)?\)")
 RX_ID = re.compile(r'\bid=["\']([^"\']+)["\']')
 RX_EXTERNAL = re.compile(r"^(https?://|mailto:|tel:)")
+# The target of a markdown link, when it is root-relative.
+RX_MD_TARGET = re.compile(r"(?<=\]\()(/[^)\s]*)")
+RX_FENCE = re.compile(r"^\s*(?:```+|~~~+)")
 
 
 @dataclass(frozen=True)
@@ -98,6 +101,38 @@ def validate_links(
                     )
 
     return warnings
+
+
+def add_prefix_to_markdown(source: str, *, prefix: str, is_main: bool = True) -> str:
+    """Add the documentation prefix to the root-relative links of a markdown source.
+
+    The counterpart of `_add_prefix_to_urls`, which does this to the rendered
+    HTML. Without it the markdown a prefixed page publishes would link out of its
+    own prefix and back to the unprefixed site.
+
+    Only the target of a markdown link is touched, so a link title is left alone,
+    and fenced code blocks are skipped: the links in them are examples being shown
+    to the reader, not links the page is making.
+    """
+    prefixed_folders = get_prefixed_folders(prefix=prefix, is_main=is_main)
+    if not prefixed_folders:
+        return source
+
+    def add_prefix(match: re.Match[str]) -> str:
+        url = match.group(1)
+        for folder in prefixed_folders:
+            if url == f"/{folder}" or url.startswith(f"/{folder}/"):
+                return f"/{prefix}{url}"
+        return url
+
+    result = []
+    in_fence = False
+    for line in source.splitlines(keepends=True):
+        if RX_FENCE.match(line):
+            in_fence = not in_fence
+        result.append(line if in_fence else RX_MD_TARGET.sub(add_prefix, line))
+
+    return "".join(result)
 
 
 def get_prefixed_folders(*, prefix: str, is_main: bool) -> tuple[str, ...]:

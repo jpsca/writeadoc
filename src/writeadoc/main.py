@@ -18,7 +18,7 @@ from jx.tools import check_all
 from markupsafe import Markup
 
 from .devserver import start_observer, start_server
-from .links import get_prefixed_folders, validate_links
+from .links import add_prefix_to_markdown, get_prefixed_folders, validate_links
 from .pages import PagesProcessor
 from .types import Build, PageData, SiteData
 from .utils import get_random_messages, logger
@@ -246,7 +246,9 @@ class Docs:
                 build_dir=self.archive_dir,
                 prefix=f"{self.build_target.prefix}/{version}" if self.build_target.prefix else version,
             )
-            self.site.archived = True
+            # The whole folder is the snapshot, variants included.
+            for docs in (self, *self.variants.values()):
+                docs.site.archived = True
         else:
             self._set_build_target(
                 build_dir=self.root_dir / "build",
@@ -355,6 +357,11 @@ class Docs:
 
         The markdown is the one the page was built from, so autodoc blocks appear
         expanded, matching what `llms.txt` contains.
+
+        Under a prefix the links are rewritten to stay inside it, as
+        `_add_prefix_to_urls` does for the HTML. An archived build is the
+        exception: it keeps the source links, so its markdown stays the copy the
+        version was written from.
         """
         if not page.source:
             return
@@ -364,7 +371,15 @@ class Docs:
         else:
             outpath = self.build_target.dir / f"{str(page.url).strip('/')}.md"
 
-        self._write(outpath, f"{page.render_metadata(url=page.url)}\n\n{page.source}\n")
+        source = page.source
+        if self.build_target.prefix and not self.site.archived:
+            source = add_prefix_to_markdown(
+                source,
+                prefix=self.build_target.prefix,
+                is_main=self.is_main,
+            )
+
+        self._write(outpath, f"{page.render_metadata(url=page.url)}\n\n{source}\n")
 
     def _render_search_page(self) -> None:
         if not (self.views_dir / "search.jx").exists():
