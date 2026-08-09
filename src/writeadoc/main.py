@@ -266,7 +266,7 @@ class Docs:
             print(f"{messages[0]}...")
 
         for variant in self.variants.values():
-            variant.build(devmode=devmode, llm=llm)
+            variant.build(devmode=devmode, llm=llm, boring=boring)
 
         print("Processing pages...")
         nav, pages = self.pages_processor.run(self.pages)

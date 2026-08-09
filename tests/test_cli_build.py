@@ -3,6 +3,7 @@ from unittest.mock import call
 import pytest
 
 from writeadoc.main import Docs
+from writeadoc.utils import RANDOM_MESSAGES
 
 
 @pytest.fixture
@@ -77,3 +78,30 @@ Hello
 
     result = (tmp_root / "archive" / "1.0" / "docs" / "test" / "index.html").read_text()
     assert 'href="/1.0/assets/app.css?v=' in result
+
+
+@pytest.fixture
+def docs_with_variant(tmp_root):
+    (tmp_root / "content" / "es").mkdir()
+    (tmp_root / "content" / "one.md").write_text("---\ntitle: One\n---\n\nHi.")
+    (tmp_root / "content" / "es" / "one.md").write_text("---\ntitle: Uno\n---\n\nHola.")
+
+    variant = Docs(tmp_root, pages=["one.md"], site={"lang": "es"})
+    return Docs(tmp_root, pages=["one.md"], variants={"es": variant})
+
+
+def _random_messages_in(output: str) -> list[str]:
+    return [message for message in RANDOM_MESSAGES if f"{message}..." in output]
+
+
+def test_boring_silences_the_variants_too(docs_with_variant, capsys):
+    docs_with_variant.build(boring=True)
+
+    assert _random_messages_in(capsys.readouterr().out) == []
+
+
+def test_variants_are_not_silenced_without_boring(docs_with_variant, capsys):
+    """Guards the test above: the messages do get printed when not boring."""
+    docs_with_variant.build(boring=False)
+
+    assert _random_messages_in(capsys.readouterr().out)
