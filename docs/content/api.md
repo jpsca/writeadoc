@@ -7,3 +7,9 @@ title: API
 
 ::: api writeadoc.Build
 :::
+
+::: api writeadoc.SiteData
+:::
+
+::: api writeadoc.PageData
+:::

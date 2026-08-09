@@ -124,6 +124,26 @@ class PageRef:
 
 
 class PageData:
+    """A single page, available to its view as `page`.
+
+    Attributes:
+        url: The absolute URL path of the page, prefix included.
+        section_title: The title of the section containing it, if any.
+        section_url: The URL of that section, if it has a page of its own.
+        meta: The front matter. An `id` is added if the page did not set one.
+        source: The markdown source, after the autodoc blocks are expanded.
+        content: The rendered HTML.
+        filepath: The markdown file, or `None` for a page rendered straight from
+            a view, such as the search page.
+        prev: The previous page in reading order. Filled in by the build.
+        next: The next page in reading order. Filled in by the build.
+        search_data: What the search index holds for this page. Filled in by
+            the build.
+        toc: The tree of headings found in the page.
+        parents: The ids of the navigation items containing this page.
+
+    """
+
     url: str
     section_title: str
     section_url: str
@@ -164,24 +184,37 @@ class PageData:
 
     @property
     def id(self) -> str:
+        """The page id, defaulting to a slug built from its URL."""
         return self.meta["id"]
 
     @property
     def title(self) -> str:
+        """The `title` from the front matter, defaulting to the file name."""
         return self.meta.get("title", self.filepath.name if self.filepath else "")
 
     @property
     def icon(self) -> str:
+        """The `icon` from the front matter, for the navigation."""
         return self.meta.get("icon", "")
 
     @property
     def view(self) -> str:
+        """The view rendering this page, from the front matter."""
         return self.meta.get("view", "page.jx")
 
     def __repr__(self) -> str:
         return f"<Page {self.url}>"
 
     def render_metadata(self, **kwargs) -> str:
+        """Render this page's metadata as a front matter block.
+
+        Arguments:
+            **kwargs: Extra entries to add to the metadata.
+
+        Returns:
+            The metadata between `---` delimiters, as `llms.txt` includes it.
+
+        """
         return render_metadata(self.meta, **kwargs)
 
 

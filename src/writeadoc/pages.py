@@ -150,8 +150,6 @@ class PagesProcessor:
             logger.warning("No index.jx view found.")
             return None
 
-        outpath = self.docs.build_target.out_dir / "index.html"
-        outpath.parent.mkdir(parents=True, exist_ok=True)
         url = self.docs.build_target.base_url
 
         md_index = self.docs.content_dir / "index.md"
