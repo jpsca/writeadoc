@@ -135,7 +135,7 @@ class Docs:
             variants[name] = variant.build_target
 
         self.build_target = Build(dir=build_dir, prefix=prefix, variants=variants)
-        self.catalog.jinja_env.globals["build"] = self.build_target
+        self.catalog.jinja_env.globals["build"] = self.build_target  # type: ignore
 
     # Deprecated, removed in 0.29
 

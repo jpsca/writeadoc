@@ -71,13 +71,12 @@ def truncate(source: str, limit: int = 400) -> str:
     return source
 
 
-def dict_to_yaml(data: dict, indent: int = 0, is_list_item: bool = False) -> str:
+def dict_to_yaml(data: dict, indent: int = 0) -> str:
     """Convert a Python dictionary to a YAML string.
 
     Args:
         data: The dictionary to convert
         indent: Current indentation level (for recursive calls)
-        is_list_item: Whether the current item is part of a list
 
     Returns:
         A formatted YAML string representation
@@ -103,12 +102,11 @@ def dict_to_yaml(data: dict, indent: int = 0, is_list_item: bool = False) -> str
                 for item in value:
                     if isinstance(item, dict):
                         lines.append(f"{spaces}  -")
-                        lines.append(dict_to_yaml(item, indent + 4, True))
+                        lines.append(dict_to_yaml(item, indent + 4))
                     else:
                         lines.append(f"{spaces}  - {_format_yaml_value(item)}")
         else:
-            prefix = "" if is_list_item else f"{key}: "
-            lines.append(f"{spaces}{prefix}{_format_yaml_value(value)}")
+            lines.append(f"{spaces}{key}: {_format_yaml_value(value)}")
 
     return "\n".join(lines)
 

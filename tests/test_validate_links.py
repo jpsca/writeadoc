@@ -3,7 +3,12 @@ from pathlib import Path
 
 import pytest
 
-from writeadoc.links import LinkWarning, get_prefixed_folders, validate_links
+from writeadoc.links import (
+    LinkWarning,
+    add_prefix_to_markdown,
+    get_prefixed_folders,
+    validate_links,
+)
 from writeadoc.main import Docs
 from writeadoc.types import PageData
 
@@ -454,3 +459,35 @@ class TestWarningsOutput:
         docs._validate_links()
 
         assert capsys.readouterr().out == ""
+
+
+class TestAddPrefixToMarkdown:
+
+    def test_without_a_prefix_the_source_is_untouched(self):
+        source = "See [two](/docs/two/)."
+
+        assert add_prefix_to_markdown(source, prefix="") == source
+
+    def test_only_the_prefixed_folders_are_rewritten(self):
+        source = "[a](/docs/a/) [b](/other/b/) [c](https://x.test/docs/c/)"
+
+        rewritten = add_prefix_to_markdown(source, prefix="v2")
+
+        assert "[a](/v2/docs/a/)" in rewritten
+        assert "[b](/other/b/)" in rewritten
+        assert "[c](https://x.test/docs/c/)" in rewritten
+
+    def test_a_link_title_is_left_alone(self):
+        source = '![x](/assets/a.png "A: title")'
+
+        assert add_prefix_to_markdown(source, prefix="v2") == (
+            '![x](/v2/assets/a.png "A: title")'
+        )
+
+    def test_a_variant_does_not_prefix_the_shared_assets(self):
+        source = "[a](/docs/a/) ![b](/assets/b.png)"
+
+        rewritten = add_prefix_to_markdown(source, prefix="v2/es", is_main=False)
+
+        assert "[a](/v2/es/docs/a/)" in rewritten
+        assert "![b](/assets/b.png)" in rewritten

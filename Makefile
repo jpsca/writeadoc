@@ -10,7 +10,7 @@ test:
 .PHONY: lint
 lint:
 	uv run ruff check .
-	uv run ty check
+	uv run ty check src/writeadoc
 
 .PHONY: coverage
 coverage:

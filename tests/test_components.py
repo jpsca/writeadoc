@@ -116,3 +116,30 @@ class TestRenderComponents:
         result = render_components(html, {}, render_string=render_string)
 
         assert result.strip() == html
+
+
+class TestUnterminatedTags:
+    """Malformed input must be left alone rather than half-rewritten."""
+
+    def test_an_opening_tag_that_never_closes(self):
+        source = '<Card title="oops {% fill a %}'
+
+        assert protect_fill_tags(source, IMPORTS) == (source, [])
+
+    def test_a_body_that_never_closes(self):
+        source = "<Card>{% fill a %}"
+
+        assert protect_fill_tags(source, IMPORTS) == (source, [])
+
+    def test_a_nested_tag_that_never_closes(self):
+        source = '<Card>{% fill a %}<Card title="oops</Card>'
+        result, fill_tags = protect_fill_tags(source, IMPORTS)
+
+        assert fill_tags == []
+        assert result == source
+
+    def test_a_good_tag_after_a_broken_one_is_still_handled(self):
+        source = "<Card>unclosed <Card>{% fill a %}</Card>"
+        _, fill_tags = protect_fill_tags(source, IMPORTS)
+
+        assert [tag for _, tag in fill_tags] == ["{% fill a %}"]

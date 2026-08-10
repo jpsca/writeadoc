@@ -2,7 +2,7 @@ import jx
 import pytest
 from jinja2 import UndefinedError
 
-from writeadoc.types import SiteData
+from writeadoc.types import NavItem, SiteData
 
 
 class TestDeclaredAttributes:
@@ -74,3 +74,31 @@ class TestUnsetAttributes:
 
         with pytest.raises(UndefinedError, match="no attribute 'nmae'"):
             catalog.render_string("{{ site.nmae }}", globals={"site": site})
+
+
+class TestNavItem:
+
+    def test_dict_serializes_the_tree(self):
+        child = NavItem(title="Child", url="/docs/parent/child/")
+        parent = NavItem(title="Parent", url="/docs/parent/", pages=[child])
+
+        assert parent.dict() == {
+            "id": "parent",
+            "title": "Parent",
+            "url": "/docs/parent/",
+            "icon": "",
+            "pages": [
+                {
+                    "id": "parent-child",
+                    "title": "Child",
+                    "url": "/docs/parent/child/",
+                    "icon": "",
+                    "pages": [],
+                }
+            ],
+        }
+
+    def test_an_item_without_a_url_gets_a_generated_id(self):
+        item = NavItem(title="Section")
+
+        assert len(item.id) == 32
