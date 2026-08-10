@@ -3,7 +3,7 @@ requires = ["setuptools"]
 
 [project]
 name = "writeadoc"
-version = "0.27.0"
+version = "0.28.0"
 description = "Focus on your content and let WriteADoc take care of the rest"
 authors = [
     {name = "Juan Pablo Scaletti", email = "juanpablo@jpscaletti.com"},
